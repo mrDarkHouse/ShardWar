@@ -15,6 +15,11 @@ public abstract class Entity extends Image implements DamageReceiver {
     public Entity(TextureRegion region) {
         super(region);
     }
+    abstract public boolean isExist();
+
+    public Entity() {
+        super();
+    }
 
     public abstract Vector2 getShootPosition(int line);
 

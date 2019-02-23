@@ -10,7 +10,7 @@ public class AssaultTower extends Tower{
 
         public P() {
             super(ShardWar.main.getAssetLoader().get("towers/assault.png", Texture.class),
-                    "Assaut", 10, 7, 3, 2, 0.6f);
+                    "Assaut", 15, 7, 2, 3, 2, 0.6f);
         }
 
         @Override

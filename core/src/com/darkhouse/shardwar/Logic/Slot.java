@@ -2,7 +2,6 @@ package com.darkhouse.shardwar.Logic;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -18,8 +17,6 @@ import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
 import com.darkhouse.shardwar.ShardWar;
-
-import java.util.Arrays;
 
 public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> extends Entity {
 
@@ -101,6 +98,11 @@ public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> ex
     }
 
     @Override
+    public boolean isExist() {
+        return object != null;
+    }
+
+    @Override
     public Vector2 getShootPosition(int line) {
         return new Vector2(getX() + getParent().getX() + getWidth()/2, getY() + getParent().getY() + getHeight()/2);
     }
@@ -147,7 +149,7 @@ public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> ex
             addListener(new InputListener() {
                 @Override
                 public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                    if(user == owner.getCurrentPlayerIndex()) {
+                    if(user == owner.getCurrentPlayerObject()) {
                         if (empty() && getColor().a != 1f) {
                             fadeOut();
                         }
@@ -165,7 +167,7 @@ public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> ex
 
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    if(user == owner.getCurrentPlayerIndex()) {
+                    if(user == owner.getCurrentPlayerObject()) {
                         owner.hideTooltips();
                         if (object == null) {
                             tooltip.show();
@@ -206,6 +208,7 @@ public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> ex
             this.object = ((O) prototype.getObject());//TODO this works but need remake
 //            this.object = new Tower(object);
             object.setSlot(this);
+            object.setOwner(owner.getCurrentPlayerObject());
             fadeOut();
             tooltip.hide();
 

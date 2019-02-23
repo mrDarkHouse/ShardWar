@@ -1,7 +1,10 @@
 package com.darkhouse.shardwar;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.darkhouse.shardwar.Logic.DamageReceiver;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
@@ -9,6 +12,8 @@ import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 public class Player extends Entity {
     private int shards;
     private float[] lineX;
+    private ProgressBar healthBar;
+    private final int maxShards = 40;
 
     public int getShards() {
         return shards;
@@ -20,7 +25,9 @@ public class Player extends Entity {
         }else return false;
     }
     public void addShards(int value){
-        shards += value;
+        if(shards + value <= maxShards) shards += value;
+        else shards = maxShards;
+        updateBar();
     }
 
     @Override
@@ -28,12 +35,31 @@ public class Player extends Entity {
         return new Vector2(lineX[line], getY());
     }
 
-    public Player() {
-        super(ShardWar.main.getAssetLoader().get("shard.png", Texture.class));
-
-
-        shards = 10;
+    @Override
+    public boolean isExist() {
+        return true;
     }
+
+    public Player() {
+//        super(ShardWar.main.getAssetLoader().get("shard.png", Texture.class));
+
+
+    }
+
+    public void init(){
+//        healthBar = new ProgressBar(0, maxShards, 0.1f, true, ShardWar.main.getAssetLoader().getSkin(), "health-bar");
+//        healthBar.setSize(Gdx.graphics.getWidth(), 40);
+//        healthBar.getStyle().background.setMinWidth(Gdx.graphics.getWidth());
+//        healthBar.getStyle().knobBefore.setMinWidth(Gdx.graphics.getWidth() - 2);
+//        healthBar.setPosition(0, 0);
+//        System.out.println(healthBar.getX() + " " + getX() + " "  +
+//                healthBar.getY() + " " + getY());
+//        updateBar();
+//        healthBar.pack();
+
+        addShards(10);
+    }
+
     public void setShootCoord(float[] lineX){
         this.lineX = lineX;
     }
@@ -41,13 +67,26 @@ public class Player extends Entity {
     @Override
     public void dmg(int dmg, GameObject source) {
         if(!deleteShards(dmg)){
+            shards = 0;
+            updateBar();
             loose();
-        }
+        }else updateBar();
+
     }
+
+    private void updateBar(){
+//        healthBar.setValue(shards);
+    }
+
 
     private void loose(){
-
+        System.out.println("Loose");
+        System.exit(0);
     }
 
-
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+//        super.draw(batch, parentAlpha);
+//        healthBar.draw(batch, parentAlpha);
+    }
 }

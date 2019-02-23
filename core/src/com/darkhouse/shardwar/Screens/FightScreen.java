@@ -22,6 +22,7 @@ import java.util.*;
 public class FightScreen extends AbstractScreen {
 
     private static final int CORNER_SPACE = 70;
+    private static final int INCOME = 4;
 
 //    private Field field1;
 //    private Field field2;
@@ -62,7 +63,7 @@ public class FightScreen extends AbstractScreen {
     private int currentPlayer;
 
 
-    public Player getCurrentPlayerIndex(){
+    public Player getCurrentPlayerObject(){
         return players[currentPlayer - 1];
     }
 
@@ -349,6 +350,7 @@ public class FightScreen extends AbstractScreen {
         offTouch();
         if(round != 1){
             fight();
+            shot = 0;
 
             Timer t = new Timer();
             t.schedule(new TimerTask() {
@@ -376,17 +378,28 @@ public class FightScreen extends AbstractScreen {
 //
 //    }
 
-    private final long shootDelay = 700;
+//    private final long shootDelay = 700;
 
 
+    int shot = 0;
 
     private void fight(){
-        for (Slot<Tower.TowerPrototype, Tower> s:fields[getCurrentPlayer() - 1].getTowers()){
+        for (final Slot<Tower.TowerPrototype, Tower> s:fields[getCurrentPlayer() - 1].getTowers()){
             if(/*s.getSelected() != -1*/!s.isNoSelected()) {
 //                System.out.println(Arrays.toString(s.getSelected()));
 //                for (int i = 0; i < s.getSelected().length; i++) {
 //                    shootProjectile(s, 0);
-                s.getObject().setCanShoot(true);
+
+
+//                s.getObject().setCanShoot(true);
+                Timer t = new Timer();
+                t.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        s.getObject().setCanShoot(true);
+                    }
+                }, 200/* *shot*/);
+//                shot++;
             }
         }
 
@@ -438,7 +451,7 @@ public class FightScreen extends AbstractScreen {
 
     private void income(){
         for (int i = 0; i < 2; i++) {
-            players[i].addShards(5);
+            players[i].addShards(INCOME);
         }
     }
 
@@ -547,9 +560,11 @@ public class FightScreen extends AbstractScreen {
         players[0] = new Player();
         players[0].setPosition(Gdx.graphics.getWidth()/2f, 0);
         stage.addActor(players[0]);
+        players[0].init();
         players[1] = new Player();
         players[1].setPosition(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight() - players[1].getHeight());
         stage.addActor(players[1]);
+        players[1].init();
         currentPlayer = 1;
 
 

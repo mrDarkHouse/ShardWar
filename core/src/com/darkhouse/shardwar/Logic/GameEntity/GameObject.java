@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.darkhouse.shardwar.Logic.DamageReceiver;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.Logic.Slot;
+import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.ShardWar;
 
 public abstract class GameObject implements DamageReceiver {
@@ -14,6 +15,7 @@ public abstract class GameObject implements DamageReceiver {
         protected String name;
         protected int cost;
         protected int maxHealth;
+        protected int bounty;
 
         public Texture getTexture() {
             return texture;
@@ -28,11 +30,12 @@ public abstract class GameObject implements DamageReceiver {
             return maxHealth;
         }
 
-        public ObjectPrototype(Texture texture, String name, int health, int cost) {
+        public ObjectPrototype(Texture texture, String name, int health, int cost, int bounty) {
             this.texture = texture;
             this.name = name;
             this.maxHealth = health;
             this.cost = cost;
+            this.bounty = bounty;
         }
 
         public abstract GameObject getObject();
@@ -47,6 +50,12 @@ public abstract class GameObject implements DamageReceiver {
     protected int health;
     protected Slot slot;
     protected ObjectPrototype objectPrototype;
+    protected int bounty;
+    protected Player owner;
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
 
     public ObjectPrototype getObjectPrototype() {
         return objectPrototype;
@@ -84,6 +93,7 @@ public abstract class GameObject implements DamageReceiver {
         this.name = prototype.name;
         this.health = prototype.maxHealth;
         this.maxHealth = prototype.maxHealth;
+        this.bounty = prototype.bounty;
         this.objectPrototype = prototype;
     }
 //    public static GameObject create(ObjectPrototype prototype){
@@ -106,7 +116,7 @@ public abstract class GameObject implements DamageReceiver {
     public void dmg(int dmg, GameObject source){
         health -= receiveDamage(dmg, source);
 //        System.out.println("attacked " + health);
-        if(health <= 0) die();
+        if(health <= 0) die(source);
         else slot.hasChanged();
 //        ShardWar.fightScreen.hasChanged();
     }
@@ -114,9 +124,10 @@ public abstract class GameObject implements DamageReceiver {
     public abstract int receiveDamage(int damage, GameObject source);
     public abstract void physic(float delta);
 
-    private void die(){
+    private void die(GameObject source){
         slot.clearObject();
         slot.hasChanged();
         slot = null;
+        source.owner.addShards(bounty);
     }
 }

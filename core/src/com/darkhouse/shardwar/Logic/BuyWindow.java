@@ -27,9 +27,10 @@ public abstract class BuyWindow<T extends GameObject.ObjectPrototype, O extends 
             this.owner = owner;
             this.object = object;
             add(new Image(object.getTexture())).spaceRight(5f);
-            add(new Label(object.getName(), ShardWar.main.getAssetLoader().getSkin()));
-            add(new Label(" " + object.getCost(), ShardWar.main.getAssetLoader().getSkin()));
+            add(new Label(object.getName(), ShardWar.main.getAssetLoader().getSkin())).fill().expand();
+            add(new Label(" " + object.getCost(), ShardWar.main.getAssetLoader().getSkin())).fill();
             add(new Image(ShardWar.main.getAssetLoader().get("shard.png", Texture.class)));
+//            debug();
 
             init();
         }
@@ -71,7 +72,7 @@ public abstract class BuyWindow<T extends GameObject.ObjectPrototype, O extends 
         protected Wall.WallPrototype[] getItems() {
             return new Wall.WallPrototype[]
                     {new BrickWall.P(),
-                     new EnergyWall.P(5),
+                     new EnergyWall.P(1),
                      new SpikeWall.P(3)};
         }
     }

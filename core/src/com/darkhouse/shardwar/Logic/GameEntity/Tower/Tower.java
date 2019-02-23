@@ -18,11 +18,11 @@ public abstract class Tower extends GameObject {
         private int shoots;
         private float shootDelay;
 
-        public TowerPrototype(Texture texture, String name, int health, int cost, int dmg) {
-            this(texture, name, health, cost, dmg, 1, 0f);
+        public TowerPrototype(Texture texture, String name, int health, int cost, int dmg, int bounty) {
+            this(texture, name, health, cost, dmg, bounty, 1, 0f);
         }
-        public TowerPrototype(Texture texture, String name, int health, int cost, int dmg, int shoots, float shootDelay){
-            super(texture, name, health, cost);
+        public TowerPrototype(Texture texture, String name, int health, int cost, int dmg, int bounty, int shoots, float shootDelay){
+            super(texture, name, health, cost, bounty);
             this.dmg = dmg;
             this.shoots = shoots;
             this.shootDelay = shootDelay;

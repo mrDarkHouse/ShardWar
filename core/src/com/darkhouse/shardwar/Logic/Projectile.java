@@ -80,7 +80,14 @@ public class Projectile extends Image {
         move(delta);
     }
 
+    private void checkIfTargetDie(){
+        if(!target.isExist()){
+            target = ShardWar.fightScreen.searchTarget(slot, line);
+        }
+    }
+
     protected void move(float delta){
+        checkIfTargetDie();
         position.set(getX(), getY());
         targetV.set(target.getXShoot(line),
                 target.getYShoot(line));

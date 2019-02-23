@@ -11,7 +11,7 @@ public class SniperTower extends Tower{
 
         public P() {
             super(ShardWar.main.getAssetLoader().get("towers/sniper.png", Texture.class),
-                    "Sniper", 10, 5, 8);
+                    "Sniper", 15, 5, 3, 3);
         }
 
         @Override
@@ -29,8 +29,6 @@ public class SniperTower extends Tower{
     public SniperTower(P prototype) {
         super(prototype);
     }
-
-    @Override
     public void attack(DamageReceiver g) {
         g.dmg(dmg, this);
 //        System.out.println("attack");
