@@ -11,7 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.darkhouse.shardwar.Logic.*;
+import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.Disarm;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.FireBreath;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.Model.ShardPanel;
 import com.darkhouse.shardwar.Player;
@@ -23,6 +27,7 @@ public class FightScreen extends AbstractScreen {
 
     private static final int CORNER_SPACE = 70;
     private static final int INCOME = 4;
+    private static final int ROLL_ROUND = 5;
 
 //    private Field field1;
 //    private Field field2;
@@ -30,9 +35,59 @@ public class FightScreen extends AbstractScreen {
 
     public Array<Projectile> projectiles;
 
-    private static class Field extends Table{
+    public static class Field extends Table{
         private TowerSlot[] towers;
         private Array<WallSlot> walls;
+
+        public ArrayList<Slot> getObjects(){
+            ArrayList<Slot> list = new ArrayList<Slot>();
+            for(TowerSlot t:towers){
+                /*if(t.getObject() != null) */list.add(t);
+            }
+            for(WallSlot w:walls){
+                /*if(w.getObject() != null) */list.add(w);
+            }
+            return list;
+        }
+
+        public ArrayList<Slot> getOnColumn(int column){
+            ArrayList<Slot> curr = new ArrayList<Slot>();
+            for(TowerSlot t:towers){
+                if(t.getColumn() == column/* && t.getObject() != null*/) curr.add(t);
+            }
+            for(WallSlot w:walls){
+                if(w.getColumn() == column/* && w.getObject() != null*/) curr.add(w);
+            }
+            return curr;
+        }
+        public ArrayList<Slot> getOnRow(int row){
+            ArrayList<Slot> curr = new ArrayList<Slot>();
+            for(TowerSlot t:towers){
+                if(t.getRow() == row/* && t.getObject() != null*/) curr.add(t);
+            }
+            for(WallSlot w:walls){
+                if(w.getRow() == row/* && w.getObject() != null*/) curr.add(w);
+            }
+            return curr;
+        }
+        public Slot get(int row, int column){
+            for(TowerSlot t:towers){
+                if(t.getRow() == row && t.getColumn() == column) return t;
+            }
+            for(WallSlot w:walls){
+                if(w.getRow() == row && w.getColumn() == column) return w;
+            }
+            throw new IllegalArgumentException("wrong row (" + row + ") or column (" + column + ")");
+        }
+        public Slot getByCoords(float x, float y){
+            for(TowerSlot t:towers){
+                if(t.contains(x, y)) return t;
+            }
+            for(WallSlot w:walls){
+                if(w.contains(x, y)) return w;
+            }
+            return null;
+        }
 
         public void setTowers(TowerSlot[] towers) {
             this.towers = towers;
@@ -70,8 +125,28 @@ public class FightScreen extends AbstractScreen {
     public int getCurrentPlayer() {//1-2
         return currentPlayer;
     }
+    public int getEnemyPlayer(int i){
+        return 3 - i;
+    }
     public int getOppositePlayer(){
-        return 3 - currentPlayer;
+        return getEnemyPlayer(currentPlayer);
+    }
+    public int getPlayerIndex(Player player){
+        if(player == players[0]) return 1;
+        if(player == players[1]) return 2;
+        else return -1;
+    }
+
+//    public Field getField(Player player){
+//        if(player == players[0]) return fields[0];
+//        if(player == players[1]) return fields[1];
+//        return null;
+//    }
+    public Field getField(int i){
+        return fields[i - 1];
+    }
+    public Field getEnemyField(Player player){
+        return getField(getEnemyPlayer(getPlayerIndex(player)));
     }
 
 
@@ -84,12 +159,14 @@ public class FightScreen extends AbstractScreen {
     private Slot targetSlot;
 //    private Image targeter;
     private Array<Image> targetSelected;
+    private SpellBuy spellBuy;
 
     public void setTargetSlot(Slot targetSlot) {
         this.targetSlot = targetSlot;
-        if(targetSlot.isNoSelected()) {
+//        System.out.println(targetSlot.isNoSelected());
+        if(targetSlot.getNumberSelected() < targetSlot.getSelected().length) {
             targetSlot.setTargeter(new Image(ShardWar.main.getAssetLoader().getCenterTarget(getCurrentPlayer())));
-            targetSlot.select(targetSlot.getLine());
+            targetSlot.select(targetSlot.getColumn());
             if (currentPlayer == 1) {
                 targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getCenterTarget(1));
                 targetSlot.getTargeter().setPosition(targetSlot.getX() + targetSlot.getParent().getX(),
@@ -105,6 +182,8 @@ public class FightScreen extends AbstractScreen {
         }else {
             AlphaAction a = new AlphaAction();
             a.setAlpha(1f);
+//            System.out.println(targetSlot);
+//            System.out.println(targetSlot.getTargeter());
             targetSlot.getTargeter().addAction(a);
         }
     }
@@ -151,28 +230,28 @@ public class FightScreen extends AbstractScreen {
         public boolean mouseMoved(int screenX, int screenY) {
             if(targetSlot != null){
                 if(screenX > targetSlot.getX() + targetSlot.getParent().getX() + targetSlot.getWidth()){
-                    if(targetSlot.getLine() != 2) {
+                    if(targetSlot.getColumn() != 2) {
                         if(currentPlayer == 1) targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getRightTarget(1));
                         if(currentPlayer == 2) targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getRightTarget(2));
                         targetSlot.getTargeter().setWidth(48 * 3);
                         targetSlot.getTargeter().setX(targetSlot.getX() + targetSlot.getParent().getX());
-                        targetSlot.select(targetSlot.getLine() + 1);
+                        targetSlot.select(targetSlot.getColumn() + 1);
                     }
                 }
                 else if(screenX < targetSlot.getX() + targetSlot.getParent().getX()){
-                    if(targetSlot.getLine() != 0) {
+                    if(targetSlot.getColumn() != 0) {
                         if(currentPlayer == 1) targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getLeftTarget(1));
                         if(currentPlayer == 2) targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getLeftTarget(2));
                         targetSlot.getTargeter().setWidth(48 * 3);
                         targetSlot.getTargeter().setX(targetSlot.getX() + targetSlot.getParent().getX() - 48 * 2);
-                        targetSlot.select(targetSlot.getLine() - 1);
+                        targetSlot.select(targetSlot.getColumn() - 1);
                     }
                 }else {
                     if(currentPlayer == 1) targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getCenterTarget(1));
                     if(currentPlayer == 2) targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getCenterTarget(2));
                     targetSlot.getTargeter().setWidth(48);
                     targetSlot.getTargeter().setX(targetSlot.getX() + targetSlot.getParent().getX());
-                    targetSlot.select(targetSlot.getLine());
+                    targetSlot.select(targetSlot.getColumn());
                 }
             }
             return super.mouseMoved(screenX, screenY);
@@ -212,7 +291,11 @@ public class FightScreen extends AbstractScreen {
         initTimeBar();
         createDialog();
         initTimeSkipButton();
+        addSpellPanel();
+        initSpellDialog();
     }
+
+
 
     private void initTimeSkipButton(){
         TextButton timeSkip = new TextButton("End Turn", ShardWar.main.getAssetLoader().getSkin());
@@ -319,18 +402,96 @@ public class FightScreen extends AbstractScreen {
         }
     }
 
+    private void actEffects(){
+        for (Slot s:fields[currentPlayer - 1].getObjects()){
+            if(s.getObject() != null) s.getObject().actEffects();
+        }
+    }
+
     private void showPlayerTurn(){
         initDialog();
         showTurnLabel();
+        if(round % ROLL_ROUND == 0 && numberChange == 0){
+            rollSpells();
+        }
         Timer t = new Timer();
         t.schedule(new TimerTask() {
             @Override
             public void run() {
                 hideTurnLabel();
+                if(round % ROLL_ROUND == 0) showSpells();
                 allowStartTurn = true;
                 onTouch();
             }
         }, 1000);
+    }
+
+    private void addSpellPanel(){
+        SpellPanel spellPanel = new SpellPanel(players[0]);
+        SpellPanel spellPane2 = new SpellPanel(players[1]);
+
+        spellPanel.setSize(250, 70);
+        spellPane2.setSize(250, 70);
+        spellPanel.init();
+        spellPane2.init();
+
+//        spellPanel.debug();
+//        spellPane2.debug();
+
+        spellPanel.setPosition(50, 30);
+        spellPane2.setPosition(50, Gdx.graphics.getHeight() - spellPane2.getHeight() - 30);
+
+        stage.addActor(spellPanel);
+        stage.addActor(spellPane2);
+    }
+
+    private int spellRoll = 0;
+
+    private void rollSpells(){
+        spellBuy.clearSpells();
+//        spellBuy.setSize(200, 200);
+        spellBuy.addSpell(getSpell(spellRoll));
+        spellBuy.addSpell(getSpell(spellRoll + 1));
+        spellBuy.addSpell(getSpell(spellRoll + 2));
+        spellRoll += 3;
+        spellBuy.pack();
+    }
+
+    private void showSpells(){
+//        spellBuy.clear();
+
+//        System.out.println(spellBuy.getChildren());
+
+        spellBuy.show(stage);
+    }
+//    private static Spell.SpellPrototype[] allSpells = new Spell.SpellPrototype[10];
+    private static ArrayList<Spell.SpellPrototype> allSpells = new ArrayList<Spell.SpellPrototype>();
+
+    private Spell.SpellPrototype getSpell(int i){
+        return allSpells.get(i%allSpells.size());
+    }
+
+    private void initSpellDialog(){
+        spellBuy = new SpellBuy();
+        spellBuy.setSize(200, 200);
+//        allSpells[0] = new FireBreath.P(4);
+
+//        ArrayList<Integer> randoms = new ArrayList<Integer>();
+//        for (int i = 0; i < allSpells.size(); i++) {
+////            int a = r.nextInt(allSpells.length);
+//            randoms.add(i);
+//        }
+        allSpells.add(new FireBreath.P(4));
+//        allSpells.add(new FireBreath.P(4));
+//        allSpells.add(new FireBreath.P(4));
+        allSpells.add(new Disarm.P(2));
+        allSpells.add(new Disarm.P(2));
+
+
+
+
+        Collections.shuffle(allSpells);
+
     }
 
     private int numberChange;
@@ -350,7 +511,7 @@ public class FightScreen extends AbstractScreen {
         offTouch();
         if(round != 1){
             fight();
-            shot = 0;
+//            shot = 0;
 
             Timer t = new Timer();
             t.schedule(new TimerTask() {
@@ -358,6 +519,7 @@ public class FightScreen extends AbstractScreen {
                 public void run() {
                     if(projectiles.size == 0){
                         cancel();
+                        actEffects();
                         nextPlayer();
                     }
                 }
@@ -372,16 +534,8 @@ public class FightScreen extends AbstractScreen {
         }else changePlayerTurn();
         timeBar.setValue(turnTime);
     }
-//    private class endBulletsListener extends Timer{
-//
-//
-//
-//    }
 
-//    private final long shootDelay = 700;
-
-
-    int shot = 0;
+//    private int shot = 0;
 
     private void fight(){
         for (final Slot<Tower.TowerPrototype, Tower> s:fields[getCurrentPlayer() - 1].getTowers()){
@@ -398,7 +552,7 @@ public class FightScreen extends AbstractScreen {
                     public void run() {
                         s.getObject().setCanShoot(true);
                     }
-                }, 200/* *shot*/);
+                }, 100/* *shot*/);
 //                shot++;
             }
         }
@@ -430,19 +584,19 @@ public class FightScreen extends AbstractScreen {
     public Entity searchTarget(Slot<Tower.TowerPrototype, Tower> attacker, int line){
         for (int i = 0; i < 6; i ++){
             WallSlot curr = fields[getOppositePlayer() - 1].getWalls().get(i);
-            if(curr.getObject() != null && curr.getLine() == line && curr.getRow() == 1){
+            if(curr.getObject() != null && curr.getColumn() == line && curr.getRow() == 0){
                 return curr;
             }
         }
         for (int i = 0; i < 6; i ++){
             WallSlot curr = fields[getOppositePlayer() - 1].getWalls().get(i);
-            if(curr.getObject() != null && curr.getLine() == line && curr.getRow() == 2){
+            if(curr.getObject() != null && curr.getColumn() == line && curr.getRow() == 1){
                 return curr;
             }
         }
         for (int i = 0; i < 3; i ++){
             TowerSlot curr = fields[getOppositePlayer() - 1].getTowers()[i];
-            if(curr.getObject() != null && curr.getLine() == line){
+            if(curr.getObject() != null && curr.getColumn() == line){
                 return curr;
             }
         }
@@ -472,17 +626,17 @@ public class FightScreen extends AbstractScreen {
         Array<WallSlot> wallSlots = new Array<WallSlot>();
 
         if(player) {
-            wallSlots.addAll(addWallSlots(field, true, players[0], 1));
+            wallSlots.addAll(addWallSlots(field, true, players[0], 0));
             field.row();
-            wallSlots.addAll(addWallSlots(field, true, players[0], 2));
+            wallSlots.addAll(addWallSlots(field, true, players[0], 1));
             field.row();
             addTowerSlots(field, true, players[0]);
         }else {
             addTowerSlots(field, false, players[1]);
             field.row();
-            wallSlots.addAll(addWallSlots(field, false, players[1], 2));
-            field.row();
             wallSlots.addAll(addWallSlots(field, false, players[1], 1));
+            field.row();
+            wallSlots.addAll(addWallSlots(field, false, players[1], 0));
         }
         field.setWalls(wallSlots);
         field.pack();
@@ -522,7 +676,7 @@ public class FightScreen extends AbstractScreen {
     private void addTowerSlots(Field t, boolean player, Player user){
         TowerSlot[] towerSlots = new TowerSlot[3];
         for (int i = 0; i < 3; i++) {
-            towerSlots[i] = new TowerSlot(player, this, user, i, 3);
+            towerSlots[i] = new TowerSlot(player, this, user, i, 2);
             t.add(towerSlots[i]);
         }
         t.setTowers(towerSlots);

@@ -45,6 +45,14 @@ public class AssetLoader extends AssetManager {
         load("projectiles/sniper.png", Texture.class);
         load("projectiles/assault.png", Texture.class);
 
+        load("Spells/firebreath.png", Texture.class);
+        load("Spells/disarm.png", Texture.class);
+
+        load("Effects/disarm.png", Texture.class);
+        load("Effects/heal.png", Texture.class);
+
+        load("towerSlotSelect.png", Texture.class);
+        load("wallSlotSelect.png", Texture.class);
 
         ObjectMap<String, Object> fontMap = new ObjectMap<String, Object>();
         fontMap.put("description-font", FontLoader.generateFont(0, 16, Color.BLACK));
@@ -81,6 +89,15 @@ public class AssetLoader extends AssetManager {
         get("target/targetRightInv.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         get("target/targetLeft.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         get("target/targetLeftInv.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
+        get("towerSlot.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+    }
+
+    public Texture getSpell(String name){
+        return get("Spells/" + name + ".png", Texture.class);
+    }
+    public Texture getEffectIcon(String name){
+        return get("Effects/" + name + ".png", Texture.class);
     }
 
     public Skin getSkin(){

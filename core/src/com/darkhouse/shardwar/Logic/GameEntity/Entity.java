@@ -21,6 +21,10 @@ public abstract class Entity extends Image implements DamageReceiver {
         super();
     }
 
+    public boolean contains(float x, float y){
+        return (x >= getX() + getParent().getX() && x <= getX() + getParent().getX() + getWidth())
+                && (y >= getY() + getParent().getY() && y <= getY() + getParent().getY() + getHeight());
+    }
     public abstract Vector2 getShootPosition(int line);
 
     public float getXShoot(int line){
@@ -30,8 +34,4 @@ public abstract class Entity extends Image implements DamageReceiver {
         return getShootPosition(line).y;
     }
 
-//    @Override
-//    public void dmg(int dmg, GameObject source) {
-//
-//    }
 }

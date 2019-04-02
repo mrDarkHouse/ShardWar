@@ -1,6 +1,8 @@
 package com.darkhouse.shardwar.Logic.GameEntity.Wall;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.darkhouse.shardwar.Logic.DamageReceiver;
+import com.darkhouse.shardwar.Logic.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.ShardWar;
 
@@ -10,7 +12,7 @@ public class SpikeWall extends Wall {
         private int spikeDmg;
         public P(int spikeDmg) {
             super(ShardWar.main.getAssetLoader().get("walls/spikeWall.png", Texture.class),
-                    "Spike Wall", 25, 7, 4);
+                    "Spike Wall", 20, 7, 4);
             this.spikeDmg = spikeDmg;
         }
 
@@ -28,8 +30,10 @@ public class SpikeWall extends Wall {
     }
 
     @Override
-    public int receiveDamage(int damage, GameObject source) {
-        source.dmg(spikeDmg, this);
+    public int receiveDamage(int damage, DamageSource source) {
+        if(source instanceof DamageReceiver) {
+            ((DamageReceiver) source).dmg(spikeDmg, this);
+        }
         return damage;
     }
 }

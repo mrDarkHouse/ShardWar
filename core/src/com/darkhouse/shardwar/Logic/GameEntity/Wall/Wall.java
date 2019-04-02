@@ -2,8 +2,8 @@ package com.darkhouse.shardwar.Logic.GameEntity.Wall;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.darkhouse.shardwar.Logic.DamageReceiver;
+import com.darkhouse.shardwar.Logic.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
-import com.darkhouse.shardwar.Logic.Slot;
 
 public abstract class Wall extends GameObject implements DamageReceiver {
 //    private Texture texture;
@@ -24,7 +24,7 @@ public abstract class Wall extends GameObject implements DamageReceiver {
         return ((WallPrototype) objectPrototype);
     }
 
-    public abstract int receiveDamage(int damage, GameObject source);
+    public abstract int receiveDamage(int damage, DamageSource source);
 
     @Override
     public void physic(float delta) {

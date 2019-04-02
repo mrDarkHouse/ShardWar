@@ -1,6 +1,7 @@
 package com.darkhouse.shardwar.Logic.GameEntity.Wall;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.darkhouse.shardwar.Logic.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.ShardWar;
 
@@ -10,7 +11,7 @@ public class EnergyWall extends Wall {
         private int blockDmg;
         public P(int blockDmg) {
             super(ShardWar.main.getAssetLoader().get("walls/energyWall.png", Texture.class),
-                    "Energy Wall", 14, 5, 3);
+                    "Energy Wall", 12, 5, 3);
             this.blockDmg = blockDmg;
         }
 
@@ -28,7 +29,7 @@ public class EnergyWall extends Wall {
     }
 
     @Override
-    public int receiveDamage(int damage, GameObject source) {
+    public int receiveDamage(int damage, DamageSource source) {
         if(damage > blockDmg) return damage - blockDmg;
         else return 1;
     }

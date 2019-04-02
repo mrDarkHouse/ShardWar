@@ -3,13 +3,11 @@ package com.darkhouse.shardwar.Logic.GameEntity.Tower;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.darkhouse.shardwar.Logic.DamageReceiver;
+import com.darkhouse.shardwar.Logic.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.Projectile;
 import com.darkhouse.shardwar.Logic.Slot;
-import com.darkhouse.shardwar.Logic.TowerSlot;
-
-import java.util.Arrays;
 
 public abstract class Tower extends GameObject {
 
@@ -38,7 +36,7 @@ public abstract class Tower extends GameObject {
     public Tower(TowerPrototype prototype) {
         super(prototype);
         this.dmg = prototype.dmg;
-        this.shoots = prototype.shoots;
+//        this.shoots = prototype.shoots;
         this.shootDelay = prototype.shootDelay;
         this.shootTime = shootDelay;
     }
@@ -47,7 +45,18 @@ public abstract class Tower extends GameObject {
     protected int dmg;
     private boolean canShoot;
 
+    private boolean disarm;
+
+    public void setDisarm(boolean disarm) {
+        this.disarm = disarm;
+    }
+
+    public boolean isDisarm() {
+        return disarm;
+    }
+
     public void setCanShoot(boolean canShoot) {
+        this.shoots = slot.getNumberSelected();
         this.canShoot = canShoot;
     }
 
@@ -68,13 +77,28 @@ public abstract class Tower extends GameObject {
     public void attack(DamageReceiver g){};
 
     @Override
-    public int receiveDamage(int damage, GameObject source) {
+    public int receiveDamage(int damage, DamageSource source) {
         return damage;
     }
 
     @Override
     public Slot<TowerPrototype, Tower> getSlot() {
         return ((Slot<TowerPrototype, Tower>) slot);
+    }
+
+    public void physic(float delta){
+        if(canShoot){
+            if(shootTime >= shootDelay){
+                shot();
+            }else shootTime += delta;
+        }
+    }
+
+    protected void shot(){
+//        if(!disarm) {
+            shootProjectile(shootNum);
+            afterShoot();
+//        }
     }
 
     private void shootProjectile(int i){
@@ -86,14 +110,6 @@ public abstract class Tower extends GameObject {
         slot.getOwner().projectiles.add(pr);
     }
 
-    public void physic(float delta){
-        if(canShoot){
-            if(shootTime >= shootDelay){
-                shootProjectile(shootNum);
-                afterShoot();
-            }else shootTime += delta;
-        }
-    }
     private void afterShoot(){
         shootNum++;
         shootTime = 0;

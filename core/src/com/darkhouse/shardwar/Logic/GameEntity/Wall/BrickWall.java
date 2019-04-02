@@ -1,6 +1,7 @@
 package com.darkhouse.shardwar.Logic.GameEntity.Wall;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.darkhouse.shardwar.Logic.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.ShardWar;
 
@@ -10,7 +11,7 @@ public class BrickWall extends Wall {
 
         public P() {
             super(ShardWar.main.getAssetLoader().get("walls/brickWall.png", Texture.class),
-                    "Brick Wall", 20, 3, 2);
+                    "Brick Wall", 12, 3, 2);
         }
 
         @Override
@@ -24,7 +25,7 @@ public class BrickWall extends Wall {
     }
 
     @Override
-    public int receiveDamage(int damage, GameObject source) {
+    public int receiveDamage(int damage, DamageSource source) {
         return damage;
     }
 }

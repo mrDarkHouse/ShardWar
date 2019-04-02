@@ -1,19 +1,30 @@
 package com.darkhouse.shardwar;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.darkhouse.shardwar.Logic.DamageReceiver;
+import com.darkhouse.shardwar.Logic.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
+import com.darkhouse.shardwar.Logic.SpellPanel;
 
 public class Player extends Entity {
     private int shards;
     private float[] lineX;
     private ProgressBar healthBar;
     private final int maxShards = 40;
+
+    private SpellPanel spellPanel;
+
+    public void setSpellPanel(SpellPanel spellPanel) {
+        this.spellPanel = spellPanel;
+    }
+
+    public boolean addSpell(Spell.SpellPrototype spellPrototype){
+        return spellPanel.addSpell(spellPrototype);
+    }
+
 
     public int getShards() {
         return shards;
@@ -65,7 +76,7 @@ public class Player extends Entity {
     }
 
     @Override
-    public void dmg(int dmg, GameObject source) {
+    public void dmg(int dmg, DamageSource source) {
         if(!deleteShards(dmg)){
             shards = 0;
             updateBar();

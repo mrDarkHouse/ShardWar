@@ -1,6 +1,7 @@
 package com.darkhouse.shardwar.Logic;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
@@ -14,6 +15,7 @@ public class TowerSlot extends Slot<Tower.TowerPrototype, Tower> {
 
     protected void init(){
         tooltip = new BuyWindow.TowerWindow(this);
+        choose = new TextureRegion(ShardWar.main.getAssetLoader().get("towerSlotSelect.png", Texture.class));
         super.init();
     }
 }

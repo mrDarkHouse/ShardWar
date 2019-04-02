@@ -1,32 +1,36 @@
 package com.darkhouse.shardwar.Logic;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
+import com.badlogic.gdx.scenes.scene2d.actions.ColorAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.AssaultTower;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
+import com.darkhouse.shardwar.Logic.GameEntity.Wall.Wall;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
 import com.darkhouse.shardwar.ShardWar;
 
-public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> extends Entity {
+public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> extends Entity {
 
-    private boolean player;
+    protected boolean player;
     private Player user;
     protected O object;
     protected BuyWindow tooltip;
     private FightScreen owner;
     private ProgressBar hpBar;
-    private int line;
+    private int column;
     private int row;
     private int selected[];// = -1;
     private int numberSelected;
@@ -43,15 +47,39 @@ public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> ex
         }
     }
     public Image getTargeter(){
+//        System.out.println(Arrays.toString(targeter));
         return targeter[numberSelected];
+    }
+
+    protected TextureRegion choose;
+    private boolean isChosen;
+
+    public void choose(){
+        isChosen = true;
+//        setVisible(false);
+//        a = new ColorAction();
+//        a.setDuration(1f);
+//        a.setEndColor(Color.ORANGE);
+//        addAction(a);
+//        setColor(Color.ORANGE);
+    }
+    public void unChoose(){
+        isChosen = false;
+//        setVisible(true);
+//        setColor(Color.WHITE);
+//        setColor(color);
+//        removeAction(a);
+//        getActions().clear();
+//        fadeIn();
+
     }
 
     public FightScreen getOwner() {
         return owner;
     }
 
-    public int getLine() {
-        return line;
+    public int getColumn() {
+        return column;
     }
     public int getRow() {
         return row;
@@ -86,11 +114,23 @@ public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> ex
 
 
     public boolean isNoSelected(){
+//        boolean b = false;
+//        for (int i = 0; i < selected.length; i++) {
+//            if(selected[i] == -1) b = true;
+//        }
+//        return b;
         boolean b = false;
-        for (int i = 0; i < selected.length; i++) {
-            if(selected[i] == -1) b = true;
+        for (int aSelected : selected) {
+            if (aSelected != -1) b = true;
         }
-        return b;
+        return !b;
+    }
+    public int getNumberSelected(){
+        int a = 0;
+        for (int aSelected : selected) {
+            if (aSelected != -1) a++;
+        }
+        return a;
     }
 
     public int[] getSelected() {
@@ -107,12 +147,12 @@ public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> ex
         return new Vector2(getX() + getParent().getX() + getWidth()/2, getY() + getParent().getY() + getHeight()/2);
     }
 
-    public Slot(Texture texture, boolean player, FightScreen owner, Player user, int line, int row) {
+    public Slot(Texture texture, boolean player, FightScreen owner, Player user, int column, int row) {
         super(getTexture(texture, player));
         this.player = player;
         this.owner = owner;
         this.user = user;
-        this.line = line;
+        this.column = column;
         this.row = row;
         init();
         selected = new int[]{-1};
@@ -185,7 +225,9 @@ public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> ex
 
     private void selectTarget(){
         if(object instanceof Tower){
-            owner.setTargetSlot(this);
+            if(!((Tower) object).isDisarm()) {
+                owner.setTargetSlot(this);
+            }
         }
     }
 
@@ -209,12 +251,13 @@ public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> ex
 //            this.object = new Tower(object);
             object.setSlot(this);
             object.setOwner(owner.getCurrentPlayerObject());
+            object.init();
             fadeOut();
             tooltip.hide();
 
             initHpBar();
 
-            if(object instanceof AssaultTower){
+            if(object instanceof AssaultTower){//rework with ability
                 selected = new int[]{-1, -1};
                 targeter = new Image[2];
                 maxTargets = 2;
@@ -275,6 +318,10 @@ public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> ex
             else batch.draw(object.getTexture(), getX(), getY(), getWidth(), getHeight(),
                     0, 0, ((int) getWidth()), ((int)getHeight()), false, true);
         }
+        if(isChosen){
+            batch.draw(choose, getX(), getY(), getWidth(), getHeight());
+        }
+        drawEffects(batch);
     }
 
     @Override
@@ -285,13 +332,19 @@ public class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> ex
         }
     }
 
-    @Override
-    public String toString() {
-        return "[Object: " + object + " row:" + row + " line:" + line + "]";
+    private void drawEffects(Batch batch){
+        if(object != null) {
+            object.effectBar.draw(batch, 1);
+        }
     }
 
     @Override
-    public void dmg(int dmg, GameObject source) {
+    public String toString() {
+        return "[Object: " + object + " row:" + row + " column:" + column + "]";
+    }
+
+    @Override
+    public void dmg(int dmg, DamageSource source) {
         object.dmg(dmg, source);
     }
 }

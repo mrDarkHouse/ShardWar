@@ -1,6 +1,7 @@
 package com.darkhouse.shardwar.Logic;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.Wall;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
@@ -13,6 +14,9 @@ public class WallSlot extends Slot<Wall.WallPrototype, Wall> {
 
     protected void init(){
         tooltip = new BuyWindow.WallWindow(this);
+        TextureRegion r = new TextureRegion(ShardWar.main.getAssetLoader().get("wallSlotSelect.png", Texture.class));
+        if(!player)r.flip(false, true);
+        choose = r;
         super.init();
     }
 }
