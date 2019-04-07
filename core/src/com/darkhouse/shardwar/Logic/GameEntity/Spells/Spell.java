@@ -1,8 +1,8 @@
 package com.darkhouse.shardwar.Logic.GameEntity.Spells;
 
-import com.darkhouse.shardwar.Logic.DamageSource;
+import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
-import com.darkhouse.shardwar.Logic.Slot;
+import com.darkhouse.shardwar.Logic.Slot.Slot;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
 
@@ -133,39 +133,63 @@ public abstract class Spell implements DamageSource {
 
     }
 
-//    public enum SpellType{
-//
-//
-//    }
+    public enum FieldTarget{
+        FRIENDLY, ENEMY, ALL //All not completed
+    }
 
     public static abstract class SpellPrototype{
-        private Type spellType;
         private String name;
+        private Type spellType;
+        private FieldTarget fieldTarget;
         private ArrayList<Class<? extends GameObject>> affectedTypes;
 
         public String getName() {
             return name;
         }
+        public Type getSpellType() {
+            return spellType;
+        }
+        public FieldTarget getFieldTarget() {
+            return fieldTarget;
+        }
+        public ArrayList<Class<? extends GameObject>> getAffectedTypes() {
+            return affectedTypes;
+        }
 
-        public SpellPrototype(String name, Type spellType, Class<? extends GameObject>... affectedTypes) {
+        public SpellPrototype(String name, Type spellType, FieldTarget fieldTarget, Class<? extends GameObject>... affectedTypes) {
             this.name = name;
             this.spellType = spellType;
+            this.fieldTarget = fieldTarget;
             this.affectedTypes = new ArrayList<Class<? extends GameObject>>(Arrays.asList(affectedTypes));
         }
+
+        public abstract String getTooltip();
 
         public abstract Spell createSpell(Player player);
     }
 
+
     public Type getSpellType() {
         return spellType;
     }
+    public FieldTarget getFieldTarget() {
+        return fieldTarget;
+    }
 
     protected Type spellType;
+    protected FieldTarget fieldTarget;
+    protected SpellPrototype prototype;
+
+    public SpellPrototype getPrototype() {
+        return prototype;
+    }
 
     public Spell(Player owner, SpellPrototype prototype) {
         this.owner = owner;
         this.spellType = prototype.spellType;
+        this.fieldTarget = prototype.fieldTarget;
         this.affectedTypes = prototype.affectedTypes;
+        this.prototype = prototype;
     }
 
     public abstract void use(ArrayList<GameObject> targets);

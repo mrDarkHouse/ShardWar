@@ -1,23 +1,37 @@
 package com.darkhouse.shardwar.Tools;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.I18NBundleLoader;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ObjectMap;
+
+import java.util.Locale;
 
 public class AssetLoader extends AssetManager {
 
+    private I18NBundle b;
+
+    public String getWord(String s){
+        return b.get(s);
+    }
+    public void initLang(String locale){
+        I18NBundleLoader.I18NBundleParameter param = new I18NBundleLoader.I18NBundleParameter(new Locale(locale), "UTF-8");
+        load("Language/text", I18NBundle.class, param);
+        finishLoading();
+        b = get("Language/text", I18NBundle.class);
+    }
 
     public void loadAll(){
-        load("skins/uiskin.json", Skin.class);
-
         load("MainMenuBg.png", Texture.class);
         load("backButton.png", Texture.class);
         load("shard.png", Texture.class);
@@ -45,23 +59,34 @@ public class AssetLoader extends AssetManager {
         load("projectiles/sniper.png", Texture.class);
         load("projectiles/assault.png", Texture.class);
 
-        load("Spells/firebreath.png", Texture.class);
-        load("Spells/disarm.png", Texture.class);
+        load("Ability/Spells/firebreath.png", Texture.class);
+        load("Ability/Spells/disarm.png", Texture.class);
+        load("Ability/Spells/heal.png", Texture.class);
+        load("Ability/Spells/weakness.png", Texture.class);
+        load("Ability/Spells/vulnerability.png", Texture.class);
 
-        load("Effects/disarm.png", Texture.class);
-        load("Effects/heal.png", Texture.class);
+        load("Ability/Effects/disarm.png", Texture.class);
+        load("Ability/Effects/heal.png", Texture.class);
+        load("Ability/Effects/weakness.png", Texture.class);
+        load("Ability/Effects/vulnerability.png", Texture.class);
 
         load("towerSlotSelect.png", Texture.class);
         load("wallSlotSelect.png", Texture.class);
 
+        load("mobHpBarBg.png", Texture.class);
+        load("mobHpBarKnob.png", Texture.class);
+
         ObjectMap<String, Object> fontMap = new ObjectMap<String, Object>();
-        fontMap.put("description-font", FontLoader.generateFont(0, 16, Color.BLACK));
+        fontMap.put("default-font", FontLoader.generateFont(0, 26, Color.BLACK));
+        fontMap.put("description-font", FontLoader.generateFont(1, 20, Color.BLACK));
+        fontMap.put("spell-font", FontLoader.generateFont(1, 14, Color.WHITE));
+
 
         SkinLoader.SkinParameter parameter = new SkinLoader.SkinParameter(fontMap);
         load("skins/uiskin.json", Skin.class, parameter);
 
-        finishLoading();
     }
+
     public Drawable getCenterTarget(int player){
         if(player == 1) return new TextureRegionDrawable(new TextureRegion(get("target/targetCenter.png", Texture.class)));
         else return new TextureRegionDrawable(new TextureRegion(get("target/targetCenterInv.png", Texture.class)));
@@ -93,11 +118,19 @@ public class AssetLoader extends AssetManager {
         get("towerSlot.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     }
 
+    public ProgressBar.ProgressBarStyle getLoadingBarStyle(){
+        TextureRegionDrawable barFone = new TextureRegionDrawable(new TextureRegion(get("mobHpBarBg.png", Texture.class)));
+        TextureRegionDrawable barTop = new TextureRegionDrawable(new TextureRegion(get("mobHpBarKnob.png", Texture.class)));
+        ProgressBar.ProgressBarStyle style = new ProgressBar.ProgressBarStyle(barFone, barTop);
+        style.knobBefore = style.knob;
+        return style;
+    }
+
     public Texture getSpell(String name){
-        return get("Spells/" + name + ".png", Texture.class);
+        return get("Ability/Spells/" + name + ".png", Texture.class);
     }
     public Texture getEffectIcon(String name){
-        return get("Effects/" + name + ".png", Texture.class);
+        return get("Ability/Effects/" + name + ".png", Texture.class);
     }
 
     public Skin getSkin(){

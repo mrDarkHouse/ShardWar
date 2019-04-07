@@ -19,7 +19,7 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.darkhouse.shardwar.Model;
+package com.darkhouse.shardwar.Model.Tooltip;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -65,7 +65,7 @@ public class TooltipListener extends ClickListener {
 	public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 		super.enter(event, x, y, pointer, fromActor);
         inside = true;
-		tooltip.setVisible(true);
+		tooltip.show();
 		tmp.set(x, y);
 		event.getListenerActor().localToStageCoordinates(tmp);
 		tooltip.setPosition(tmp.x + position.x + offset.x, tmp.y + position.y + offset.y);
@@ -77,7 +77,7 @@ public class TooltipListener extends ClickListener {
 		super.exit(event, x, y, pointer, toActor);
         if(/*toActor == null*/pointer == -1) {
 			inside = false;
-			tooltip.setVisible(false);
+			tooltip.hide();
 			//System.out.println(toActor);
 		}
 

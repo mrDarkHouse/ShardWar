@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.darkhouse.shardwar.Screens.FightScreen;
 import com.darkhouse.shardwar.Screens.MainMenu;
 import com.darkhouse.shardwar.Screens.OptionsMenu;
+import com.darkhouse.shardwar.Screens.StartingLoadScreen;
 import com.darkhouse.shardwar.Tools.AssetLoader;
 import com.darkhouse.shardwar.Tools.FontLoader;
 
@@ -37,19 +38,20 @@ public class ShardWar extends Game {
 	public void create () {
 		main = this;
 		assetLoader = new AssetLoader();
-		init();
+//		init();
 		Texture.setAssetManager(assetLoader);
 
 
-		initScreens();
-		setScreen(mainMenu);
+		setScreen(new StartingLoadScreen());
+//		setScreen(mainMenu);
 	}
 
-	private void init(){
+	public void init(){
 //		FontLoader.load();
-		assetLoader.loadAll();
-		assetLoader.setFilters();
-
+//		assetLoader.loadAll();
+//		assetLoader.setFilters();
+		FontLoader.load();
+		initScreens();
 	}
 	private void initScreens(){
 		mainMenu = new MainMenu();

@@ -1,4 +1,4 @@
-package com.darkhouse.shardwar.Logic;
+package com.darkhouse.shardwar.Logic.GameEntity;
 
 public interface DamageReceiver {
 

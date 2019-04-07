@@ -1,7 +1,7 @@
 package com.darkhouse.shardwar.Logic.GameEntity.Tower;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.darkhouse.shardwar.Logic.DamageReceiver;
+import com.darkhouse.shardwar.Logic.GameEntity.DamageReceiver;
 import com.darkhouse.shardwar.ShardWar;
 
 public class SniperTower extends Tower{

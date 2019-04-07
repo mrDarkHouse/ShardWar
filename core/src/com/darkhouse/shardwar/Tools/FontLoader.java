@@ -153,8 +153,8 @@ public class FontLoader {
                 break;
 //            case 1:f = Gdx.files.internal("Fonts/roboto-regular.ttf");
 //                break;
-//            case 2:f = Gdx.files.internal("Fonts/Roboto-Medium.ttf");
-//                break;
+            case 1:f = Gdx.files.internal("Fonts/Roboto-Medium.ttf");
+                break;
             default:throw new IllegalArgumentException("cant find font with type " + type);
         }
         return generateDefaultFont(size, color, f);

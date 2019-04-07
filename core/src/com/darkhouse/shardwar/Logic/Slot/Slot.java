@@ -1,23 +1,21 @@
-package com.darkhouse.shardwar.Logic;
+package com.darkhouse.shardwar.Logic.Slot;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
-import com.badlogic.gdx.scenes.scene2d.actions.ColorAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.darkhouse.shardwar.Logic.BuyWindow;
+import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.AssaultTower;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
-import com.darkhouse.shardwar.Logic.GameEntity.Wall.Wall;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
 import com.darkhouse.shardwar.ShardWar;
@@ -271,7 +269,6 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     }
 
     private void initHpBar(){
-
         int height = 8;
         hpBar = new ProgressBar(0, object.getMaxHealth(), 0.2f, false,
                 ShardWar.main.getAssetLoader().getSkin(), "health-bar");
@@ -294,7 +291,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     private void updateListeners(){
         if(object == null) fadeIn();
     }
-    private void updateHpBar(){
+    public void updateHpBar(){
         if(object != null) hpBar.setValue(object.getHealth());
         else if(hpBar != null) {
             hpBar.remove();

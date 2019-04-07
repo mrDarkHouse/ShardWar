@@ -1,20 +1,16 @@
 package com.darkhouse.shardwar.Logic.GameEntity;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.utils.Array;
-import com.darkhouse.shardwar.Logic.DamageReceiver;
-import com.darkhouse.shardwar.Logic.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.Effect;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.EffectIcon;
-import com.darkhouse.shardwar.Logic.Slot;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.Vulnerability;
+import com.darkhouse.shardwar.Logic.Slot.Slot;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.ShardWar;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public abstract class GameObject implements DamageReceiver, DamageSource {
@@ -228,6 +224,11 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
     public int getMaxHealth() {
         return maxHealth;
     }
+    public void heal(int amount){
+        if(health + amount < maxHealth) health += amount;
+        else health = maxHealth;
+        slot.updateHpBar();
+    }
 
     public void setSlot(Slot slot) {
         this.slot = slot;
@@ -273,11 +274,20 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
     }
 
     public void dmg(int dmg, DamageSource source){
-        health -= receiveDamage(dmg, source);
+        health -= receiveDamage(calculateGetDmg(dmg), source);
 //        System.out.println("attacked " + health);
         if(health <= 0) die(source);
         else slot.hasChanged();
 //        ShardWar.fightScreen.hasChanged();
+    }
+
+    public int calculateGetDmg(int dmg){
+        if (effects.containsKey(Effect.IGetDmg.class)) {
+            for (Effect e : effects.get(Effect.IGetDmg.class)) {
+                dmg = ((Effect.IGetDmg) e).getDmg(dmg);
+            }
+        }
+        return dmg;
     }
 
     public abstract int receiveDamage(int damage, DamageSource source);

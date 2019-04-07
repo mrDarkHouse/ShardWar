@@ -14,8 +14,13 @@ public class Disarm extends Spell {
         private int duration;
 
         public P(int duration) {
-            super("disarm", TargetType.SINGLE, Tower.class);
+            super("disarm", TargetType.SINGLE, FieldTarget.ENEMY, Tower.class);
             this.duration = duration;
+        }
+
+        @Override
+        public String getTooltip() {
+            return "Disarm selected tower for " + duration + " seconds";
         }
 
         @Override
@@ -26,7 +31,7 @@ public class Disarm extends Spell {
     }
     public class DisarmEffect extends Effect<Tower>{
 
-        public DisarmEffect(int duration, Tower owner) {
+        public DisarmEffect(int duration) {
             super("disarm", false, duration, INone.class);
             this.owner = owner;
         }
@@ -52,7 +57,7 @@ public class Disarm extends Spell {
     @Override
     public void use(ArrayList<GameObject> targets) {
         for (GameObject o:targets){
-            o.addEffect(new DisarmEffect(duration, ((Tower) o)));//remove cast
+            o.addEffect(new DisarmEffect(duration).setOwner(((Tower) o)));//TODO remove cast
         }
     }
 

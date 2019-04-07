@@ -1,4 +1,4 @@
-package com.darkhouse.shardwar.Model;
+package com.darkhouse.shardwar.Model.Tooltip;
 
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -14,11 +14,13 @@ public abstract class AbstractTooltip extends Window {
     public AbstractTooltip(String title, Skin skin) {
         super(title, skin, "description");
         getTitleLabel().setAlignment(Align.center);
+        setVisible(false);
     }
 
     public AbstractTooltip(String title, Skin skin, String styleName) {
         super(title, skin, styleName);
         getTitleLabel().setAlignment(Align.center);
+        setVisible(false);
     }
 
     public void show(){

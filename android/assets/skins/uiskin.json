@@ -1,5 +1,5 @@
 {
-	com.badlogic.gdx.graphics.g2d.BitmapFont: { default-font: { file: MainFont.fnt } },
+	com.badlogic.gdx.graphics.g2d.BitmapFont: {  },
 	com.badlogic.gdx.graphics.Color: {
 		green: { a: 1, b: 0, g: 1, r: 0 },
 		white: { a: 1, b: 1, g: 1, r: 1 },
@@ -16,7 +16,7 @@
 	com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		default: { down: default-round-down, up: default-round, font: default-font, fontColor: white },
 		toggle: { checked: default-round-down, downFontColor: red },
-		description : { down: default-round-down, up: default-round, font: default-font, fontColor: white }
+		description : { down: default-round-down, up: default-round, font: description-font, fontColor: white }
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
 		default: { vScroll: default-scroll, hScrollKnob: default-round-large, background: default-rect, hScroll: default-scroll, vScrollKnob: default-round-large }
@@ -35,7 +35,7 @@
 	com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 		default: { titleFont: default-font, background: default-window, titleFontColor: white },
 		dialog: { titleFont: default-font, background: default-window, titleFontColor: white },
-		description: { titleFont: default-font, background: default-window, titleFontColor: white }
+		description: { titleFont: description-font, background: default-window, titleFontColor: white }
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
 		default-horizontal: { background: default-slider, knob: default-slider-knob },
@@ -49,7 +49,8 @@
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		default: { font: default-font, fontColor: white },
-		turn-info: { background: default-rect, font: default-font, fontColor: white}
+		description: { background: default-rect, font: description-font, fontColor: white},
+		spell-tooltip: { font: spell-font, fontColor: white }
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 		default: { selection: selection, background: textfield, font: default-font, fontColor: white, cursor: cursor }

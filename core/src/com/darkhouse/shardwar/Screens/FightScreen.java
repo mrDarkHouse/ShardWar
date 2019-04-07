@@ -11,12 +11,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.darkhouse.shardwar.Logic.*;
-import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
-import com.darkhouse.shardwar.Logic.GameEntity.Spells.Disarm;
-import com.darkhouse.shardwar.Logic.GameEntity.Spells.FireBreath;
-import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.*;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellBuy;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellPanel;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
+import com.darkhouse.shardwar.Logic.Slot.Slot;
+import com.darkhouse.shardwar.Logic.Slot.TowerSlot;
+import com.darkhouse.shardwar.Logic.Slot.WallSlot;
 import com.darkhouse.shardwar.Model.ShardPanel;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.ShardWar;
@@ -27,7 +29,7 @@ public class FightScreen extends AbstractScreen {
 
     private static final int CORNER_SPACE = 70;
     private static final int INCOME = 4;
-    private static final int ROLL_ROUND = 5;
+    private static final int ROLL_ROUND = 3;
 
 //    private Field field1;
 //    private Field field2;
@@ -142,8 +144,18 @@ public class FightScreen extends AbstractScreen {
 //        if(player == players[1]) return fields[1];
 //        return null;
 //    }
+    public Field getCurrentField(){
+        return getField(currentPlayer);
+    }
+    public Field getOppositeField(){
+        return getField(getOppositePlayer());
+    }
+
     public Field getField(int i){
         return fields[i - 1];
+    }
+    public Field getField(Player player){
+        return getField(getPlayerIndex(player));
     }
     public Field getEnemyField(Player player){
         return getField(getEnemyPlayer(getPlayerIndex(player)));
@@ -163,7 +175,7 @@ public class FightScreen extends AbstractScreen {
 
     public void setTargetSlot(Slot targetSlot) {
         this.targetSlot = targetSlot;
-//        System.out.println(targetSlot.isNoSelected());
+        ShardWar.fightScreen.getCurrentField().setTouchable(Touchable.disabled);
         if(targetSlot.getNumberSelected() < targetSlot.getSelected().length) {
             targetSlot.setTargeter(new Image(ShardWar.main.getAssetLoader().getCenterTarget(getCurrentPlayer())));
             targetSlot.select(targetSlot.getColumn());
@@ -272,8 +284,10 @@ public class FightScreen extends AbstractScreen {
                 targetSlot.getTargeter().addAction(a);
                 targetSlot.endSelect();
                 targetSlot = null;
+                ShardWar.fightScreen.getCurrentField().setTouchable(Touchable.enabled);
+                return true;
             }
-            return super.touchDown(screenX, screenY, pointer, button);
+            return false;
         }
     }
 
@@ -432,9 +446,6 @@ public class FightScreen extends AbstractScreen {
 
         spellPanel.setSize(250, 70);
         spellPane2.setSize(250, 70);
-        spellPanel.init();
-        spellPane2.init();
-
 //        spellPanel.debug();
 //        spellPane2.debug();
 
@@ -443,6 +454,9 @@ public class FightScreen extends AbstractScreen {
 
         stage.addActor(spellPanel);
         stage.addActor(spellPane2);
+
+        spellPanel.init();
+        spellPane2.init();
     }
 
     private int spellRoll = 0;
@@ -474,6 +488,7 @@ public class FightScreen extends AbstractScreen {
     private void initSpellDialog(){
         spellBuy = new SpellBuy();
         spellBuy.setSize(200, 200);
+        spellBuy.init(stage);
 //        allSpells[0] = new FireBreath.P(4);
 
 //        ArrayList<Integer> randoms = new ArrayList<Integer>();
@@ -481,11 +496,11 @@ public class FightScreen extends AbstractScreen {
 ////            int a = r.nextInt(allSpells.length);
 //            randoms.add(i);
 //        }
-        allSpells.add(new FireBreath.P(4));
 //        allSpells.add(new FireBreath.P(4));
-//        allSpells.add(new FireBreath.P(4));
-        allSpells.add(new Disarm.P(2));
-        allSpells.add(new Disarm.P(2));
+//        allSpells.add(new Disarm.P(2));
+        allSpells.add(new Heal.P(5));
+        allSpells.add(new Weakness.P(2));
+        allSpells.add(new Vulnerability.P(1));
 
 
 
@@ -508,6 +523,7 @@ public class FightScreen extends AbstractScreen {
     private void endTime(){
         allowStartTurn = false;
         hideTooltips();
+        spellBuy.hide();
         offTouch();
         if(round != 1){
             fight();

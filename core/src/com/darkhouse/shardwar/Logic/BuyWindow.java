@@ -14,10 +14,10 @@ import com.darkhouse.shardwar.Logic.GameEntity.Wall.BrickWall;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.EnergyWall;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.SpikeWall;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.Wall;
-import com.darkhouse.shardwar.Model.AbstractTooltip;
+import com.darkhouse.shardwar.Logic.Slot.Slot;
 import com.darkhouse.shardwar.ShardWar;
 
-public abstract class BuyWindow<T extends GameObject.ObjectPrototype, O extends GameObject> extends AbstractTooltip {
+public abstract class BuyWindow<T extends GameObject.ObjectPrototype, O extends GameObject> extends Window {
 
     private static class BuyItem<T extends GameObject.ObjectPrototype, O extends GameObject> extends Table {
         private Slot<T, O> owner;
@@ -78,7 +78,8 @@ public abstract class BuyWindow<T extends GameObject.ObjectPrototype, O extends 
     }
 
     public BuyWindow(Slot<T, O> owner, String title) {
-        super(title, ShardWar.main.getAssetLoader().getSkin());
+        super(title, ShardWar.main.getAssetLoader().getSkin(), "description");
+        getTitleLabel().setAlignment(Align.center);
 //        if(type == Tower.class) {
 ////            getTitleLabel().setText("Tower");
 ////            BuyItem<Tower> item1 = new BuyItem<T>(new SniperTower(), owner);
@@ -105,12 +106,16 @@ public abstract class BuyWindow<T extends GameObject.ObjectPrototype, O extends 
 
     abstract protected T[] getItems();
 
-    @Override
-    public void hasChanged() {
-
+    public void show(){
+        setVisible(true);
+        toFront();
     }
 
-    @Override
+    public void hide(){
+        setVisible(false);
+    }
+
+
     public void init(Stage stage) {
         stage.addActor(this);
     }

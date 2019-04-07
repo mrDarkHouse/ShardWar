@@ -1,7 +1,8 @@
-package com.darkhouse.shardwar.Logic;
+package com.darkhouse.shardwar.Logic.Slot;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.darkhouse.shardwar.Logic.BuyWindow;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.Wall;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;

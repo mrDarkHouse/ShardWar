@@ -23,6 +23,11 @@ public abstract class AbstractScreen implements Screen {
     public AbstractScreen(Texture texture) {
         batch = new SpriteBatch();
         stage = new Stage();
+        if(texture != null){
+            initBg(texture);
+        }
+    }
+    protected void initBg(Texture texture){
         background = new Image(texture);
         background.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         stage.addActor(background);

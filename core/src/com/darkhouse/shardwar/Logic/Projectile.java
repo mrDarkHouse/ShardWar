@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
+import com.darkhouse.shardwar.Logic.Slot.Slot;
 import com.darkhouse.shardwar.ShardWar;
 
 public class Projectile extends Image {
@@ -36,26 +37,7 @@ public class Projectile extends Image {
     protected Vector2 targetV = new Vector2();
     protected Vector2 dir = new Vector2();
 
-    public Projectile(Slot<Tower.TowerPrototype, Tower> slot, Vector2 startLocation, Entity target, int line) {//additional are in MultiShot, Glaive
-
-//
-//        super(tower.getTowerPrototype().getPrototype().getProjectileTexture());
-//        this.tower = tower;
-//        this.target = target;
-//        this.speed = tower.getTowerPrototype().getPrototype().getProjectileSpeed();//custom
-//        this.isMainProjectile = isMain;
-//
-//        afterHitAbilties = new Array<Ability.IAfterHit>();
-////        texture = tower.getTowerPrototype().getPrototype().getProjectileTexture();//WHAT THE FUCK IT??!!
-//        // (prototype.getPrototype().getPrototype().getAnotherPrototype.getTowerPrototype.getAnotherFuckingPrototype)
-//
-//        //position.set(tower.getX(), tower.getY());
-////        setX(tower.getCenter().x);
-////        setY(tower.getCenter().y);
-//        setX(startLocation.x);
-//        setY(startLocation.y);
-
-
+    public Projectile(Slot<Tower.TowerPrototype, Tower> slot, Vector2 startLocation, Entity target, int line) {
         this(slot, startLocation, line);
         this.target = target;
     }
@@ -114,15 +96,7 @@ public class Projectile extends Image {
         setX(position.x);
         setY(position.y);
     }
-//    private void hitTarget(){
-//        target.hit(tower.getTowerPrototype().getDmg(), tower);
-//    }
 
-//    protected void afterHit(){
-//        for (Ability.IAfterHit a:afterHitAbilties){
-//            a.hit(target, ((int) (tower.getDmg(target, isMainProjectile) * dmgMultiplayer)), this);
-//        }
-//    }
 
 
     @Override

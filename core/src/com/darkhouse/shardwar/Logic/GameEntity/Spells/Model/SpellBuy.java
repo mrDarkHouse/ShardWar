@@ -1,21 +1,37 @@
-package com.darkhouse.shardwar.Logic;
+package com.darkhouse.shardwar.Logic.GameEntity.Spells.Model;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
-import com.darkhouse.shardwar.Screens.FightScreen;
+import com.darkhouse.shardwar.Model.Tooltip.TooltipListener;
 import com.darkhouse.shardwar.ShardWar;
 
 public class SpellBuy extends Dialog {
 
     private Container[] spells;
+    private Stage stage;
+
+    private class SpellBuyTooltip extends SpellTooltip{
+
+        public SpellBuyTooltip(Spell.SpellPrototype spell) {
+            super(spell, null);
+        }
+
+        @Override
+        protected void showTargets() {
+
+        }
+        @Override
+        protected void clearTargets() {
+        }
+    }
 
     private class Container extends Actor {
         private Texture slotTexture;
@@ -31,6 +47,10 @@ public class SpellBuy extends Dialog {
         public void setSpell(final Spell.SpellPrototype spell) {
             this.spell = spell;
             spellTexture = ShardWar.main.getAssetLoader().getSpell(spell.getName());
+            final SpellBuyTooltip t = new SpellBuyTooltip(spell);
+            t.init();
+            stage.addActor(t);
+            addListener(new TooltipListener(t, true));
             addListener(new ClickListener(){
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -39,11 +59,14 @@ public class SpellBuy extends Dialog {
 //                        SpellBuy.this.setTouchable(Touchable.disabled);
                             SpellBuy.this.hide();
                             Container.this.spell = null;
+                            t.hide();
+                            Container.this.clearListeners();
                         }
                     }
                     return true;
                 }
             });
+
         }
 
         @Override
@@ -83,6 +106,10 @@ public class SpellBuy extends Dialog {
         }
         pack();
     }
+    public void init(Stage stage){
+        this.stage = stage;
+
+    }
     public void addSpell(Spell.SpellPrototype prototype){
         for (int i = 0; i < 3; i++) {
 //            System.out.println(i);
@@ -96,6 +123,7 @@ public class SpellBuy extends Dialog {
         for (int i = 0; i < 3; i++) {
             if(spells[i].spell != null){
                 spells[i].spell = null;
+                spells[i].clearListeners();
             }
         }
     }

@@ -1,13 +1,13 @@
 package com.darkhouse.shardwar;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
-import com.darkhouse.shardwar.Logic.DamageSource;
+import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
-import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
-import com.darkhouse.shardwar.Logic.SpellPanel;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellPanel;
 
 public class Player extends Entity {
     private int shards;
@@ -43,7 +43,7 @@ public class Player extends Entity {
 
     @Override
     public Vector2 getShootPosition(int line) {
-        return new Vector2(lineX[line], getY());
+        return new Vector2(lineX[line], getY());//TODO java.lang.ArrayIndexOutOfBoundsException: -1
     }
 
     @Override
@@ -92,7 +92,7 @@ public class Player extends Entity {
 
     private void loose(){
         System.out.println("Loose");
-        System.exit(0);
+        Gdx.app.exit();
     }
 
     @Override

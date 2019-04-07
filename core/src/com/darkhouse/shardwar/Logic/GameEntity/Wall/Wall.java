@@ -1,8 +1,8 @@
 package com.darkhouse.shardwar.Logic.GameEntity.Wall;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.darkhouse.shardwar.Logic.DamageReceiver;
-import com.darkhouse.shardwar.Logic.DamageSource;
+import com.darkhouse.shardwar.Logic.GameEntity.DamageReceiver;
+import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 
 public abstract class Wall extends GameObject implements DamageReceiver {

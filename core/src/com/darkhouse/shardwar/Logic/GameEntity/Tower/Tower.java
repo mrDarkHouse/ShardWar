@@ -2,12 +2,12 @@ package com.darkhouse.shardwar.Logic.GameEntity.Tower;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
-import com.darkhouse.shardwar.Logic.DamageReceiver;
-import com.darkhouse.shardwar.Logic.DamageSource;
+import com.darkhouse.shardwar.Logic.GameEntity.DamageReceiver;
+import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.Projectile;
-import com.darkhouse.shardwar.Logic.Slot;
+import com.darkhouse.shardwar.Logic.Slot.Slot;
 
 public abstract class Tower extends GameObject {
 
@@ -72,6 +72,11 @@ public abstract class Tower extends GameObject {
 
     public int getDmg() {
         return dmg;
+    }
+
+    public void setDmg(int dmg) {
+        if(dmg > 0) this.dmg = dmg;
+        else this.dmg = 0;
     }
 
     public void attack(DamageReceiver g){};

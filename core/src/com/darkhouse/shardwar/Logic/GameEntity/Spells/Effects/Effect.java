@@ -11,7 +11,7 @@ public abstract class Effect<T extends GameObject> {
         void attack();
     }
     public interface IGetDmg extends IEffectType{
-        int getDmg();
+        int getDmg(int dmg);
     }
     public interface INone extends IEffectType{
 
@@ -23,6 +23,11 @@ public abstract class Effect<T extends GameObject> {
     private int duration;
     private int currentTime;
     private Class<? extends IEffectType> type;
+
+    public Effect<T> setOwner(T owner){
+        this.owner = owner;
+        return this;
+    }
 
     public String getName() {
         return name;
