@@ -10,10 +10,13 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.darkhouse.shardwar.Logic.BuyWindow;
 import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.Ability;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.MultiShot;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.AssaultTower;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.Player;
@@ -23,6 +26,8 @@ import com.darkhouse.shardwar.ShardWar;
 public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameObject> extends Entity {
 
     protected boolean player;
+    private boolean flip;
+    private int drawOffset;
     private Player user;
     protected O object;
     protected BuyWindow tooltip;
@@ -30,10 +35,10 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     private ProgressBar hpBar;
     private int column;
     private int row;
-    private int selected[];// = -1;
+    public int selected[];// = -1;//TODO private
     private int numberSelected;
-    private int maxTargets;
-    private Image targeter[];
+    public int maxTargets;
+    public Image targeter[];
 
     public void setTargeter(Image i){
 //        System.out.println(Arrays.toString(targeter));
@@ -140,24 +145,23 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
         return object != null;
     }
 
-    @Override
-    public Vector2 getShootPosition(int line) {
-        return new Vector2(getX() + getParent().getX() + getWidth()/2, getY() + getParent().getY() + getHeight()/2);
-    }
 
-    public Slot(Texture texture, boolean player, FightScreen owner, Player user, int column, int row) {
-        super(getTexture(texture, player));
+    public Slot(Texture texture, boolean player, boolean flip, int drawOffset, FightScreen owner, Player user, int column, int row) {
+//        super(getTexture(texture, player));
         this.player = player;
+        this.flip = flip;
+        this.drawOffset = drawOffset;
         this.owner = owner;
         this.user = user;
         this.column = column;
         this.row = row;
+        setDrawable(new TextureRegionDrawable(getTexture(texture)));
         init();
         selected = new int[]{-1};
     }
 
-    private static TextureRegion getTexture(Texture base, boolean player){
-        if(player){
+    protected TextureRegion getTexture(Texture base){
+        if(!flip || player){
             return new TextureRegion(base);
         }else {
             TextureRegion r = new TextureRegion(base);
@@ -170,12 +174,12 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
         return object == null;
     }
 
-    private void fadeIn(){
+    protected void fadeIn(){
         AlphaAction a = new AlphaAction();
         a.setAlpha(0.4f);
         addAction(a);
     }
-    private void fadeOut(){
+    protected void fadeOut(){
         AlphaAction a = new AlphaAction();
         a.setAlpha(1f);
         addAction(a);
@@ -224,7 +228,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     private void selectTarget(){
         if(object instanceof Tower){
             if(!((Tower) object).isDisarm()) {
-                owner.setTargetSlot(this);
+                owner.setTargetSlot((Slot<Tower.TowerPrototype, Tower>) this);
             }
         }
     }
@@ -242,6 +246,9 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
         tooltip.hide();
     }
 
+    public void setObject(O object) {
+        this.object = object;
+    }
 
     public void build(T prototype){
         if(this.object == null && user.deleteShards(prototype.getCost())){
@@ -255,15 +262,39 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 
             initHpBar();
 
-            if(object instanceof AssaultTower){//rework with ability
-                selected = new int[]{-1, -1};
-                targeter = new Image[2];
-                maxTargets = 2;
-            }else {
-                selected = new int[]{-1};
-                maxTargets = 1;
-                targeter = new Image[1];
+            selected = new int[]{-1};
+            targeter = new Image[1];
+            maxTargets = 1;
+            for (Ability a:prototype.getAbilities()){
+                a.setOwner(object);
+                a.build();
             }
+
+//            if(prototype.haveAbility(MultiShot.class)){
+//                MultiShot a = prototype.getAbility(MultiShot.class);
+//                int n = a.getShoots();
+//                selected = new int[n];
+//                for (int i = 0; i < n; i++) {
+//                    selected[i] = -1;
+//                }
+//                targeter = new Image[n];
+//                maxTargets = n;
+//                ((Tower) object).setShootDelay(a.getShotDelay());
+//            }else {
+//                selected = new int[]{-1};
+//                targeter = new Image[1];
+//                maxTargets = 1;
+//            }
+
+//            if(object instanceof AssaultTower){//rework with ability
+//                selected = new int[]{-1, -1};
+//                targeter = new Image[2];
+//                maxTargets = 2;
+//            }else {
+//                selected = new int[]{-1};
+//                maxTargets = 1;
+//                targeter = new Image[1];
+//            }
 
         }
     }
@@ -298,6 +329,15 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
             hpBar = null;
         }
     }
+    public void clear(){
+        for (int i = 0; i < selected.length; i++) {
+            selected[i] = -1;
+        }
+        numberSelected = 0;
+        for (int i = 0; i < targeter.length; i++) {
+            targeter[i] = null;
+        }
+    }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
@@ -311,8 +351,10 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 //        }
 
         if(object != null) {
-            if(player) batch.draw(object.getTexture(), getX(), getY(), getWidth(), getHeight());
-            else batch.draw(object.getTexture(), getX(), getY(), getWidth(), getHeight(),
+            if(!flip || player) batch.draw(object.getTexture(), getX() + drawOffset, getY() + drawOffset,
+                    getWidth() - drawOffset*2, getHeight() - drawOffset*2);
+            else batch.draw(object.getTexture(), getX() + drawOffset, getY() + drawOffset,
+                    getWidth() - drawOffset*2, getHeight() - drawOffset*2,
                     0, 0, ((int) getWidth()), ((int)getHeight()), false, true);
         }
         if(isChosen){

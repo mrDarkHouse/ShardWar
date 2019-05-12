@@ -59,22 +59,42 @@ public class AssetLoader extends AssetManager {
         load("projectiles/sniper.png", Texture.class);
         load("projectiles/assault.png", Texture.class);
 
+        load("Ability/Spells/Background/tier1.png", Texture.class);
+        load("Ability/Spells/Background/tier2.png", Texture.class);
+        load("Ability/Spells/Background/tier3.png", Texture.class);
+        load("Ability/Spells/Background/tier4.png", Texture.class);
+
         load("Ability/Spells/firebreath.png", Texture.class);
         load("Ability/Spells/disarm.png", Texture.class);
         load("Ability/Spells/heal.png", Texture.class);
         load("Ability/Spells/weakness.png", Texture.class);
         load("Ability/Spells/vulnerability.png", Texture.class);
+        load("Ability/Spells/fatalblow.png", Texture.class);
+        load("Ability/Spells/silence.png", Texture.class);
+        load("Ability/Spells/combiner.png", Texture.class);
+        load("Ability/Spells/greed.png", Texture.class);
+        load("Ability/Spells/nottoday.png", Texture.class);
+        load("Ability/Spells/opticalsight.png", Texture.class);
+        load("Ability/Spells/poisonsplash.png", Texture.class);
+        load("Ability/Spells/shieldup.png", Texture.class);
 
         load("Ability/Effects/disarm.png", Texture.class);
-        load("Ability/Effects/heal.png", Texture.class);
         load("Ability/Effects/weakness.png", Texture.class);
         load("Ability/Effects/vulnerability.png", Texture.class);
+        load("Ability/Effects/silence.png", Texture.class);
+        load("Ability/Effects/nottoday.png", Texture.class);
+        load("Ability/Effects/opticalsight.png", Texture.class);
+        load("Ability/Effects/poisonsplash.png", Texture.class);
+        load("Ability/Effects/shieldup.png", Texture.class);
 
         load("towerSlotSelect.png", Texture.class);
         load("wallSlotSelect.png", Texture.class);
 
         load("mobHpBarBg.png", Texture.class);
         load("mobHpBarKnob.png", Texture.class);
+
+        load("player1Logo.png", Texture.class);
+        load("player2Logo.png", Texture.class);
 
         ObjectMap<String, Object> fontMap = new ObjectMap<String, Object>();
         fontMap.put("default-font", FontLoader.generateFont(0, 26, Color.BLACK));
@@ -116,6 +136,10 @@ public class AssetLoader extends AssetManager {
         get("target/targetLeftInv.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         get("towerSlot.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
+        get("player1Logo.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        get("player2Logo.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
     }
 
     public ProgressBar.ProgressBarStyle getLoadingBarStyle(){
@@ -131,6 +155,10 @@ public class AssetLoader extends AssetManager {
     }
     public Texture getEffectIcon(String name){
         return get("Ability/Effects/" + name + ".png", Texture.class);
+    }
+
+    public Texture getSpellSlotBgTexture(int tier){
+        return get("Ability/Spells/Background/tier" + tier + ".png", Texture.class);
     }
 
     public Skin getSkin(){

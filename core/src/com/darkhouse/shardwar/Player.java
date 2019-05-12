@@ -1,19 +1,41 @@
 package com.darkhouse.shardwar;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
+import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellPanel;
 
-public class Player extends Entity {
+import java.util.Arrays;
+
+public class Player extends GameObject {
     private int shards;
     private float[] lineX;
     private ProgressBar healthBar;
     private final int maxShards = 40;
+    private boolean silenced;
+
+    public void setSilenced(boolean silenced) {
+        this.silenced = silenced;
+        if(silenced){
+            AlphaAction a = new AlphaAction();
+            a.setAlpha(0.4f);
+            spellPanel.addAction(a);
+        }else {
+            AlphaAction a = new AlphaAction();
+            a.setAlpha(1f);
+            spellPanel.addAction(a);
+        }
+    }
+    public boolean isSilenced() {
+        return silenced;
+    }
 
     private SpellPanel spellPanel;
 
@@ -41,23 +63,50 @@ public class Player extends Entity {
         updateBar();
     }
 
-    @Override
-    public Vector2 getShootPosition(int line) {
-        return new Vector2(lineX[line], getY());//TODO java.lang.ArrayIndexOutOfBoundsException: -1
+//    @Override
+//    public Vector2 getShootPosition(int line) {
+//        return new Vector2(lineX[line], getY());//TODO java.lang.ArrayIndexOutOfBoundsException: -1
+//    }
+//
+//    @Override
+//    public boolean isExist() {
+//        return true;
+//    }
+
+    public static class PlayerPrototype extends ObjectPrototype{
+
+        public PlayerPrototype(Texture texture, String name) {
+            super(texture, name, 0, 0, 0);
+        }
+
+        @Override
+        public Player getObject() {
+            return new Player(this);
+        }
     }
 
-    @Override
-    public boolean isExist() {
-        return true;
-    }
 
-    public Player() {
+    public Player(PlayerPrototype p) {
+        super(p);
 //        super(ShardWar.main.getAssetLoader().get("shard.png", Texture.class));
 
 
     }
 
+
+    public void initShards(){
+        addShards(10);
+    }
+
+    @Override
+    public Vector2 getShootPosition(int line) {
+//        System.out.println(line);
+        return new Vector2(lineX[line], slot.getY() + slot.getParent().getY() + slot.getHeight()/2);
+        //TODO java.lang.ArrayIndexOutOfBoundsException: -1
+    }
+
     public void init(){
+        super.init();
 //        healthBar = new ProgressBar(0, maxShards, 0.1f, true, ShardWar.main.getAssetLoader().getSkin(), "health-bar");
 //        healthBar.setSize(Gdx.graphics.getWidth(), 40);
 //        healthBar.getStyle().background.setMinWidth(Gdx.graphics.getWidth());
@@ -67,8 +116,6 @@ public class Player extends Entity {
 //                healthBar.getY() + " " + getY());
 //        updateBar();
 //        healthBar.pack();
-
-        addShards(10);
     }
 
     public void setShootCoord(float[] lineX){
@@ -82,6 +129,15 @@ public class Player extends Entity {
             updateBar();
             loose();
         }else updateBar();
+    }
+
+    @Override
+    public int receiveDamage(int damage, DamageSource source) {
+        return damage;
+    }
+
+    @Override
+    public void physic(float delta) {
 
     }
 
@@ -95,9 +151,9 @@ public class Player extends Entity {
         Gdx.app.exit();
     }
 
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-//        super.draw(batch, parentAlpha);
-//        healthBar.draw(batch, parentAlpha);
-    }
+//    @Override
+//    public void draw(Batch batch, float parentAlpha) {
+////        super.draw(batch, parentAlpha);
+////        healthBar.draw(batch, parentAlpha);
+//    }
 }

@@ -4,6 +4,9 @@ import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.Effect;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.Player;
+import com.darkhouse.shardwar.ShardWar;
+import com.darkhouse.shardwar.Tools.AssetLoader;
+import com.darkhouse.shardwar.Tools.FontLoader;
 
 import java.util.ArrayList;
 
@@ -20,7 +23,9 @@ public class Disarm extends Spell {
 
         @Override
         public String getTooltip() {
-            return "Disarm selected tower for " + duration + " seconds";
+            AssetLoader l = ShardWar.main.getAssetLoader();
+            return l.getWord("disarmTooltip1") + " " + FontLoader.colorString(String.valueOf(duration), 2)
+                    + " " + l.getWord("disarmTooltip2");
         }
 
         @Override
@@ -33,7 +38,6 @@ public class Disarm extends Spell {
 
         public DisarmEffect(int duration) {
             super("disarm", false, duration, INone.class);
-            this.owner = owner;
         }
 
         @Override

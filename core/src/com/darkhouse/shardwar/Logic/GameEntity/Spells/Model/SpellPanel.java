@@ -13,21 +13,26 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
+import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
+import com.darkhouse.shardwar.Logic.GameEntity.Wall.Wall;
+import com.darkhouse.shardwar.Logic.Slot.PlayerSlot;
 import com.darkhouse.shardwar.Logic.Slot.Slot;
-import com.darkhouse.shardwar.Model.Tooltip.AbstractTooltip;
+import com.darkhouse.shardwar.Logic.Slot.TowerSlot;
+import com.darkhouse.shardwar.Logic.Slot.WallSlot;
 import com.darkhouse.shardwar.Model.ShapeTarget;
 import com.darkhouse.shardwar.Model.Tooltip.TooltipListener;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
 import com.darkhouse.shardwar.ShardWar;
-import com.darkhouse.shardwar.Tools.AssetLoader;
-import com.darkhouse.shardwar.Tools.FontLoader;
 
 import java.util.ArrayList;
 
 public class SpellPanel extends Table {
+
+    private final static int drawOffset = 2;
 
     private class SpellSlot extends Actor {
 
@@ -70,7 +75,7 @@ public class SpellPanel extends Table {
                     }
                     for (Slot s:all){
                         if(targets.contains(s)){
-                            s.choose();
+                            chooseCorrectTargets(s, spell.getAffectedTypes());
                         }else s.unChoose();
                     }
 //                    for (Slot s:targets) {
@@ -205,11 +210,13 @@ public class SpellPanel extends Table {
 //            addListener(new TooltipListener(tooltip, true));
         }
 
+
         private ArrayList<GameObject> sortTargets(ArrayList<Slot> targets, Spell spell){
             ArrayList<GameObject> trueTargets = new ArrayList<GameObject>();
             for (Slot g:targets){
                 if(g.getObject() != null){
-                    if(spell.getAffectedTypes().contains(g.getObject().getClass().getSuperclass())){//TODO rework
+                    if(spell.getAffectedTypes().contains(g.getObject().getClass().getSuperclass()) ||//TODO rework
+                    spell.getAffectedTypes().contains(g.getObject().getClass())){
                         trueTargets.add(g.getObject());
                     }
                 }
@@ -219,6 +226,7 @@ public class SpellPanel extends Table {
 
 
         private void useSpell(Spell spell, Vector2 useCoord){
+            if(player.isSilenced()) return;
             if(spell.getSpellType() instanceof Spell.NonTargetType) {
                 FightScreen f = ShardWar.fightScreen;
                 ArrayList<Slot> targetSlots = new ArrayList<Slot>();
@@ -239,13 +247,11 @@ public class SpellPanel extends Table {
                 removeSpell();
             }
             if(spell.getSpellType() instanceof Spell.TargetType) {
-                getStage().addListener(new SoloTargeter(new Vector2(
-                        useCoord.x + getParent().getX() + index*getWidth() - 5, useCoord.y + getParent().getY() - 5)
+                SoloTargeter st = new SoloTargeter(new Vector2(
+                        useCoord.x + getParent().getX() + index*getWidth() - 5, useCoord.y + getParent().getY() - 5));
+                getStage().addListener(st);
+                listeners.add(st);
                         //5 - size between top of table and actor (getHeight() - 10, getHeight() - 10)
-
-
-                        /*new Vector2(
-                        getX() + getParent().getX() + getWidth()/2, getY() + getParent().getY() + getHeight()/2))*/));
             }
 
         }
@@ -259,7 +265,8 @@ public class SpellPanel extends Table {
         public void draw(Batch batch, float parentAlpha) {
             batch.draw(bgTexture, getX(), getY(), getWidth(), getHeight());
             if(spell != null) {
-                batch.draw(texture, getX(), getY(), getWidth(), getHeight());
+                batch.draw(texture, getX() + drawOffset, getY() + drawOffset,
+                        getWidth() - drawOffset*2, getHeight() - drawOffset*2);
             }
         }
     }
@@ -280,6 +287,7 @@ public class SpellPanel extends Table {
     public void init(){
         setBackground(ShardWar.main.getAssetLoader().getSkin().getDrawable("info-panel"));
         slots = new SpellSlot[4];
+        listeners = new ArrayList<SpellSlot.SoloTargeter>();
         for (int i = 0; i < slots.length; i++) {
             slots[i] = new SpellSlot(i);
             slots[i].setSize(getHeight() - 10, getHeight() - 10);
@@ -292,7 +300,23 @@ public class SpellPanel extends Table {
 //        pack();
     }
 
+    public static void chooseCorrectTargets(Slot s, ArrayList<Class<? extends GameObject>> affectedTypes) {
+        if(s instanceof TowerSlot && affectedTypes.contains(Tower.class)) {
+            s.choose();
+        }else if(s instanceof WallSlot && affectedTypes.contains(Wall.class)){
+            s.choose();
+        }else if(s instanceof PlayerSlot && affectedTypes.contains(Player.class)){
+            s.choose();
+        }
+    }
 
+    private ArrayList<SpellSlot.SoloTargeter> listeners;
+    public void clearListeners(){
+        for (SpellSlot.SoloTargeter s:listeners){
+            s.cancelTargeting();
+        }
+        listeners.clear();
+    }
 
     public boolean addSpell(Spell.SpellPrototype spellPrototype){
 //        SpellSlot s = new SpellSlot();

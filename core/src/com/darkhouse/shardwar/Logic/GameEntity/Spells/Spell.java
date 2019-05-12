@@ -5,6 +5,7 @@ import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.Slot.Slot;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
+import com.darkhouse.shardwar.ShardWar;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,6 +99,7 @@ public abstract class Spell implements DamageSource {
                 list.addAll(field.getOnColumn(0));
                 list.addAll(field.getOnColumn(1));
                 list.addAll(field.getOnColumn(2));
+                list.add(field.getPlayerSlot());
                 list.removeAll(Collections.singleton(null));
                 return list;
             }
@@ -122,6 +124,13 @@ public abstract class Spell implements DamageSource {
                 list.removeAll(Collections.singleton(null));
                 return list;
             }
+        }, PLAYER{
+            @Override
+            public ArrayList<Slot> getTargets(FightScreen.Field field) {
+                ArrayList<Slot> list = new ArrayList<Slot>();
+                list.add(field.getPlayerSlot());
+                return new ArrayList<Slot>(list);
+            }
         };
 
         public abstract ArrayList<Slot> getTargets(FightScreen.Field field);
@@ -142,7 +151,14 @@ public abstract class Spell implements DamageSource {
         private Type spellType;
         private FieldTarget fieldTarget;
         private ArrayList<Class<? extends GameObject>> affectedTypes;
+        private int tier;
 
+        public int getTier() {
+            return tier;
+        }
+        public void setTier(int tier) {
+            this.tier = tier;
+        }
         public String getName() {
             return name;
         }

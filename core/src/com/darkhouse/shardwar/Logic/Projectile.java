@@ -21,7 +21,7 @@ public class Projectile extends Image {
 
     protected Slot<Tower.TowerPrototype, Tower> slot;
     protected Tower tower;
-    protected Entity target;
+    protected Slot target;
     protected float speed;
     private int line;
 
@@ -37,7 +37,7 @@ public class Projectile extends Image {
     protected Vector2 targetV = new Vector2();
     protected Vector2 dir = new Vector2();
 
-    public Projectile(Slot<Tower.TowerPrototype, Tower> slot, Vector2 startLocation, Entity target, int line) {
+    public Projectile(Slot<Tower.TowerPrototype, Tower> slot, Vector2 startLocation, Slot target, int line) {
         this(slot, startLocation, line);
         this.target = target;
     }
@@ -69,8 +69,8 @@ public class Projectile extends Image {
     protected void move(float delta){
         checkIfTargetDie();
         position.set(getX(), getY());
-        targetV.set(target.getXShoot(line),
-                target.getYShoot(line));
+        targetV.set(target.getObject().getXShoot(line),
+                target.getObject().getYShoot(line));
         dir.set(targetV).sub(position).nor();
         velocity.set(dir).scl(speed);
         movement.set(velocity).scl(delta);

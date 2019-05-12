@@ -1,9 +1,18 @@
 package com.darkhouse.shardwar.Logic.GameEntity;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
+import com.badlogic.gdx.utils.Array;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.Effect;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.EffectIcon;
+import com.darkhouse.shardwar.ShardWar;
+
+import java.util.HashMap;
 
 public abstract class Entity extends Image implements DamageReceiver {
 
@@ -24,13 +33,8 @@ public abstract class Entity extends Image implements DamageReceiver {
         return (x >= getX() + getParent().getX() && x <= getX() + getParent().getX() + getWidth())
                 && (y >= getY() + getParent().getY() && y <= getY() + getParent().getY() + getHeight());
     }
-    public abstract Vector2 getShootPosition(int line);
 
-    public float getXShoot(int line){
-        return getShootPosition(line).x;
-    }
-    public float getYShoot(int line){
-        return getShootPosition(line).y;
-    }
+
+
 
 }

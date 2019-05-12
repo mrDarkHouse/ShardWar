@@ -17,6 +17,7 @@ public class SpellBuy extends Dialog {
 
     private Container[] spells;
     private Stage stage;
+    private final static int drawOffset = 2;
 
     private class SpellBuyTooltip extends SpellTooltip{
 
@@ -26,7 +27,6 @@ public class SpellBuy extends Dialog {
 
         @Override
         protected void showTargets() {
-
         }
         @Override
         protected void clearTargets() {
@@ -47,6 +47,7 @@ public class SpellBuy extends Dialog {
         public void setSpell(final Spell.SpellPrototype spell) {
             this.spell = spell;
             spellTexture = ShardWar.main.getAssetLoader().getSpell(spell.getName());
+            slotTexture = ShardWar.main.getAssetLoader().getSpellSlotBgTexture(spell.getTier());
             final SpellBuyTooltip t = new SpellBuyTooltip(spell);
             t.init();
             stage.addActor(t);
@@ -73,7 +74,8 @@ public class SpellBuy extends Dialog {
         public void draw(Batch batch, float parentAlpha) {
             batch.draw(slotTexture, getX(), getY(), getWidth(), getHeight());
             if(spell != null) {
-                batch.draw(spellTexture, getX(), getY(), getWidth(), getHeight());
+                batch.draw(spellTexture, getX() + drawOffset, getY() + drawOffset,
+                        getWidth() - drawOffset*2, getHeight() - drawOffset*2);
             }
         }
     }

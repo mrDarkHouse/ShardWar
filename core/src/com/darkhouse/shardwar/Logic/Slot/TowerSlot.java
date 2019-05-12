@@ -11,7 +11,8 @@ import com.darkhouse.shardwar.ShardWar;
 public class TowerSlot extends Slot<Tower.TowerPrototype, Tower> {
 
     public TowerSlot(boolean player, FightScreen owner, Player user, int line, int row) {
-        super(ShardWar.main.getAssetLoader().get("towerSlot.png", Texture.class), player, owner, user, line, row);
+        super(ShardWar.main.getAssetLoader().get("towerSlot.png", Texture.class),
+                player, true, 2, owner, user, line, row);
     }
 
     protected void init(){

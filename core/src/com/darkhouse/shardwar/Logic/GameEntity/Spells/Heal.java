@@ -4,6 +4,9 @@ import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.Wall;
 import com.darkhouse.shardwar.Player;
+import com.darkhouse.shardwar.ShardWar;
+import com.darkhouse.shardwar.Tools.AssetLoader;
+import com.darkhouse.shardwar.Tools.FontLoader;
 
 import java.util.ArrayList;
 
@@ -20,7 +23,10 @@ public class Heal extends Spell{
 
         @Override
         public String getTooltip() {
-            return "Heal friendly units for " + healAmount + " hp";
+            AssetLoader l = ShardWar.main.getAssetLoader();
+            return l.getWord("healTooltip1") + " " +
+                    FontLoader.colorString(String.valueOf(healAmount), 2)
+                    + " " + l.getWord("healTooltip2");
         }
 
         @Override

@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.MultiShot;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.AssaultTower;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.SniperTower;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
@@ -73,7 +74,7 @@ public abstract class BuyWindow<T extends GameObject.ObjectPrototype, O extends 
             return new Wall.WallPrototype[]
                     {new BrickWall.P(),
                      new EnergyWall.P(1),
-                     new SpikeWall.P(3)};
+                     new SpikeWall.P(2)};
         }
     }
 

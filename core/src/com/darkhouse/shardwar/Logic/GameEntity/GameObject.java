@@ -1,16 +1,20 @@
 package com.darkhouse.shardwar.Logic.GameEntity;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.utils.Array;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.Effect;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.EffectIcon;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.Ability;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Vulnerability;
 import com.darkhouse.shardwar.Logic.Slot.Slot;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.ShardWar;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public abstract class GameObject implements DamageReceiver, DamageSource {
@@ -22,6 +26,7 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         protected int cost;
         protected int maxHealth;
         protected int bounty;
+        protected ArrayList<Ability> abilities;
 
         public Texture getTexture() {
             return texture;
@@ -35,13 +40,30 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         public int getMaxHealth() {
             return maxHealth;
         }
+        public ArrayList<Ability> getAbilities() {
+            return abilities;
+        }
+        public boolean haveAbility(Class<? extends Ability> c){
+            for (Ability a:getAbilities()){
+                if(a.getClass() == c) return true;
+            }
+            return false;
+        }
+        public <T extends Ability> T getAbility(Class<T> c){
+            for (Ability a:getAbilities()){
+                if(a.getClass() == c) return (T)a;//TODO
+            }
+            return null;
+        }
 
-        public ObjectPrototype(Texture texture, String name, int health, int cost, int bounty) {
+        public ObjectPrototype(Texture texture, String name, int health, int cost, int bounty,
+                               Ability... abilities) {
             this.texture = texture;
             this.name = name;
             this.maxHealth = health;
             this.cost = cost;
             this.bounty = bounty;
+            this.abilities = new ArrayList<Ability>(Arrays.asList(abilities));
         }
 
         public abstract GameObject getObject();
@@ -124,7 +146,6 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
             effects.put(tt, arr);
         }
     }
-
     public void addEffect(Effect e){
         if(!haveEffect(e.getClass())) {
             setEffect(e);
@@ -139,7 +160,6 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
             getEffect(e.getClass()).updateDuration();
         }
     }
-
     public boolean haveEffect(Class e){
         return (getEffect(e) != null);
     }
@@ -159,7 +179,6 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         }
         return null;
     }
-
     public void deleteEffect(Class d){
         for (java.util.Map.Entry<Class<? extends Effect.IEffectType> , Array<Effect>> e:effects.entrySet()){
             for (Effect ab:e.getValue()){
@@ -173,7 +192,6 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
             }
         }
     }
-
     public void actEffects(){
         for (Effect e:getEffects()){
             e.nextTurn();
@@ -230,6 +248,14 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         slot.updateHpBar();
     }
 
+    public abstract Vector2 getShootPosition(int line);
+    public float getXShoot(int line){
+        return getShootPosition(line).x;
+    }
+    public float getYShoot(int line){
+        return getShootPosition(line).y;
+    }
+
     public void setSlot(Slot slot) {
         this.slot = slot;
     }
@@ -273,10 +299,15 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         return health;
     }
 
+    public void kill(DamageSource source, boolean bounty){
+        health -= getHealth();
+        die(source, bounty);
+    }
+
     public void dmg(int dmg, DamageSource source){
         health -= receiveDamage(calculateGetDmg(dmg), source);
 //        System.out.println("attacked " + health);
-        if(health <= 0) die(source);
+        if(health <= 0) die(source, true);
         else slot.hasChanged();
 //        ShardWar.fightScreen.hasChanged();
     }
@@ -293,11 +324,11 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
     public abstract int receiveDamage(int damage, DamageSource source);
     public abstract void physic(float delta);
 
-    private void die(DamageSource source){
-        slot.clearObject();
+    protected void die(DamageSource source, boolean giveBounty){
+        slot.clearObject();//NullPointer
         slot.hasChanged();
         slot = null;
-        source.getOwnerPlayer().addShards(bounty);
+        if(giveBounty) source.getOwnerPlayer().addShards(bounty);
     }
 
 

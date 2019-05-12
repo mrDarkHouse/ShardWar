@@ -2,15 +2,18 @@ package com.darkhouse.shardwar.Logic.GameEntity.Tower;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.darkhouse.shardwar.Logic.GameEntity.DamageReceiver;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.Ability;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.MultiShot;
 import com.darkhouse.shardwar.ShardWar;
 
 public class AssaultTower extends Tower{
 
-    public static class P extends TowerPrototype{
+    public static class P extends TowerPrototype<AssaultTower>{
 
         public P() {
             super(ShardWar.main.getAssetLoader().get("towers/assault.png", Texture.class),
-                    "Assaut", 15, 7, 2, 3, 2, 0.6f);
+                    "Assaut", 15, 7, 2, 3,
+                    new MultiShot(2, 0.6f));
         }
 
         @Override
@@ -19,7 +22,7 @@ public class AssaultTower extends Tower{
         }
 
         @Override
-        public Tower getObject() {
+        public AssaultTower getObject() {
             return new AssaultTower(this);
         }
     }

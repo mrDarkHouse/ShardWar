@@ -6,6 +6,7 @@ import com.darkhouse.shardwar.Logic.GameEntity.DamageReceiver;
 import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.Ability;
 import com.darkhouse.shardwar.Logic.Projectile;
 import com.darkhouse.shardwar.Logic.Slot.Slot;
 
@@ -13,17 +14,15 @@ public abstract class Tower extends GameObject {
 
     public abstract static class TowerPrototype<T extends Tower> extends ObjectPrototype {
         private int dmg;
-        private int shoots;
-        private float shootDelay;
 
-        public TowerPrototype(Texture texture, String name, int health, int cost, int dmg, int bounty) {
-            this(texture, name, health, cost, dmg, bounty, 1, 0f);
-        }
-        public TowerPrototype(Texture texture, String name, int health, int cost, int dmg, int bounty, int shoots, float shootDelay){
-            super(texture, name, health, cost, bounty);
+//        public TowerPrototype(Texture texture, String name, int health, int cost, int dmg, int bounty,
+//                              Ability... abilities) {
+//            this(texture, name, health, cost, dmg, bounty, abilities);
+//        }
+        public TowerPrototype(Texture texture, String name, int health, int cost, int dmg, int bounty,
+                              Ability... abilities){
+            super(texture, name, health, cost, bounty, abilities);
             this.dmg = dmg;
-            this.shoots = shoots;
-            this.shootDelay = shootDelay;
         }
 
         @Override
@@ -37,23 +36,43 @@ public abstract class Tower extends GameObject {
         super(prototype);
         this.dmg = prototype.dmg;
 //        this.shoots = prototype.shoots;
-        this.shootDelay = prototype.shootDelay;
+        this.shootDelay = 0;
         this.shootTime = shootDelay;
     }
 
+    @Override
+    public Vector2 getShootPosition(int line) {
+        return new Vector2(slot.getX() + slot.getParent().getX() + slot.getWidth()/2,
+                slot.getY() + slot.getParent().getY() + slot.getHeight()/2);
+    }
+
+//    @Override
+//    public Vector2 getShootPosition(int line) {
+//        return new Vector2(slot.getX(), slot.getY());
+//    }
+
+    private boolean global;
+    public boolean isGlobal() {
+        return global;
+    }
+    public void setGlobal(boolean global) {
+        this.global = global;
+    }
 
     protected int dmg;
+    protected int bonusDmg;
     private boolean canShoot;
+
 
     private boolean disarm;
 
     public void setDisarm(boolean disarm) {
         this.disarm = disarm;
     }
-
     public boolean isDisarm() {
         return disarm;
     }
+
 
     public void setCanShoot(boolean canShoot) {
         this.shoots = slot.getNumberSelected();
@@ -61,6 +80,12 @@ public abstract class Tower extends GameObject {
     }
 
     private float shootDelay;
+
+    public void setShootDelay(float shootDelay) {
+        this.shootDelay = shootDelay;
+        this.shootTime = shootDelay;
+    }
+
     private float shootTime;
     private int shootNum;
     private int shoots;
@@ -106,8 +131,14 @@ public abstract class Tower extends GameObject {
 //        }
     }
 
+    @Override
+    protected void die(DamageSource source, boolean giveBounty) {
+        slot.clear();
+        super.die(source, giveBounty);
+    }
+
     private void shootProjectile(int i){
-        Entity dr = slot.getOwner().searchTarget(getSlot(), getSlot().getSelected()[i]);
+        Slot dr = slot.getOwner().searchTarget(getSlot(), getSlot().getSelected()[i]);
         Vector2 startLocation = new Vector2(getSlot().getX() + getSlot().getParent().getX() + getSlot().getWidth() / 2,
                 getSlot().getY() + getSlot().getParent().getY() + getSlot().getHeight() / 2);
         Projectile pr = new Projectile(getSlot(), startLocation, dr, getSlot().getSelected()[i]);

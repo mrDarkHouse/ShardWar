@@ -4,7 +4,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
+import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
+import com.darkhouse.shardwar.Logic.GameEntity.Wall.Wall;
+import com.darkhouse.shardwar.Logic.Slot.PlayerSlot;
 import com.darkhouse.shardwar.Logic.Slot.Slot;
+import com.darkhouse.shardwar.Logic.Slot.TowerSlot;
+import com.darkhouse.shardwar.Logic.Slot.WallSlot;
 import com.darkhouse.shardwar.Model.Tooltip.AbstractTooltip;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
@@ -76,7 +81,7 @@ public class SpellTooltip extends AbstractTooltip {
             targets.addAll(t.getTargets(ShardWar.fightScreen.getCurrentField()));
         }
         for (Slot s:targets){
-            s.choose();
+            SpellPanel.chooseCorrectTargets(s, spell.getAffectedTypes());
         }
     }
 

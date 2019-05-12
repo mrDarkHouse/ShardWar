@@ -10,7 +10,8 @@ import com.darkhouse.shardwar.ShardWar;
 
 public class WallSlot extends Slot<Wall.WallPrototype, Wall> {
     public WallSlot(boolean player, FightScreen owner, Player user, int line, int row) {
-        super(ShardWar.main.getAssetLoader().get("wallSlot.png", Texture.class), player, owner, user, line, row);
+        super(ShardWar.main.getAssetLoader().get("wallSlot.png", Texture.class),
+                player, true, 0, owner, user, line, row);
     }
 
     protected void init(){

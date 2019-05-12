@@ -8,7 +8,7 @@ public abstract class Effect<T extends GameObject> {
 
     }
     public interface IAttack extends IEffectType{
-        void attack();
+        void attack(GameObject target);
     }
     public interface IGetDmg extends IEffectType{
         int getDmg(int dmg);
@@ -63,7 +63,12 @@ public abstract class Effect<T extends GameObject> {
         owner.deleteEffect(this.getClass());
     }
 
+    protected void act(){
+
+    }
+
     public void nextTurn(){
+        act();
         currentTime--;
         if(currentTime <= 0) {
             removeEffect();

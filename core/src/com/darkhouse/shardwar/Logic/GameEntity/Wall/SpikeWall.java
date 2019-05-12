@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.darkhouse.shardwar.Logic.GameEntity.DamageReceiver;
 import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
+import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.ShardWar;
 
 public class SpikeWall extends Wall {
@@ -31,7 +32,7 @@ public class SpikeWall extends Wall {
 
     @Override
     public int receiveDamage(int damage, DamageSource source) {
-        if(source instanceof DamageReceiver) {
+        if(source instanceof Tower) {
             ((DamageReceiver) source).dmg(spikeDmg, this);
         }
         return damage;
