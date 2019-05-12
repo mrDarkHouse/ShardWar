@@ -77,6 +77,7 @@ public class AssetLoader extends AssetManager {
         load("Ability/Spells/opticalsight.png", Texture.class);
         load("Ability/Spells/poisonsplash.png", Texture.class);
         load("Ability/Spells/shieldup.png", Texture.class);
+        load("Ability/Spells/disablefield.png", Texture.class);
 
         load("Ability/Effects/disarm.png", Texture.class);
         load("Ability/Effects/weakness.png", Texture.class);
@@ -86,9 +87,12 @@ public class AssetLoader extends AssetManager {
         load("Ability/Effects/opticalsight.png", Texture.class);
         load("Ability/Effects/poisonsplash.png", Texture.class);
         load("Ability/Effects/shieldup.png", Texture.class);
+        load("Ability/Effects/disablefield.png", Texture.class);
 
         load("towerSlotSelect.png", Texture.class);
         load("wallSlotSelect.png", Texture.class);
+        load("towerSlotDisabled.png", Texture.class);
+        load("wallSlotDisabled.png", Texture.class);
 
         load("mobHpBarBg.png", Texture.class);
         load("mobHpBarKnob.png", Texture.class);

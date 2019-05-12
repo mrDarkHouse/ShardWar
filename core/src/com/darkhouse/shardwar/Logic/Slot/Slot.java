@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.darkhouse.shardwar.Logic.BuyWindow;
 import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
+import com.darkhouse.shardwar.Logic.GameEntity.Empty;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.Ability;
@@ -30,6 +31,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     private int drawOffset;
     private Player user;
     protected O object;
+    protected Empty emptyObject;
     protected BuyWindow tooltip;
     private FightScreen owner;
     private ProgressBar hpBar;
@@ -39,6 +41,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     private int numberSelected;
     public int maxTargets;
     public Image targeter[];
+    public boolean disable;
 
     public void setTargeter(Image i){
 //        System.out.println(Arrays.toString(targeter));
@@ -54,7 +57,15 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
         return targeter[numberSelected];
     }
 
+    public boolean isDisable() {
+        return disable;
+    }
+    public void setDisable(boolean disable) {
+        this.disable = disable;
+    }
+
     protected TextureRegion choose;
+    protected TextureRegion disableTexture;
     private boolean isChosen;
 
     public void choose(){
@@ -91,12 +102,20 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     public O getObject() {
         return object;
     }
+    public Empty getEmptyObject() {
+        return emptyObject;
+    }
+    public GameObject getSomeObject(){
+        if(getObject() != null) return object;
+        else return getEmptyObject();
+    }
 
-//    public void setObject(T object) {
+    //    public void setObject(T object) {
 //        this.object = object;
 //    }
     public void clearObject(){
         this.object = null;
+//        this.object = new Empty();
     }
 
     public void select(int selected) {
@@ -142,7 +161,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 
     @Override
     public boolean isExist() {
-        return object != null;
+        return !empty();
     }
 
 
@@ -172,6 +191,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 
     public boolean empty(){
         return object == null;
+//        return object.getClass() == Empty.class;
     }
 
     protected void fadeIn(){
@@ -192,7 +212,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
                 @Override
                 public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                     if(user == owner.getCurrentPlayerObject()) {
-                        if (empty() && getColor().a != 1f) {
+                        if (empty() && !disable && getColor().a != 1f) {
                             fadeOut();
                         }
                     }
@@ -211,7 +231,8 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                     if(user == owner.getCurrentPlayerObject()) {
                         owner.hideTooltips();
-                        if (object == null) {
+                        if(disable) return true;
+                        if (empty()) {
                             tooltip.show();
                         }else {
                             if(owner.getRound() != 1) {
@@ -250,8 +271,12 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
         this.object = object;
     }
 
+    public void setEmptyObject(Empty emptyObject) {
+        this.emptyObject = emptyObject;
+    }
+
     public void build(T prototype){
-        if(this.object == null && user.deleteShards(prototype.getCost())){
+        if(empty() && user.deleteShards(prototype.getCost())){
             this.object = ((O) prototype.getObject());//TODO this works but need remake
 //            this.object = new Tower(object);
             object.setSlot(this);
@@ -320,10 +345,10 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
         updateListeners();
     }
     private void updateListeners(){
-        if(object == null) fadeIn();
+        if(empty()) fadeIn();
     }
     public void updateHpBar(){
-        if(object != null) hpBar.setValue(object.getHealth());
+        if(!empty()) hpBar.setValue(object.getHealth());
         else if(hpBar != null) {
             hpBar.remove();
             hpBar = null;
@@ -350,7 +375,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 //                    0, 0, texture.getWidth(), texture.getHeight(), false, true);
 //        }
 
-        if(object != null) {
+        if(/*object != null*/ !empty()) {
             if(!flip || player) batch.draw(object.getTexture(), getX() + drawOffset, getY() + drawOffset,
                     getWidth() - drawOffset*2, getHeight() - drawOffset*2);
             else batch.draw(object.getTexture(), getX() + drawOffset, getY() + drawOffset,
@@ -359,6 +384,9 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
         }
         if(isChosen){
             batch.draw(choose, getX(), getY(), getWidth(), getHeight());
+        }
+        if(disable){
+            batch.draw(disableTexture, getX(), getY(), getWidth(), getHeight());
         }
         drawEffects(batch);
     }
@@ -372,8 +400,8 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     }
 
     private void drawEffects(Batch batch){
-        if(object != null) {
-            object.effectBar.draw(batch, 1);
+        if(getSomeObject() != null) {
+            getSomeObject().effectBar.draw(batch, 1);
         }
     }
 

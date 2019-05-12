@@ -214,10 +214,10 @@ public class SpellPanel extends Table {
         private ArrayList<GameObject> sortTargets(ArrayList<Slot> targets, Spell spell){
             ArrayList<GameObject> trueTargets = new ArrayList<GameObject>();
             for (Slot g:targets){
-                if(g.getObject() != null){
-                    if(spell.getAffectedTypes().contains(g.getObject().getClass().getSuperclass()) ||//TODO rework
-                    spell.getAffectedTypes().contains(g.getObject().getClass())){
-                        trueTargets.add(g.getObject());
+                if(g.getSomeObject() != null){
+                    if(spell.getAffectedTypes().contains(g.getSomeObject().getClass().getSuperclass()) ||//TODO rework
+                    spell.getAffectedTypes().contains(g.getSomeObject().getClass())){
+                        trueTargets.add(g.getSomeObject());
                     }
                 }
             }

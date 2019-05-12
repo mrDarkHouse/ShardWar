@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.darkhouse.shardwar.Logic.*;
+import com.darkhouse.shardwar.Logic.GameEntity.Empty;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.*;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellBuy;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellPanel;
@@ -44,7 +45,7 @@ public class FightScreen extends AbstractScreen {
         private Array<WallSlot> walls;
         private PlayerSlot playerSlot;
 
-        public ArrayList<Slot> getObjects(){
+        public ArrayList<Slot> getMainObjects(){
             ArrayList<Slot> list = new ArrayList<Slot>();
             for(TowerSlot t:towers){
                 /*if(t.getObject() != null) */list.add(t);
@@ -52,6 +53,11 @@ public class FightScreen extends AbstractScreen {
             for(WallSlot w:walls){
                 /*if(w.getObject() != null) */list.add(w);
             }
+            return list;
+        }
+
+        public ArrayList<Slot> getObjects(){
+            ArrayList<Slot> list = getMainObjects();
             list.add(playerSlot);
             return list;
         }
@@ -392,7 +398,7 @@ public class FightScreen extends AbstractScreen {
         turnDialog.getTitleLabel().setText(roundText);
         turnDialog.getContentTable().clear();
 //        turnDialog.text(roundText).row();
-        turnDialog.text(turnText);
+        turnDialog.text(turnText);//java.lang.IndexOutOfBoundsException: index can't be >= size: 1 >= 0
 //        turnDialog.pack();
 //        turnDialog.getButtonTable().getCells().get(0).getActor() =
     }
@@ -436,7 +442,7 @@ public class FightScreen extends AbstractScreen {
 
     private void actEffects(){
         for (Slot s:fields[currentPlayer - 1].getObjects()){
-            if(s.getObject() != null) s.getObject().actEffects();
+            if(s.getSomeObject() != null) s.getSomeObject().actEffects();
         }
     }
 
@@ -511,9 +517,10 @@ public class FightScreen extends AbstractScreen {
 
         allSpells.put(1, new ArrayList<Spell.SpellPrototype>(
                 Arrays.asList(new FireBreath.P(5),
-                        new Disarm.P(2),
+                       /* new Disarm.P(2),
                         new Heal.P(5),
-                        new Weakness.P(2, 1))
+                        new Weakness.P(2, 1),*/
+                        new DisableField.P(3))
         ));
         allSpells.put(2, new ArrayList<Spell.SpellPrototype>(
                 Arrays.asList(new Greed.P(5),
@@ -666,19 +673,19 @@ public class FightScreen extends AbstractScreen {
     public Slot searchTarget(Slot<Tower.TowerPrototype, Tower> attacker, int line){
         for (int i = 0; i < 6; i ++){
             WallSlot curr = fields[getOppositePlayer() - 1].getWalls().get(i);
-            if(curr.getObject() != null && curr.getColumn() == line && curr.getRow() == 0){
+            if(!curr.empty() && curr.getColumn() == line && curr.getRow() == 0){
                 return curr;
             }
         }
         for (int i = 0; i < 6; i ++){
             WallSlot curr = fields[getOppositePlayer() - 1].getWalls().get(i);
-            if(curr.getObject() != null && curr.getColumn() == line && curr.getRow() == 1){
+            if(!curr.empty() && curr.getColumn() == line && curr.getRow() == 1){
                 return curr;
             }
         }
         for (int i = 0; i < 3; i ++){
             TowerSlot curr = fields[getOppositePlayer() - 1].getTowers()[i];
-            if(curr.getObject() != null && curr.getColumn() == line){
+            if(!curr.empty() && curr.getColumn() == line){
                 return curr;
             }
         }
@@ -786,6 +793,12 @@ public class FightScreen extends AbstractScreen {
         stage.addActor(fields[0]);
         fields[0].playerSlot.getObject().init();
         initTooltips(fields[0]);
+        for(Slot s:fields[0].getMainObjects()){
+            Empty e = new Empty();
+            s.setEmptyObject(e);
+            e.setSlot(s);
+            e.init();
+        }
     }
     private void initEnemyFiled(){
         fields[1] = generateField(false);
@@ -795,6 +808,12 @@ public class FightScreen extends AbstractScreen {
         stage.addActor(fields[1]);
         fields[1].playerSlot.getObject().init();
         initTooltips(fields[1]);
+        for(Slot s:fields[1].getMainObjects()){
+            Empty e = new Empty();
+            s.setEmptyObject(e);
+            e.setSlot(s);
+            e.init();
+        }
     }
 
     private void setPlayerShootPositions(){

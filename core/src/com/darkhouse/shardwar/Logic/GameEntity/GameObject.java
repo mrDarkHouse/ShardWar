@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.utils.Array;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.DisableField;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.Effect;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.EffectIcon;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.Ability;
@@ -264,6 +265,11 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         return slot;
     }
 
+    public GameObject() {
+        effects = new HashMap<Class<? extends Effect.IEffectType>, Array<Effect>>();
+        effectBar = new EffectBar();
+    }
+
     public GameObject(ObjectPrototype prototype) {
         this.texture = prototype.texture;
         this.name = prototype.name;
@@ -274,7 +280,7 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         effects = new HashMap<Class<? extends Effect.IEffectType>, Array<Effect>>();
         effectBar = new EffectBar();
 //        effectBar.debug();
-        effectBar.debugAll();
+//        effectBar.debugAll();
     }
 
     public void init(){
@@ -327,8 +333,11 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
     protected void die(DamageSource source, boolean giveBounty){
         slot.clearObject();//NullPointer
         slot.hasChanged();
+        Empty e = slot.getEmptyObject();
+        e.addEffect(new DisableField.DisableFieldEffect(1).setOwner(e));
         slot = null;
         if(giveBounty) source.getOwnerPlayer().addShards(bounty);
+
     }
 
 
