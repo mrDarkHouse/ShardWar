@@ -17,7 +17,9 @@ public class Greed extends Spell {
         private int bounty;
 
         public P(int bounty) {
-            super("greed",TargetType.SINGLE, FieldTarget.FRIENDLY, Tower.class, Wall.class);
+            super("greed", new TargetData[]{
+                    new TargetData(TargetType.SINGLE, FieldTarget.FRIENDLY, Tower.class, Wall.class)
+            });
             this.bounty = bounty;
         }
 
@@ -43,8 +45,8 @@ public class Greed extends Spell {
     }
 
     @Override
-    public void use(ArrayList<GameObject> targets) {
-        for (GameObject g:targets){
+    public void use(ArrayList<ArrayList<GameObject>> targets) {
+        for (GameObject g:targets.get(0)){
 //            g.dmg(g.getHealth(), this);
             g.kill(this, false);
             getOwnerPlayer().addShards(bounty);

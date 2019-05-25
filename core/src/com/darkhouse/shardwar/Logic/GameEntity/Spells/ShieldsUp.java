@@ -18,7 +18,9 @@ public class ShieldsUp extends Spell {
         private int shieldAmount;
 
         public P(int duration, int shieldAmount) {
-            super("shieldup", NonTargetType.FRAME, FieldTarget.FRIENDLY, Wall.class);
+            super("shieldup", new TargetData[]{
+                    new TargetData(NonTargetType.FRAME, FieldTarget.FRIENDLY, Wall.class)
+            });
             this.duration = duration;
             this.shieldAmount = shieldAmount;
         }
@@ -91,8 +93,8 @@ public class ShieldsUp extends Spell {
     }
 
     @Override
-    public void use(ArrayList<GameObject> targets) {
-        for (GameObject g:targets){
+    public void use(ArrayList<ArrayList<GameObject>> targets) {
+        for (GameObject g:targets.get(0)){
             g.addEffect(new ShieldUpEffect(duration, shieldAmount).setOwner(((Wall) g)));
         }
     }

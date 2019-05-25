@@ -18,7 +18,9 @@ public class Weakness extends Spell{
         private int duration;
 
         public P(int dmgReduction, int duration) {
-            super("weakness", NonTargetType.ALL, FieldTarget.ENEMY, Tower.class);
+            super("weakness", new TargetData[]{
+                    new TargetData(NonTargetType.ALL, FieldTarget.ENEMY, Tower.class)
+            });
             this.dmgReduction = dmgReduction;
             this.duration = duration;
         }
@@ -67,8 +69,8 @@ public class Weakness extends Spell{
     }
 
     @Override
-    public void use(ArrayList<GameObject> targets) {
-        for (GameObject o:targets){
+    public void use(ArrayList<ArrayList<GameObject>> targets) {
+        for (GameObject o:targets.get(0)){
             o.addEffect(new WeakEffect(duration).setOwner((Tower) o));
         }
     }

@@ -20,7 +20,9 @@ public class PoisonSplash extends Spell {
         private int finalDmg;
 
         public P(int duration, int dmg, int finalDmg) {
-            super("poisonsplash", TargetType.CORNER, FieldTarget.ENEMY, Tower.class, Wall.class);
+            super("poisonsplash", new TargetData[]{
+                    new TargetData(TargetType.CORNER, FieldTarget.ENEMY, Tower.class, Wall.class)
+            });
             this.duration = duration;
             this.dmg = dmg;
             this.finalDmg = finalDmg;
@@ -85,8 +87,8 @@ public class PoisonSplash extends Spell {
     }
 
     @Override
-    public void use(ArrayList<GameObject> targets) {
-        for (GameObject g:targets){
+    public void use(ArrayList<ArrayList<GameObject>> targets) {
+        for (GameObject g:targets.get(0)){
             g.addEffect(new PoisonSplashEffect(duration, dmg, finalDmg).setOwner(g));
         }
     }

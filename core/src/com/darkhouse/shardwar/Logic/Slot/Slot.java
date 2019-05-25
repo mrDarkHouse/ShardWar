@@ -3,7 +3,6 @@ package com.darkhouse.shardwar.Logic.Slot;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -17,8 +16,6 @@ import com.darkhouse.shardwar.Logic.GameEntity.Empty;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.Ability;
-import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.MultiShot;
-import com.darkhouse.shardwar.Logic.GameEntity.Tower.AssaultTower;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
@@ -38,6 +35,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     private int column;
     private int row;
     public int selected[];// = -1;//TODO private
+    public int selectedRow[];
     private int numberSelected;
     public int maxTargets;
     public Image targeter[];
@@ -65,8 +63,21 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     }
 
     protected TextureRegion choose;
+    protected TextureRegion reserve;
     protected TextureRegion disableTexture;
     private boolean isChosen;
+    private boolean reserved;//for double use
+
+    public void reserve(){
+        reserved = true;
+    }
+    public void unReserve(){
+        reserved = false;
+    }
+
+    public boolean isReserved() {
+        return reserved;
+    }
 
     public void choose(){
         isChosen = true;
@@ -121,9 +132,18 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     public void select(int selected) {
         this.selected[numberSelected] = selected;
     }
+    public void selectRow(int selected){
+        this.selectedRow[numberSelected] = selected;
+    }
+
     public void flushSelect(){
         for (int i = 0; i < selected.length; i++) {
             selected[i] = -1;
+        }
+        if(selectedRow != null){
+            for (int i = 0; i < selectedRow.length; i++) {
+                selectedRow[i] = -1;
+            }
         }
     }
     public void endSelect(){
@@ -157,6 +177,10 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 
     public int[] getSelected() {
         return selected;
+    }
+
+    public int[] getSelectedRow() {
+        return selectedRow;
     }
 
     @Override
@@ -384,6 +408,9 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
         }
         if(isChosen){
             batch.draw(choose, getX(), getY(), getWidth(), getHeight());
+        }
+        if(reserved){
+            batch.draw(reserve, getX(), getY(), getWidth(), getHeight());
         }
         if(disable){
             batch.draw(disableTexture, getX(), getY(), getWidth(), getHeight());

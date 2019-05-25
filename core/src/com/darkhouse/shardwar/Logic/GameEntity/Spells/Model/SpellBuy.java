@@ -60,6 +60,7 @@ public class SpellBuy extends Dialog {
 //                        SpellBuy.this.setTouchable(Touchable.disabled);
                             SpellBuy.this.hide();
                             Container.this.spell = null;
+                            slotTexture = ShardWar.main.getAssetLoader().getSpellSlotBgTexture(1);
                             t.hide();
                             Container.this.clearListeners();
                         }

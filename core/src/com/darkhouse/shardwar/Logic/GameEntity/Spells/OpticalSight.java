@@ -2,7 +2,7 @@ package com.darkhouse.shardwar.Logic.GameEntity.Spells;
 
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.Effect;
-import com.darkhouse.shardwar.Logic.GameEntity.Tower.SniperTower;
+import com.darkhouse.shardwar.Logic.GameEntity.Tower.Sniper;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.ShardWar;
@@ -19,7 +19,9 @@ public class OpticalSight extends Spell {
         private int bonusDmg;
         
         public P(int duration, int bonusDmg) {
-            super("opticalsight", TargetType.SINGLE, FieldTarget.FRIENDLY, SniperTower.class);
+            super("opticalsight", new TargetData[]{
+                    new TargetData(TargetType.SINGLE, FieldTarget.FRIENDLY, Sniper.class)
+            });
             this.duration = duration;
             this.bonusDmg = bonusDmg;
         }
@@ -75,8 +77,8 @@ public class OpticalSight extends Spell {
     }
 
     @Override
-    public void use(ArrayList<GameObject> targets) {
-        for (GameObject g:targets){
+    public void use(ArrayList<ArrayList<GameObject>> targets) {
+        for (GameObject g:targets.get(0)){
             g.addEffect(new PowerBoostEffect(duration, bonusDmg).setOwner(((Tower) g)));
         }
     }

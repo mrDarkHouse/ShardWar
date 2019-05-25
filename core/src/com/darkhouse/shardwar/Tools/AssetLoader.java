@@ -37,17 +37,37 @@ public class AssetLoader extends AssetManager {
         load("shard.png", Texture.class);
         load("towerSlot.png", Texture.class);
         load("wallSlot.png", Texture.class);
-        load("towers/laser.png", Texture.class);
-        load("towers/assault.png", Texture.class);
-        load("towers/sniper.png", Texture.class);
+
         load("walls/brickWall.png", Texture.class);
         load("walls/energyWall.png", Texture.class);
         load("walls/spikeWall.png", Texture.class);
 
-        load("target/centerTarget.png", Texture.class);
-        load("target/leftTarget.png", Texture.class);
-        load("target/rightTarget.png", Texture.class);
-        load("target/endTarget.png", Texture.class);
+        load("towers/shotgun.png", Texture.class);
+        load("towers/assault.png", Texture.class);
+        load("towers/rocket.png", Texture.class);
+        load("towers/musket.png", Texture.class);
+        load("towers/machinegun.png", Texture.class);
+        load("towers/cannon.png", Texture.class);
+        load("towers/doublebarrel.png", Texture.class);
+        load("towers/sniper.png", Texture.class);
+        load("towers/doublerocket.png", Texture.class);
+
+        load("projectiles/shotgun.png", Texture.class);
+        load("projectiles/assault.png", Texture.class);
+        load("projectiles/rocket.png", Texture.class);
+        load("projectiles/musket.png", Texture.class);
+        load("projectiles/machinegun.png", Texture.class);
+        load("projectiles/cannon.png", Texture.class);
+        load("projectiles/doublebarrel.png", Texture.class);
+        load("projectiles/sniper.png", Texture.class);
+        load("projectiles/doublerocket.png", Texture.class);
+
+
+
+//        load("target/centerTarget.png", Texture.class);
+//        load("target/leftTarget.png", Texture.class);
+//        load("target/rightTarget.png", Texture.class);
+//        load("target/endTarget.png", Texture.class);
 
         load("target/targetCenter.png", Texture.class);
         load("target/targetLeft.png", Texture.class);
@@ -55,9 +75,15 @@ public class AssetLoader extends AssetManager {
         load("target/targetCenterInv.png", Texture.class);
         load("target/targetLeftInv.png", Texture.class);
         load("target/targetRightInv.png", Texture.class);
+        load("target/targetLeft2.png", Texture.class);
+        load("target/targetRight2.png", Texture.class);
+        load("target/targetLeftInv2.png", Texture.class);
+        load("target/targetRightInv2.png", Texture.class);
+//        load("target/targetCenterG.png", Texture.class);
+//        load("target/targetLeftG.png", Texture.class);
+//        load("target/targetRightG.png", Texture.class);
 
-        load("projectiles/sniper.png", Texture.class);
-        load("projectiles/assault.png", Texture.class);
+
 
         load("Ability/Spells/Background/tier1.png", Texture.class);
         load("Ability/Spells/Background/tier2.png", Texture.class);
@@ -91,6 +117,8 @@ public class AssetLoader extends AssetManager {
 
         load("towerSlotSelect.png", Texture.class);
         load("wallSlotSelect.png", Texture.class);
+        load("towerSlotReserve.png", Texture.class);
+        load("wallSlotReserve.png", Texture.class);
         load("towerSlotDisabled.png", Texture.class);
         load("wallSlotDisabled.png", Texture.class);
 
@@ -123,6 +151,15 @@ public class AssetLoader extends AssetManager {
         if(player == 1) return new TextureRegionDrawable(new TextureRegion(get("target/targetLeft.png", Texture.class)));
         else return new TextureRegionDrawable(new TextureRegion(get("target/targetLeftInv.png", Texture.class)));
     }
+    public Drawable getRightTarget2(int player){
+        if(player == 1) return new TextureRegionDrawable(new TextureRegion(get("target/targetRight2.png", Texture.class)));
+        else return new TextureRegionDrawable(new TextureRegion(get("target/targetRightInv2.png", Texture.class)));
+    }
+    public Drawable getLeftTarget2(int player){
+        if(player == 1) return new TextureRegionDrawable(new TextureRegion(get("target/targetLeft2.png", Texture.class)));
+        else return new TextureRegionDrawable(new TextureRegion(get("target/targetLeftInv2.png", Texture.class)));
+    }
+
 
     public void setFilters(){
         get("towerSlot.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -138,6 +175,10 @@ public class AssetLoader extends AssetManager {
         get("target/targetRightInv.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         get("target/targetLeft.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         get("target/targetLeftInv.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        get("target/targetRight2.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        get("target/targetRightInv2.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        get("target/targetLeft2.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        get("target/targetLeftInv2.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         get("towerSlot.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 

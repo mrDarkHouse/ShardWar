@@ -16,6 +16,7 @@ public class PlayerSlot extends Slot<Player.PlayerPrototype, Player> {
     @Override
     protected void init() {
         choose = new TextureRegion(ShardWar.main.getAssetLoader().get("towerSlotSelect.png", Texture.class));
+        reserve = new TextureRegion(ShardWar.main.getAssetLoader().get("towerSlotReserve.png", Texture.class));
         super.init();
     }
 

@@ -24,6 +24,7 @@ public class Projectile extends Image {
     protected Slot target;
     protected float speed;
     private int line;
+    private int row = -1;
 
 //    protected float dmgMultiplayer = 1.0f;
 //
@@ -40,7 +41,13 @@ public class Projectile extends Image {
     public Projectile(Slot<Tower.TowerPrototype, Tower> slot, Vector2 startLocation, Slot target, int line) {
         this(slot, startLocation, line);
         this.target = target;
+        move(0);//rotate to target
     }
+    public Projectile(Slot<Tower.TowerPrototype, Tower> slot, Vector2 startLocation, Slot target, int line, int row) {
+        this(slot, startLocation, target, line);
+        this.row = row;
+    }
+
 
     public Projectile(Slot<Tower.TowerPrototype, Tower> slot, Vector2 startLocation, int line){//for non target projectiles
         super(ShardWar.main.getAssetLoader().get(
@@ -60,14 +67,21 @@ public class Projectile extends Image {
         move(delta);
     }
 
-    private void checkIfTargetDie(){
+    private boolean checkIfTargetDie(){
         if(!target.isExist()){
-            target = ShardWar.fightScreen.searchTarget(slot, line);
-        }
+            if(row == -1) {
+                target = ShardWar.fightScreen.searchTarget(slot, line, row);
+                return false;
+            }else {
+                removeProjectile();
+                return true;
+            }
+        }else return false;
     }
 
     protected void move(float delta){
-        checkIfTargetDie();
+        if (delta > 0.02) System.out.println(delta);
+        if(checkIfTargetDie()) return;
         position.set(getX(), getY());
         targetV.set(target.getObject().getXShoot(line),
                 target.getObject().getYShoot(line));
@@ -85,8 +99,7 @@ public class Projectile extends Image {
 
             tower.attack(target);
 //            System.out.println("attaked " + target);
-            slot.getOwner().projectiles.removeValue(this, true);
-            remove();
+            removeProjectile();
 //            Map.projectiles.remove(this);
         }
         setRotation(dir.angle());
@@ -97,13 +110,18 @@ public class Projectile extends Image {
         setY(position.y);
     }
 
+    private void removeProjectile(){
+        slot.getOwner().projectiles.removeValue(this, true);
+        remove();
+    }
+
 
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
         setPosition(getX(), getY());
-        setSize(12, 8);//default texture size sets without it
+//        setSize(12, 8);//default texture size sets without it
         setRotation(getRotation());
 //        draw(batch, 1);
     }

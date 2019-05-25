@@ -19,6 +19,12 @@ public class MultiShot extends Ability<Tower>{
         for (int i = 0; i < shoots; i++) {
             owner.getSlot().selected[i] = -1;
         }
+        if(owner.isGlobal()){
+            owner.getSlot().selectedRow = new int[shoots];
+            for (int i = 0; i < shoots; i++) {
+                owner.getSlot().selectedRow[i] = -1;
+            }
+        }
         owner.getSlot().targeter = new Image[shoots];
         owner.getSlot().maxTargets = shoots;
         owner.setShootDelay(shotDelay);

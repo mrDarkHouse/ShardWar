@@ -18,16 +18,15 @@ public abstract class Spell implements DamageSource {
 //        Target, NonTarget;
 //    }
     private Player owner;
-    private ArrayList<Class<? extends GameObject>> affectedTypes;
 
-    public ArrayList<Class<? extends GameObject>> getAffectedTypes() {
-        return affectedTypes;
-    }
 
     @Override
     public Player getOwnerPlayer() {
         return owner;
     }
+
+
+
 
     public interface Type{
 
@@ -146,11 +145,35 @@ public abstract class Spell implements DamageSource {
         FRIENDLY, ENEMY, ALL //All not completed
     }
 
-    public static abstract class SpellPrototype{
-        private String name;
+    public static class TargetData{
         private Type spellType;
         private FieldTarget fieldTarget;
         private ArrayList<Class<? extends GameObject>> affectedTypes;
+
+        public Type getSpellType() {
+            return spellType;
+        }
+        public FieldTarget getFieldTarget() {
+            return fieldTarget;
+        }
+        public ArrayList<Class<? extends GameObject>> getAffectedTypes() {
+            return affectedTypes;
+        }
+
+        @SafeVarargs
+        public TargetData(Type spellType, FieldTarget fieldTarget, Class<? extends GameObject>... affectedTypes) {
+            this.spellType = spellType;
+            this.fieldTarget = fieldTarget;
+            this.affectedTypes = new ArrayList<>(Arrays.asList(affectedTypes));
+        }
+    }
+
+    public static abstract class SpellPrototype{
+        private String name;
+//        private Type spellType;
+//        private FieldTarget fieldTarget;
+//        private ArrayList<Class<? extends GameObject>> affectedTypes;
+        private TargetData[] targetData;
         private int tier;
 
         public int getTier() {
@@ -162,21 +185,25 @@ public abstract class Spell implements DamageSource {
         public String getName() {
             return name;
         }
-        public Type getSpellType() {
-            return spellType;
+        public TargetData[] getTargetData() {
+            return targetData;
         }
-        public FieldTarget getFieldTarget() {
-            return fieldTarget;
-        }
-        public ArrayList<Class<? extends GameObject>> getAffectedTypes() {
-            return affectedTypes;
-        }
+        //        public Type getSpellType() {
+//            return spellType;
+//        }
+//        public FieldTarget getFieldTarget() {
+//            return fieldTarget;
+//        }
+//        public ArrayList<Class<? extends GameObject>> getAffectedTypes() {
+//            return affectedTypes;
+//        }
 
-        public SpellPrototype(String name, Type spellType, FieldTarget fieldTarget, Class<? extends GameObject>... affectedTypes) {
+        public SpellPrototype(String name, TargetData[] targetData) {
             this.name = name;
-            this.spellType = spellType;
-            this.fieldTarget = fieldTarget;
-            this.affectedTypes = new ArrayList<Class<? extends GameObject>>(Arrays.asList(affectedTypes));
+            this.targetData = targetData;
+//            this.spellType = spellType;
+//            this.fieldTarget = fieldTarget;
+//            this.affectedTypes = new ArrayList<Class<? extends GameObject>>(Arrays.asList(affectedTypes));
         }
 
         public abstract String getTooltip();
@@ -185,15 +212,26 @@ public abstract class Spell implements DamageSource {
     }
 
 
-    public Type getSpellType() {
-        return spellType;
-    }
-    public FieldTarget getFieldTarget() {
-        return fieldTarget;
+
+
+//    protected Type spellType;
+//    protected FieldTarget fieldTarget;
+//    private ArrayList<Class<? extends GameObject>> affectedTypes;
+    private TargetData[] targetData;
+
+    public TargetData[] getTargetData() {
+        return targetData;
     }
 
-    protected Type spellType;
-    protected FieldTarget fieldTarget;
+    //    public Type getSpellType() {
+//        return spellType;
+//    }
+//    public FieldTarget getFieldTarget() {
+//        return fieldTarget;
+//    }
+//    public ArrayList<Class<? extends GameObject>> getAffectedTypes() {
+//        return affectedTypes;
+//    }
     protected SpellPrototype prototype;
 
     public SpellPrototype getPrototype() {
@@ -202,13 +240,16 @@ public abstract class Spell implements DamageSource {
 
     public Spell(Player owner, SpellPrototype prototype) {
         this.owner = owner;
-        this.spellType = prototype.spellType;
-        this.fieldTarget = prototype.fieldTarget;
-        this.affectedTypes = prototype.affectedTypes;
+        this.targetData = prototype.targetData;
+
+//        this.spellType = prototype.spellType;
+//        this.fieldTarget = prototype.fieldTarget;
+//        this.affectedTypes = prototype.affectedTypes;
+
         this.prototype = prototype;
     }
 
-    public abstract void use(ArrayList<GameObject> targets);
+    public abstract void use(ArrayList<ArrayList<GameObject>> targets);
 
 //    public void use(FightScreen.Field field){
 //        use(spellType.getTargets(field));

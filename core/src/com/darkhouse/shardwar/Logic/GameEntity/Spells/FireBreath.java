@@ -17,7 +17,9 @@ public class FireBreath extends Spell{
         private int dmg;
 
         public P(int dmg) {
-            super("firebreath", TargetType.HLINE, FieldTarget.ENEMY, Tower.class, Wall.class);
+            super("firebreath", new TargetData[]{
+                    new TargetData(TargetType.HLINE, FieldTarget.ENEMY, Tower.class, Wall.class)
+            });
             this.dmg = dmg;
         }
 
@@ -42,8 +44,8 @@ public class FireBreath extends Spell{
     }
 
     @Override
-    public void use(ArrayList<GameObject> targets) {
-        for (GameObject g: targets) {
+    public void use(ArrayList<ArrayList<GameObject>> targets) {
+        for (GameObject g: targets.get(0)) {
             g.dmg(dmg, this);
         }
     }

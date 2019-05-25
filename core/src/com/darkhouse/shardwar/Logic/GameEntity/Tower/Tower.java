@@ -104,7 +104,9 @@ public abstract class Tower extends GameObject {
         else this.dmg = 0;
     }
 
-    public void attack(DamageReceiver g){};
+    public void attack(DamageReceiver g) {
+        g.dmg(dmg, this);
+    }
 
     @Override
     public int receiveDamage(int damage, DamageSource source) {
@@ -132,16 +134,27 @@ public abstract class Tower extends GameObject {
     }
 
     @Override
-    protected void die(DamageSource source, boolean giveBounty) {
+    public void die(DamageSource source, boolean giveBounty, boolean disableSlotAfter) {
         slot.clear();
-        super.die(source, giveBounty);
+        super.die(source, giveBounty, disableSlotAfter);
     }
 
     private void shootProjectile(int i){
-        Slot dr = slot.getOwner().searchTarget(getSlot(), getSlot().getSelected()[i]);
+        Slot dr;
+        if(getSlot().getObject().isGlobal()) {
+            dr = slot.getOwner().searchTarget(getSlot(), getSlot().getSelected()[i], getSlot().getSelectedRow()[i]);
+        }else {
+            dr = slot.getOwner().searchTarget(getSlot(), getSlot().getSelected()[i], -1);
+        }
+        if(dr.getObject() == null) return;
         Vector2 startLocation = new Vector2(getSlot().getX() + getSlot().getParent().getX() + getSlot().getWidth() / 2,
                 getSlot().getY() + getSlot().getParent().getY() + getSlot().getHeight() / 2);
-        Projectile pr = new Projectile(getSlot(), startLocation, dr, getSlot().getSelected()[i]);
+        Projectile pr;
+        if(getSlot().getObject().isGlobal()) {
+            pr = new Projectile(getSlot(), startLocation, dr, getSlot().getSelected()[i], getSlot().getSelectedRow()[i]);
+        }else {
+            pr = new Projectile(getSlot(), startLocation, dr, getSlot().getSelected()[i]);
+        }
         slot.getStage().addActor(pr);
         slot.getOwner().projectiles.add(pr);
     }

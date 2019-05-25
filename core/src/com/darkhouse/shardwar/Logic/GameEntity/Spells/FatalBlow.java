@@ -15,7 +15,9 @@ public class FatalBlow extends Spell{
         private int dmg;
 
         public P(int dmg) {
-            super("fatalblow", NonTargetType.PLAYER, FieldTarget.ENEMY, Player.class);
+            super("fatalblow", new TargetData[]{
+                    new TargetData(NonTargetType.PLAYER, FieldTarget.ENEMY, Player.class)
+            });
             this.dmg = dmg;
         }
 
@@ -41,8 +43,8 @@ public class FatalBlow extends Spell{
     }
 
     @Override
-    public void use(ArrayList<GameObject> targets) {
-        for (GameObject g:targets){
+    public void use(ArrayList<ArrayList<GameObject>> targets) {
+        for (GameObject g:targets.get(0)){
             g.dmg(dmg, this);
         }
     }

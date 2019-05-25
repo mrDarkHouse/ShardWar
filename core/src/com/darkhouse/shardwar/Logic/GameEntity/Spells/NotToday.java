@@ -18,7 +18,9 @@ public class NotToday extends Spell {
         private int duration;
 
         public P(int duration) {
-            super("nottoday", TargetType.HLINE, FieldTarget.FRIENDLY, Tower.class, Wall.class, Player.class);
+            super("nottoday", new TargetData[]{
+                    new TargetData(TargetType.HLINE, FieldTarget.FRIENDLY, Tower.class, Wall.class, Player.class)
+            });
             this.duration = duration;
         }
 
@@ -72,8 +74,8 @@ public class NotToday extends Spell {
     }
 
     @Override
-    public void use(ArrayList<GameObject> targets) {
-        for (GameObject g:targets){
+    public void use(ArrayList<ArrayList<GameObject>> targets) {
+        for (GameObject g:targets.get(0)){
             g.addEffect(new NotTodayEffect(duration).setOwner(g));
         }
     }

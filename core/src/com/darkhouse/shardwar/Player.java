@@ -17,7 +17,7 @@ import java.util.Arrays;
 public class Player extends GameObject {
     private int shards;
     private float[] lineX;
-    private ProgressBar healthBar;
+//    private ProgressBar healthBar;
     private final int maxShards = 40;
     private boolean silenced;
 
@@ -101,7 +101,15 @@ public class Player extends GameObject {
     @Override
     public Vector2 getShootPosition(int line) {
 //        System.out.println(line);
+        try {
+            return new Vector2(lineX[line], slot.getY() + slot.getParent().getY() + slot.getHeight()/2);
+        }catch (ArrayIndexOutOfBoundsException e){
+            e.printStackTrace();
+            System.out.println(line);
+            System.out.println(Arrays.toString(lineX));
+        }
         return new Vector2(lineX[line], slot.getY() + slot.getParent().getY() + slot.getHeight()/2);
+
         //TODO java.lang.ArrayIndexOutOfBoundsException: -1
     }
 

@@ -33,23 +33,27 @@ public class SpellTooltip extends AbstractTooltip {
         AssetLoader a = ShardWar.main.getAssetLoader();
         getTitleLabel().setText(a.getWord(spell.getName()));
         defaults().align(Align.left);
-        String st = FontLoader.colorString(a.getWord("targetType") + ": ", 4);
-        Label spellType = new Label(st + a.getWord(spell.getSpellType().toString().toLowerCase()),
-                ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
-        spellType.getStyle().font.getData().markupEnabled = true;
-        String s = "";
-        for (int i = 0; i < spell.getAffectedTypes().size(); i++) {
-            s += a.getWord(spell.getAffectedTypes().get(i).getSimpleName().toLowerCase());
-            if(i != spell.getAffectedTypes().size() - 1) s += ", ";
+        for (int i = 0; i < spell.getTargetData().length; i++) {
+            String st = FontLoader.colorString(a.getWord("targetType") + ": ", 4);
+            Label spellType = new Label(st + a.getWord(spell.getTargetData()[i].getSpellType().toString().toLowerCase()),
+                    ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
+            spellType.getStyle().font.getData().markupEnabled = true;
+            String s = "";
+            for (int j = 0; j < spell.getTargetData()[i].getAffectedTypes().size(); j++) {
+                s += a.getWord(spell.getTargetData()[i].getAffectedTypes().get(j).getSimpleName().toLowerCase());
+                if(j != spell.getTargetData()[i].getAffectedTypes().size() - 1) s += ", ";
+            }
+            String at = FontLoader.colorString(a.getWord("affectedUnits") +":", 6);
+            Label affectedTypes = new Label(at + s,
+                    ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
+            affectedTypes.getStyle().font.getData().markupEnabled = true;
+
+            add(spellType).row();
+            add(affectedTypes).padBottom(5).row();
         }
-        String at = FontLoader.colorString(a.getWord("affectedUnits") +":", 6);
-        Label affectedTypes = new Label(at + s,
-                ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
-        affectedTypes.getStyle().font.getData().markupEnabled = true;
         Label spellTooltip = new Label(spell.getTooltip(),
                 ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
-        add(spellType).row();
-        add(affectedTypes).padBottom(5).row();
+
 //                add(new Actor()).row();
         add(spellTooltip).row();
         pack();
@@ -59,7 +63,7 @@ public class SpellTooltip extends AbstractTooltip {
     @Override
     public void show() {
         super.show();
-        if(spell.getSpellType() instanceof Spell.NonTargetType){
+        if(spell.getTargetData()[0].getSpellType() instanceof Spell.NonTargetType){
             if(owner == ShardWar.fightScreen.getCurrentPlayerObject()) showTargets();
         }
     }
@@ -67,21 +71,21 @@ public class SpellTooltip extends AbstractTooltip {
     @Override
     public void hide() {
         super.hide();
-        if(spell.getSpellType() instanceof Spell.NonTargetType){
+        if(spell.getTargetData()[0].getSpellType() instanceof Spell.NonTargetType){
             if(owner == ShardWar.fightScreen.getCurrentPlayerObject()) clearTargets();
         }
     }
     protected void showTargets(){
         ArrayList<Slot> targets = new ArrayList<Slot>();
-        Spell.NonTargetType t = (Spell.NonTargetType) spell.getSpellType();
-        if(spell.getFieldTarget() == Spell.FieldTarget.ENEMY) {
+        Spell.NonTargetType t = (Spell.NonTargetType) spell.getTargetData()[0].getSpellType();
+        if(spell.getTargetData()[0].getFieldTarget() == Spell.FieldTarget.ENEMY) {
             targets.addAll(t.getTargets(ShardWar.fightScreen.getOppositeField()));
         }
-        if(spell.getFieldTarget() == Spell.FieldTarget.FRIENDLY) {
+        if(spell.getTargetData()[0].getFieldTarget() == Spell.FieldTarget.FRIENDLY) {
             targets.addAll(t.getTargets(ShardWar.fightScreen.getCurrentField()));
         }
         for (Slot s:targets){
-            SpellPanel.chooseCorrectTargets(s, spell.getAffectedTypes());
+            SpellPanel.chooseCorrectTargets(s, spell.getTargetData()[0].getAffectedTypes());
         }
     }
 

@@ -18,6 +18,7 @@ public class TowerSlot extends Slot<Tower.TowerPrototype, Tower> {
     protected void init(){
         tooltip = new BuyWindow.TowerWindow(this);
         choose = new TextureRegion(ShardWar.main.getAssetLoader().get("towerSlotSelect.png", Texture.class));
+        reserve = new TextureRegion(ShardWar.main.getAssetLoader().get("towerSlotReserve.png", Texture.class));
         disableTexture = new TextureRegion(ShardWar.main.getAssetLoader().get("towerSlotDisabled.png", Texture.class));
         super.init();
     }

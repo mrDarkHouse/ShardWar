@@ -17,7 +17,9 @@ public class Disarm extends Spell {
         private int duration;
 
         public P(int duration) {
-            super("disarm", TargetType.SINGLE, FieldTarget.ENEMY, Tower.class);
+            super("disarm", new TargetData[]{
+                    new TargetData(TargetType.SINGLE, FieldTarget.ENEMY, Tower.class)
+            });
             this.duration = duration;
         }
 
@@ -59,8 +61,8 @@ public class Disarm extends Spell {
     }
 
     @Override
-    public void use(ArrayList<GameObject> targets) {
-        for (GameObject o:targets){
+    public void use(ArrayList<ArrayList<GameObject>> targets) {
+        for (GameObject o:targets.get(0)){
             o.addEffect(new DisarmEffect(duration).setOwner(((Tower) o)));//TODO remove cast
         }
     }

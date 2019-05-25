@@ -307,13 +307,13 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
 
     public void kill(DamageSource source, boolean bounty){
         health -= getHealth();
-        die(source, bounty);
+        die(source, bounty, true);
     }
 
     public void dmg(int dmg, DamageSource source){
         health -= receiveDamage(calculateGetDmg(dmg), source);
 //        System.out.println("attacked " + health);
-        if(health <= 0) die(source, true);
+        if(health <= 0) die(source, true, true);
         else slot.hasChanged();
 //        ShardWar.fightScreen.hasChanged();
     }
@@ -330,11 +330,11 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
     public abstract int receiveDamage(int damage, DamageSource source);
     public abstract void physic(float delta);
 
-    protected void die(DamageSource source, boolean giveBounty){
+    public void die(DamageSource source, boolean giveBounty, boolean disableSlotAfter){
         slot.clearObject();//NullPointer
         slot.hasChanged();
         Empty e = slot.getEmptyObject();
-        e.addEffect(new DisableField.DisableFieldEffect(1).setOwner(e));
+        if (disableSlotAfter) e.addEffect(new DisableField.DisableFieldEffect(1).setOwner(e));
         slot = null;
         if(giveBounty) source.getOwnerPlayer().addShards(bounty);
 

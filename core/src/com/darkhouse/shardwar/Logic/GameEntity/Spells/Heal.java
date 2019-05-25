@@ -17,7 +17,9 @@ public class Heal extends Spell{
         private int healAmount;
 
         public P(int healAmount) {
-            super("heal", NonTargetType.PLUS, FieldTarget.FRIENDLY, Tower.class, Wall.class);
+            super("heal", new TargetData[]{
+                    new TargetData(NonTargetType.PLUS, FieldTarget.FRIENDLY, Tower.class, Wall.class)
+            });
             this.healAmount = healAmount;
         }
 
@@ -43,8 +45,8 @@ public class Heal extends Spell{
     }
 
     @Override
-    public void use(ArrayList<GameObject> targets) {
-        for (GameObject g:targets){
+    public void use(ArrayList<ArrayList<GameObject>> targets) {
+        for (GameObject g:targets.get(0)){
             g.heal(healAmount);
         }
     }

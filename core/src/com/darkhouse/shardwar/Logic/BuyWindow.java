@@ -7,10 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
-import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.MultiShot;
-import com.darkhouse.shardwar.Logic.GameEntity.Tower.AssaultTower;
-import com.darkhouse.shardwar.Logic.GameEntity.Tower.SniperTower;
-import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
+import com.darkhouse.shardwar.Logic.GameEntity.Tower.*;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.BrickWall;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.EnergyWall;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.SpikeWall;
@@ -59,8 +56,9 @@ public abstract class BuyWindow<T extends GameObject.ObjectPrototype, O extends 
         @Override
         protected Tower.TowerPrototype[] getItems() {
             return new Tower.TowerPrototype[]{
-                    new SniperTower.P(),
-                    new AssaultTower.P()};
+                    new Shotgun.P(),
+                    new Assault.P(),
+                    new Rocket.P()};
         }
     }
     public static class WallWindow extends BuyWindow{

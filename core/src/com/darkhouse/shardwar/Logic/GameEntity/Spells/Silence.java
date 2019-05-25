@@ -16,7 +16,9 @@ public class Silence extends Spell {
         private int duration;
 
         public P(int duration) {
-            super("silence", NonTargetType.PLAYER, FieldTarget.ENEMY, Player.class);
+            super("silence", new TargetData[]{
+                    new TargetData(NonTargetType.PLAYER, FieldTarget.ENEMY, Player.class)
+            });
             this.duration = duration;
         }
 
@@ -59,8 +61,8 @@ public class Silence extends Spell {
     }
 
     @Override
-    public void use(ArrayList<GameObject> targets) {
-        for (GameObject g:targets){
+    public void use(ArrayList<ArrayList<GameObject>> targets) {
+        for (GameObject g:targets.get(0)){
             Player p = ((Player) g);
             p.addEffect(new SilenceEffect(duration).setOwner(p));
         }

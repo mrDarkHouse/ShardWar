@@ -19,6 +19,11 @@ public class WallSlot extends Slot<Wall.WallPrototype, Wall> {
         TextureRegion r = new TextureRegion(ShardWar.main.getAssetLoader().get("wallSlotSelect.png", Texture.class));
         if(!player)r.flip(false, true);
         choose = r;
+
+        TextureRegion m = new TextureRegion(ShardWar.main.getAssetLoader().get("wallSlotReserve.png", Texture.class));
+        if(!player)m.flip(false, true);
+        reserve = m;
+
         TextureRegion d = new TextureRegion(ShardWar.main.getAssetLoader().get("wallSlotDisabled.png", Texture.class));
         if(!player)d.flip(false, true);
         disableTexture = d;
