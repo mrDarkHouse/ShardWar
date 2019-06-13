@@ -44,12 +44,14 @@ public class PowerfulAmmo extends Spell {
 
         @Override
         public void apply() {
-            owner.setDmg(owner.getDmg() + bonusDmg);
+//            owner.setDmg(owner.getDmg() + bonusDmg);
+            owner.addBonusDmg(bonusDmg);
         }
 
         @Override
         public void dispell() {
-            owner.setDmg(owner.getDmg() - bonusDmg);
+//            owner.setDmg(owner.getDmg() - bonusDmg);
+            owner.addBonusDmg(-bonusDmg);
         }
 
     }

@@ -3,6 +3,7 @@ package com.darkhouse.shardwar.Logic.Slot;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.darkhouse.shardwar.Logic.BuyWindow;
+import com.darkhouse.shardwar.Logic.GameEntity.Empty;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.Wall;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
@@ -14,8 +15,8 @@ public class WallSlot extends Slot<Wall.WallPrototype, Wall> {
                 player, true, 0, owner, user, line, row);
     }
 
-    protected void init(){
-        tooltip = new BuyWindow.WallWindow(this);
+    public void init(){
+        buyWindow = new BuyWindow.WallWindow(this);
         TextureRegion r = new TextureRegion(ShardWar.main.getAssetLoader().get("wallSlotSelect.png", Texture.class));
         if(!player)r.flip(false, true);
         choose = r;
@@ -27,6 +28,7 @@ public class WallSlot extends Slot<Wall.WallPrototype, Wall> {
         TextureRegion d = new TextureRegion(ShardWar.main.getAssetLoader().get("wallSlotDisabled.png", Texture.class));
         if(!player)d.flip(false, true);
         disableTexture = d;
+
         super.init();
     }
 }

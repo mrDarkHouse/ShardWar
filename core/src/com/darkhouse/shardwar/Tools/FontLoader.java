@@ -197,6 +197,9 @@ public class FontLoader {
         return (colorCode(other) + s.substring(0, index)  + colorCode(first) +
                 s.substring(index, index + 1) + colorCode(other) +  s.substring(index + 1));
     }
+    public static String getOneColorButtonString(String s, int color){
+        return colorString(s.substring(0, 1), color) + s.substring(1);
+    }
 
 //    public static BitmapFont generateMenuFont(int size, Color color){
 //        generator = new FreeTypeFontGenerator(Gdx.files.internal("Fonts/Iscoola.ttf"));

@@ -9,6 +9,9 @@ import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.Effect;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.Ability;
 import com.darkhouse.shardwar.Logic.Projectile;
 import com.darkhouse.shardwar.Logic.Slot.Slot;
+import com.darkhouse.shardwar.ShardWar;
+import com.darkhouse.shardwar.Tools.AssetLoader;
+import com.darkhouse.shardwar.Tools.FontLoader;
 
 import java.util.Arrays;
 
@@ -65,6 +68,30 @@ public abstract class Tower extends GameObject {
     protected int bonusDmg;
     private boolean canShoot;
 
+    public void addBonusDmg(int value){
+        bonusDmg += value;
+    }
+
+    @Override
+    public String getTooltip() {
+        AssetLoader l = ShardWar.main.getAssetLoader();
+        String s = "";
+
+        s += l.getWord("health") + ": " + health + "/" + maxHealth + System.getProperty("line.separator") +
+                l.getWord("dmg") + ": ";
+        if(slot.selected.length > 1 && bonusDmg != 0) s += "(";
+        s += dmg;
+        if(bonusDmg > 0) s += "+" + FontLoader.colorString(String.valueOf(bonusDmg),0);
+        if(bonusDmg < 0) s += FontLoader.colorString(String.valueOf(bonusDmg),4);
+        if(slot.selected.length > 1 && bonusDmg != 0) s += ")";
+
+        if(slot.selected.length > 1) s += "x" + slot.selected.length;
+
+        String t = getEffectTooltip();
+        if(t.length() > 0) s += System.getProperty("line.separator") + t;
+
+        return s;
+    }
 
     private boolean disarm;
 
@@ -98,7 +125,8 @@ public abstract class Tower extends GameObject {
     }
 
     public int getDmg() {
-        return dmg;
+        if(dmg + bonusDmg >= 0) return dmg + bonusDmg;
+        else return 0;
     }
 
     public void setDmg(int dmg) {
@@ -107,16 +135,16 @@ public abstract class Tower extends GameObject {
     }
 
     public void attack(GameObject g) {
-        int realDmg = dmg;
+        int realDmg = getDmg();
         if (effects.containsKey(Effect.IPreAttack.class)) {
             for (Effect e : effects.get(Effect.IPreAttack.class)) {
                 realDmg = ((Effect.IPreAttack) e).preAttack(g, realDmg);
             }
         }
-        g.dmg(dmg, this);
+        g.dmg(realDmg, this);
         if (effects.containsKey(Effect.IAfterAttack.class)) {
             for (Effect e : effects.get(Effect.IAfterAttack.class)) {
-                ((Effect.IAfterAttack) e).afterAttack(g, dmg);
+                ((Effect.IAfterAttack) e).afterAttack(g, realDmg);
             }
         }
     }

@@ -49,7 +49,7 @@
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 		default: { font: default-font, fontColor: white },
-		description: { background: default-rect, font: description-font, fontColor: white},
+		description: { font: description-font, fontColor: white},
 		spell-tooltip: { font: spell-font, fontColor: white }
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {

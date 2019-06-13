@@ -241,9 +241,9 @@ public class SpellPanel extends Table {
 //                    }
 //                }
             });
-//            tooltip = new SpellTooltip();
-//            getStage().addActor(tooltip);
-//            addListener(new TooltipListener(tooltip, true));
+//            buyWindow = new SpellTooltip();
+//            getStage().addActor(buyWindow);
+//            addListener(new TooltipListener(buyWindow, true));
         }
 
 

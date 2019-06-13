@@ -1,11 +1,18 @@
 package com.darkhouse.shardwar.Logic.GameEntity;
 
 import com.badlogic.gdx.math.Vector2;
+import com.darkhouse.shardwar.ShardWar;
 
 public class Empty extends GameObject{
 
     public Empty() {
         super();
+        name = ShardWar.main.getAssetLoader().getWord("empty");
+    }
+
+    @Override
+    public String getTooltip() {
+        return getEffectTooltip();
     }
 
     @Override

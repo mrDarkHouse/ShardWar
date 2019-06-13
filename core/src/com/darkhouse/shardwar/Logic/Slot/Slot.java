@@ -18,6 +18,8 @@ import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.Ability;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
+import com.darkhouse.shardwar.Model.Tooltip.GameObjectTooltip;
+import com.darkhouse.shardwar.Model.Tooltip.TooltipListener;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
 import com.darkhouse.shardwar.ShardWar;
@@ -30,7 +32,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     private Player user;
     protected O object;
     protected Empty emptyObject;
-    protected BuyWindow tooltip;
+    protected BuyWindow buyWindow;
     private FightScreen owner;
     private ProgressBar hpBar;
     private int column;
@@ -136,8 +138,15 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 //    }
     public void clearObject(){
         this.object = null;
+//        tooltip = null;
 //        this.object = new Empty();
     }
+//    protected void initEmpty(){
+//        Empty e = new Empty();
+//        setEmptyObject(e);
+//        e.setSlot(this);
+//        e.init();
+//    }
 
     public void select(int selected) {
         this.selected[numberSelected] = selected;
@@ -269,7 +278,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
                         owner.hideTooltips();
                         if(disable) return true;
                         if (empty()) {
-                            tooltip.show();
+                            buyWindow.show();
                         }else {
                             if(owner.getRound() != 1) {
                                 selectTarget();
@@ -290,17 +299,23 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
         }
     }
 
-    public void initTooltip(){
-        tooltip.setPosition(getX() + getParent().getX() + 35, getY() + getParent().getY() + 35);
+    public void initTooltips(){
+        initSlotTooltip();
+        initBuyWindowTooltip();
+    }
+
+    public void initBuyWindowTooltip(){
+        initSlotTooltip();
+        buyWindow.setPosition(getX() + getParent().getX() + 35, getY() + getParent().getY() + 35);
 //        AlphaAction a = new AlphaAction();
 //        a.setAlpha(0.0f);
-//        tooltip.addAction(a);
-        tooltip.setVisible(false);
-        tooltip.init(getStage());
-        //getStage().addActor(tooltip);
+//        buyWindow.addAction(a);
+        buyWindow.setVisible(false);
+        buyWindow.init(getStage());
+        //getStage().addActor(buyWindow);
     }
     public void hideTooltip(){
-        tooltip.hide();
+        buyWindow.hide();
     }
 
     public void setObject(O object) {
@@ -319,7 +334,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
             object.setOwner(owner.getCurrentPlayerObject());
             object.init();
             fadeOut();
-            tooltip.hide();
+            buyWindow.hide();
 
             initHpBar();
 
@@ -330,6 +345,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
                 a.setOwner(object);
                 a.build();
             }
+            updateTooltip();
 
 //            if(prototype.haveAbility(MultiShot.class)){
 //                MultiShot a = prototype.getAbility(MultiShot.class);
@@ -360,6 +376,18 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
         }
     }
 
+    private GameObjectTooltip tooltip;
+
+    private void initSlotTooltip(){
+        tooltip = new GameObjectTooltip(this);
+        TooltipListener tl = new TooltipListener(tooltip, true);
+        addListener(tl);
+        getStage().addActor(tooltip);
+    }
+    public void updateTooltip(){
+        tooltip.hasChanged();
+    }
+
     private void initHpBar(){
         int height = 8;
         hpBar = new ProgressBar(0, object.getMaxHealth(), 0.2f, false,
@@ -380,6 +408,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     public void hasChanged(){
         updateHpBar();
         updateListeners();
+        updateTooltip();
     }
     private void updateListeners(){
         if(empty()) fadeIn();

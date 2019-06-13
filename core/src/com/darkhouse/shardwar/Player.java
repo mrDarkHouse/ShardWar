@@ -9,9 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
 import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.Effect;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellPanel;
 import com.darkhouse.shardwar.Screens.EndGameScreen;
+import com.darkhouse.shardwar.Tools.AssetLoader;
 
 import java.util.Arrays;
 
@@ -97,6 +99,17 @@ public class Player extends GameObject {
 
     public void initShards(){
         addShards(10);
+    }
+
+
+    @Override
+    public String getTooltip() {
+        AssetLoader l = ShardWar.main.getAssetLoader();
+        String s = "";
+
+        s += getEffectTooltip();
+
+        return s;
     }
 
     @Override

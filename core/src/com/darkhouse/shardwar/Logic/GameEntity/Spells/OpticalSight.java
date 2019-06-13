@@ -20,7 +20,7 @@ public class OpticalSight extends Spell {
         
         public P(int duration, int bonusDmg) {
             super("opticalsight", new TargetData[]{
-                    new TargetData(TargetType.SINGLE, FieldTarget.FRIENDLY, Sniper.class)
+                    new TargetData(TargetType.SINGLE, FieldTarget.FRIENDLY, Tower.class)
             });
             this.duration = duration;
             this.bonusDmg = bonusDmg;
@@ -53,12 +53,14 @@ public class OpticalSight extends Spell {
 
         @Override
         public void apply() {
-            owner.setDmg(owner.getDmg() + bonusDmg);
+//            owner.setDmg(owner.getDmg() + bonusDmg);
+            owner.addBonusDmg(bonusDmg);
         }
 
         @Override
         public void dispell() {
-            owner.setDmg(owner.getDmg() - bonusDmg);
+//            owner.setDmg(owner.getDmg() - bonusDmg);
+            owner.addBonusDmg(-bonusDmg);
         }
 
     }

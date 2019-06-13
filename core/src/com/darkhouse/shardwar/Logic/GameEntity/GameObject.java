@@ -13,6 +13,8 @@ import com.darkhouse.shardwar.Logic.GameEntity.Spells.Vulnerability;
 import com.darkhouse.shardwar.Logic.Slot.Slot;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.ShardWar;
+import com.darkhouse.shardwar.Tools.AssetLoader;
+import com.darkhouse.shardwar.Tools.FontLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -160,6 +162,7 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         }else {
             getEffect(e.getClass()).updateDuration();
         }
+        slot.updateTooltip();
     }
     public boolean haveEffect(Class e){
         return (getEffect(e) != null);
@@ -198,6 +201,7 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
             e.nextTurn();
             effectBar.updateEffectIcon();
         }
+        slot.updateTooltip();
     }
 
     public void dispell(boolean positive){
@@ -239,6 +243,22 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
 //    abstract float getWidth();
 //    abstract float getHeight();
 
+
+    public abstract String getTooltip();
+
+    public String getEffectTooltip(){
+        AssetLoader l = ShardWar.main.getAssetLoader();
+        String s = "";
+        Array<Effect> a = getEffects();
+        for (int i = 0; i < a.size; i++) {
+            Effect e = a.get(i);
+            if(i != 0) s += System.getProperty("line.separator");
+            if(e.isPositive()) s += FontLoader.getOneColorButtonString(l.getWord(e.getName()), 0);
+            else               s += FontLoader.getOneColorButtonString(l.getWord(e.getName()), 4);
+            s += " (" + e.getCurrentTime() + "/" + e.getDuration() + ")";
+        }
+        return s;
+    }
     public Texture getTexture() {
         return texture;
     }

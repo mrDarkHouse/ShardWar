@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -19,7 +18,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.darkhouse.shardwar.Logic.*;
 import com.darkhouse.shardwar.Logic.GameEntity.Empty;
-import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.*;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellBuy;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellPanel;
@@ -774,14 +772,14 @@ public class FightScreen extends AbstractScreen {
                         new Disarm.P(2),
                         new Heal.P(5),
                         new Greed.P(6),
-                        new Weakness.P(2, 1),
-                        new ClawSmash.P(4, 4, 4)
+                        new Weakness.P(2, 1)
+//                        new ClawSmash.P(4, 4, 4)
                 )
         ));
         allSpells.put(2, new ArrayList<>(
                 Arrays.asList(
                         new Vulnerability.P(1, 2),
-                        new Silence.P(2),
+                        new Silence.P(3),
                         new ShieldsUp.P(2, 8),
                         new LifeDrain.P(6),
                         new DisableField.P(3),
@@ -1041,7 +1039,7 @@ public class FightScreen extends AbstractScreen {
     }
     private void initTooltips(Table t){
         for (Cell c:t.getCells()){
-            if(c.getActor() instanceof Slot) ((Slot) c.getActor()).initTooltip();
+            if(c.getActor() instanceof Slot) ((Slot) c.getActor()).initTooltips();
         }
     }
     public void hideTooltips(){
@@ -1095,13 +1093,13 @@ public class FightScreen extends AbstractScreen {
 
         stage.addActor(fields[0]);
         fields[0].playerSlot.getObject().init();
-        initTooltips(fields[0]);
         for(Slot s:fields[0].getMainObjects()){
             Empty e = new Empty();
             s.setEmptyObject(e);
             e.setSlot(s);
             e.init();
         }
+        initTooltips(fields[0]);//after create empty object
     }
     private void initEnemyFiled(){
         fields[1] = generateField(false);
@@ -1110,13 +1108,13 @@ public class FightScreen extends AbstractScreen {
 
         stage.addActor(fields[1]);
         fields[1].playerSlot.getObject().init();
-        initTooltips(fields[1]);
         for(Slot s:fields[1].getMainObjects()){
             Empty e = new Empty();
             s.setEmptyObject(e);
             e.setSlot(s);
             e.init();
         }
+        initTooltips(fields[1]);//after create empty object
     }
 
     private void setPlayerShootPositions(){
@@ -1138,13 +1136,13 @@ public class FightScreen extends AbstractScreen {
 //        PlayerSlot s1 = new PlayerSlot();
         players[0] = new Player(new Player.PlayerPrototype(
                 ShardWar.main.getAssetLoader().get("player1Logo.png", Texture.class),
-                "Player 1"));
+                "Джавист"));
 //        players[0].setPosition(Gdx.graphics.getWidth()/2f, 0);
 //        stage.addActor(players[0]);
         players[0].initShards();
         players[1] = new Player(new Player.PlayerPrototype(
                 ShardWar.main.getAssetLoader().get("player2Logo.png", Texture.class),
-                "Player 2"));
+                "Даныло"));
 //        players[1].setPosition(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight() - players[1].getHeight());
 //        stage.addActor(players[1]);
         players[1].initShards();

@@ -43,35 +43,41 @@ public class Weakness extends Spell{
 
     private class WeakEffect extends Effect<Tower>{
 
-        private int startDmg;
+//        private int startDmg;
+        private int dmgReduction;
 
-        public WeakEffect(int duration) {
+        public WeakEffect(int duration, int dmgReduction) {
             super("weakness", false, duration, INone.class);
+            this.dmgReduction = dmgReduction;
         }
 
         @Override
         public void apply() {
-            startDmg = owner.getDmg();
-            owner.setDmg(startDmg/2);
+//            startDmg = owner.getDmg();
+//            owner.setDmg(startDmg/2);
+            owner.addBonusDmg(-dmgReduction);
         }
 
         @Override
         public void dispell() {
-            owner.setDmg(startDmg);
+//            owner.setDmg(startDmg);
+            owner.addBonusDmg(dmgReduction);
         }
     }
 
     private int duration;
+    private int dmgReduction;
 
     public Weakness(Player owner, P prototype) {
         super(owner, prototype);
-        duration = prototype.duration;
+        this.duration = prototype.duration;
+        this.dmgReduction = prototype.dmgReduction;
     }
 
     @Override
     public void use(ArrayList<ArrayList<GameObject>> targets) {
         for (GameObject o:targets.get(0)){
-            o.addEffect(new WeakEffect(duration).setOwner((Tower) o));
+            o.addEffect(new WeakEffect(duration, dmgReduction).setOwner((Tower) o));
         }
     }
 }
