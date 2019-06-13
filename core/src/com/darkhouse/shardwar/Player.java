@@ -11,6 +11,7 @@ import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellPanel;
+import com.darkhouse.shardwar.Screens.EndGameScreen;
 
 import java.util.Arrays;
 
@@ -102,13 +103,15 @@ public class Player extends GameObject {
     public Vector2 getShootPosition(int line) {
 //        System.out.println(line);
         try {
+//            System.out.println(Arrays.toString(lineX) + " (" + line + ")");
             return new Vector2(lineX[line], slot.getY() + slot.getParent().getY() + slot.getHeight()/2);
         }catch (ArrayIndexOutOfBoundsException e){
             e.printStackTrace();
             System.out.println(line);
-            System.out.println(Arrays.toString(lineX));
+//            System.out.println(Arrays.toString(lineX));
+            return new Vector2(lineX[0], slot.getY() + slot.getParent().getY() + slot.getHeight()/2);
         }
-        return new Vector2(lineX[line], slot.getY() + slot.getParent().getY() + slot.getHeight()/2);
+
 
         //TODO java.lang.ArrayIndexOutOfBoundsException: -1
     }
@@ -131,12 +134,13 @@ public class Player extends GameObject {
     }
 
     @Override
-    public void dmg(int dmg, DamageSource source) {
-        if(!deleteShards(dmg)){
+    public int dmg(int dmg, DamageSource source) {
+        if(dmg >= getShards()){
             shards = 0;
-            updateBar();
             loose();
-        }else updateBar();
+        }else deleteShards(dmg);
+        updateBar();
+        return dmg;
     }
 
     @Override
@@ -155,8 +159,8 @@ public class Player extends GameObject {
 
 
     private void loose(){
-        System.out.println("Loose");
-        Gdx.app.exit();
+        ShardWar.main.setScreen(new EndGameScreen(
+                ShardWar.fightScreen.getEnemyPlayer(ShardWar.fightScreen.getPlayerIndex(this))));
     }
 
 //    @Override

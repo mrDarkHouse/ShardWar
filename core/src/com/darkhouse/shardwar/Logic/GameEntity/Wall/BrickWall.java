@@ -11,7 +11,7 @@ public class BrickWall extends Wall {
 
         public P() {
             super(ShardWar.main.getAssetLoader().get("walls/brickWall.png", Texture.class),
-                    "Brick Wall", 12, 3, 2);
+                    "Brick Wall", 15, 3, 2);
         }
 
         @Override

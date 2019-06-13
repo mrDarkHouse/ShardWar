@@ -29,9 +29,9 @@ public class Weakness extends Spell{
         public String getTooltip() {
             AssetLoader l = ShardWar.main.getAssetLoader();
             return l.getWord("weaknessTooltip1") + " " +
-                    FontLoader.colorString(String.valueOf(dmgReduction), 2)
+                    FontLoader.colorString(String.valueOf(dmgReduction), 6)
                     + " " + l.getWord("weaknessTooltip2") + " " +
-                    FontLoader.colorString(String.valueOf(duration), 3) +
+                    FontLoader.colorString(String.valueOf(duration), 5) +
                     " " + l.getWord("weaknessTooltip3");
         }
 

@@ -13,7 +13,7 @@ public class SpikeWall extends Wall {
         private int spikeDmg;
         public P(int spikeDmg) {
             super(ShardWar.main.getAssetLoader().get("walls/spikeWall.png", Texture.class),
-                    "Spike Wall", 20, 7, 4);
+                    "Spike Wall", 14, 7, 4);
             this.spikeDmg = spikeDmg;
         }
 

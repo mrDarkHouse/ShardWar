@@ -25,6 +25,7 @@ public class Projectile extends Image {
     protected float speed;
     private int line;
     private int row = -1;
+    private int dmg = -1;
 
 //    protected float dmgMultiplayer = 1.0f;
 //
@@ -37,6 +38,16 @@ public class Projectile extends Image {
     protected Vector2 movement = new Vector2();
     protected Vector2 targetV = new Vector2();
     protected Vector2 dir = new Vector2();
+
+
+    //TODO remove this shit in constructors
+
+    public Projectile(Slot<Tower.TowerPrototype, Tower> slot, Vector2 startLocation, Slot target, int line,
+                      int row, int dmg){//separate from tower
+        this(slot, startLocation, target, line, row);
+        this.dmg = dmg;
+    }
+
 
     public Projectile(Slot<Tower.TowerPrototype, Tower> slot, Vector2 startLocation, Slot target, int line) {
         this(slot, startLocation, line);
@@ -69,7 +80,7 @@ public class Projectile extends Image {
 
     private boolean checkIfTargetDie(){
         if(!target.isExist()){
-            if(row == -1) {
+            if(row == -1) {//global
                 target = ShardWar.fightScreen.searchTarget(slot, line, row);
                 return false;
             }else {
@@ -80,7 +91,7 @@ public class Projectile extends Image {
     }
 
     protected void move(float delta){
-        if (delta > 0.02) System.out.println(delta);
+        if (delta > 0.05) System.out.println(delta);
         if(checkIfTargetDie()) return;
         position.set(getX(), getY());
         targetV.set(target.getObject().getXShoot(line),
@@ -97,7 +108,8 @@ public class Projectile extends Image {
 //                afterHit();
 //            }
 
-            tower.attack(target);
+            if(dmg == -1) tower.attack(target.getObject());
+            else target.dmg(dmg, tower);
 //            System.out.println("attaked " + target);
             removeProjectile();
 //            Map.projectiles.remove(this);

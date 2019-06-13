@@ -26,7 +26,7 @@ public class Silence extends Spell {
         public String getTooltip() {
             AssetLoader l = ShardWar.main.getAssetLoader();
             return l.getWord("silenceTooltip1") + " " +
-                    FontLoader.colorString(String.valueOf(duration), 2) + " " +
+                    FontLoader.colorString(String.valueOf(duration), 5) + " " +
                     l.getWord("silenceTooltip2");
         }
 

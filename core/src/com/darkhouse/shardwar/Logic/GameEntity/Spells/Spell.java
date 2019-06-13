@@ -44,7 +44,7 @@ public abstract class Spell implements DamageSource {
             public ArrayList<Slot> getTargets(FightScreen.Field field, Slot pointer) {
                 ArrayList<Slot> list = new ArrayList<Slot>();
                 list.add(pointer);
-                list.removeAll(Collections.singleton(null));
+//                list.removeAll(Collections.singleton(null));
                 return list;
             }
         }, HLINE {
@@ -52,7 +52,7 @@ public abstract class Spell implements DamageSource {
             public ArrayList<Slot> getTargets(FightScreen.Field field, Slot pointer) {
                 int row = pointer.getRow();
                 ArrayList<Slot> list = new ArrayList<Slot>(field.getOnRow(row));
-                list.removeAll(Collections.singleton(null));
+//                list.removeAll(Collections.singleton(null));
                 return list;
             }
         }, VLINE {
@@ -60,7 +60,7 @@ public abstract class Spell implements DamageSource {
             public ArrayList<Slot> getTargets(FightScreen.Field field, Slot pointer) {
                 int column = pointer.getColumn();
                 ArrayList<Slot> list = new ArrayList<Slot>(field.getOnColumn(column));
-                list.removeAll(Collections.singleton(null));
+//                list.removeAll(Collections.singleton(null));
                 return list;
             }
         }, CORNER {
@@ -83,7 +83,34 @@ public abstract class Spell implements DamageSource {
                 list.add(field.get(r, column));
                 list.add(field.get(row, c));
 
-                list.removeAll(Collections.singleton(null));
+//                list.removeAll(Collections.singleton(null));
+                return list;
+            }
+        }, PLUS {
+            @Override
+            public ArrayList<Slot> getTargets(FightScreen.Field field, Slot pointer) {
+                ArrayList<Slot> list = new ArrayList<Slot>();
+                int row = pointer.getRow();
+                int column = pointer.getColumn();
+
+                list.add(pointer);
+                if(row != 0) list.add(field.get(row - 1, column));
+                if(row != 2) list.add(field.get(row + 1, column));
+                if(column != 0) list.add(field.get(row, column - 1));
+                if(column != 2) list.add(field.get(row, column + 1));
+
+                return list;
+            }
+        },
+        ALL{
+            @Override
+            public ArrayList<Slot> getTargets(FightScreen.Field field, Slot pointer) {
+                Slot s = pointer;//
+                ArrayList<Slot> list = new ArrayList<Slot>();
+                list.addAll(field.getOnColumn(0));
+                list.addAll(field.getOnColumn(1));
+                list.addAll(field.getOnColumn(2));
+                list.add(field.getPlayerSlot());
                 return list;
             }
         }
@@ -99,20 +126,22 @@ public abstract class Spell implements DamageSource {
                 list.addAll(field.getOnColumn(1));
                 list.addAll(field.getOnColumn(2));
                 list.add(field.getPlayerSlot());
-                list.removeAll(Collections.singleton(null));
+//                list.removeAll(Collections.singleton(null));
                 return list;
             }
-        }, PLUS{
+        },
+        PLUS{
             @Override
             public ArrayList<Slot> getTargets(FightScreen.Field field) {
                 ArrayList<Slot> list = new ArrayList<Slot>();
                 list.add(field.get(0, 1));
                 list.addAll(field.getOnRow(1));
                 list.add(field.get(2, 1));
-                list.removeAll(Collections.singleton(null));
+//                list.removeAll(Collections.singleton(null));
                 return list;
             }
-        }, FRAME{
+        },
+        FRAME{
             @Override
             public ArrayList<Slot> getTargets(FightScreen.Field field) {
                 ArrayList<Slot> list = new ArrayList<Slot>();
@@ -120,15 +149,28 @@ public abstract class Spell implements DamageSource {
                 list.add(field.get(1, 0));
                 list.add(field.get(1, 2));
                 list.addAll(field.getOnRow(2));
-                list.removeAll(Collections.singleton(null));
+//                list.removeAll(Collections.singleton(null));
                 return list;
             }
-        }, PLAYER{
+        },
+        X{
+            @Override
+            public ArrayList<Slot> getTargets(FightScreen.Field field) {
+                ArrayList<Slot> list = new ArrayList<Slot>();
+                list.add(field.get(0, 0));
+                list.add(field.get(0, 2));
+                list.add(field.get(1, 1));
+                list.add(field.get(2, 0));
+                list.add(field.get(2, 2));
+                return list;
+            }
+        },
+        PLAYER{
             @Override
             public ArrayList<Slot> getTargets(FightScreen.Field field) {
                 ArrayList<Slot> list = new ArrayList<Slot>();
                 list.add(field.getPlayerSlot());
-                return new ArrayList<Slot>(list);
+                return new ArrayList<>(list);
             }
         };
 
@@ -175,6 +217,7 @@ public abstract class Spell implements DamageSource {
 //        private ArrayList<Class<? extends GameObject>> affectedTypes;
         private TargetData[] targetData;
         private int tier;
+        private boolean sameTargets;
 
         public int getTier() {
             return tier;
@@ -187,6 +230,17 @@ public abstract class Spell implements DamageSource {
         }
         public TargetData[] getTargetData() {
             return targetData;
+        }
+
+        public boolean isSameTargets() {
+            return sameTargets;
+        }
+
+        public void setSameTargets() {
+            this.sameTargets = true;
+        }
+        public void lockTargeting(){
+
         }
         //        public Type getSpellType() {
 //            return spellType;

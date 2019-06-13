@@ -11,7 +11,7 @@ public class DoubleRocket extends Tower {
 
         public P() {
             super(ShardWar.main.getAssetLoader().get("towers/doublerocket.png", Texture.class),
-                    ShardWar.main.getAssetLoader().getWord("doublerocket"), 18, 0, 2, 5,
+                    ShardWar.main.getAssetLoader().getWord("doublerocket"), 20, 0, 2, 5,
                     new GlobalShot(false), new MultiShot(2, 0.6f));
         }
 

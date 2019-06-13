@@ -4,6 +4,8 @@ import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.*;
 import com.darkhouse.shardwar.Logic.Slot.Slot;
 import com.darkhouse.shardwar.Player;
+import com.darkhouse.shardwar.ShardWar;
+import com.darkhouse.shardwar.Tools.AssetLoader;
 
 import java.util.ArrayList;
 
@@ -20,7 +22,9 @@ public class Combiner extends Spell{
 
         @Override
         public String getTooltip() {
-            return "";
+            AssetLoader l = ShardWar.main.getAssetLoader();
+            return l.getWord("combinerTooltip1") + System.getProperty("line.separator") +
+                    l.getWord("combinerTooltip2");
         }
 
         @Override

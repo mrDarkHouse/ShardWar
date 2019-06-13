@@ -10,7 +10,7 @@ public class DoubleBarrel extends Tower {
 
         public P() {
             super(ShardWar.main.getAssetLoader().get("towers/doublebarrel.png", Texture.class),
-                    ShardWar.main.getAssetLoader().getWord("doublebarrel"), 20, 0, 3, 5,
+                    ShardWar.main.getAssetLoader().getWord("doublebarrel"), 25, 0, 3, 5,
                     new MultiShot(2, 0.3f));
         }
 

@@ -4,11 +4,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.darkhouse.shardwar.Logic.GameEntity.DamageReceiver;
 import com.darkhouse.shardwar.Logic.GameEntity.DamageSource;
-import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
+import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.Effect;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells.Ability;
 import com.darkhouse.shardwar.Logic.Projectile;
 import com.darkhouse.shardwar.Logic.Slot.Slot;
+
+import java.util.Arrays;
 
 public abstract class Tower extends GameObject {
 
@@ -104,8 +106,19 @@ public abstract class Tower extends GameObject {
         else this.dmg = 0;
     }
 
-    public void attack(DamageReceiver g) {
+    public void attack(GameObject g) {
+        int realDmg = dmg;
+        if (effects.containsKey(Effect.IPreAttack.class)) {
+            for (Effect e : effects.get(Effect.IPreAttack.class)) {
+                realDmg = ((Effect.IPreAttack) e).preAttack(g, realDmg);
+            }
+        }
         g.dmg(dmg, this);
+        if (effects.containsKey(Effect.IAfterAttack.class)) {
+            for (Effect e : effects.get(Effect.IAfterAttack.class)) {
+                ((Effect.IAfterAttack) e).afterAttack(g, dmg);
+            }
+        }
     }
 
     @Override
@@ -135,11 +148,13 @@ public abstract class Tower extends GameObject {
 
     @Override
     public void die(DamageSource source, boolean giveBounty, boolean disableSlotAfter) {
-        slot.clear();
+        if(slot != null) slot.clearSelecting();
+        else System.out.println("Slot null " + this);
         super.die(source, giveBounty, disableSlotAfter);
     }
 
     private void shootProjectile(int i){
+//        if(getSlot().getSelected()[i] == -1) return;//target not chosen
         Slot dr;
         if(getSlot().getObject().isGlobal()) {
             dr = slot.getOwner().searchTarget(getSlot(), getSlot().getSelected()[i], getSlot().getSelectedRow()[i]);
@@ -147,16 +162,16 @@ public abstract class Tower extends GameObject {
             dr = slot.getOwner().searchTarget(getSlot(), getSlot().getSelected()[i], -1);
         }
         if(dr.getObject() == null) return;
-        Vector2 startLocation = new Vector2(getSlot().getX() + getSlot().getParent().getX() + getSlot().getWidth() / 2,
-                getSlot().getY() + getSlot().getParent().getY() + getSlot().getHeight() / 2);
+//        Vector2 startLocation = new Vector2(getSlot().getX() + getSlot().getParent().getX() + getSlot().getWidth() / 2,
+//                getSlot().getY() + getSlot().getParent().getY() + getSlot().getHeight() / 2);
         Projectile pr;
         if(getSlot().getObject().isGlobal()) {
-            pr = new Projectile(getSlot(), startLocation, dr, getSlot().getSelected()[i], getSlot().getSelectedRow()[i]);
+            pr = new Projectile(getSlot(), getSlot().getCenter(), dr, getSlot().getSelected()[i], getSlot().getSelectedRow()[i]);
         }else {
-            pr = new Projectile(getSlot(), startLocation, dr, getSlot().getSelected()[i]);
+            pr = new Projectile(getSlot(), getSlot().getCenter(), dr, getSlot().getSelected()[i]);
         }
-        slot.getStage().addActor(pr);
         slot.getOwner().projectiles.add(pr);
+        slot.getStage().addActor(pr);
     }
 
     private void afterShoot(){
@@ -168,6 +183,7 @@ public abstract class Tower extends GameObject {
             shootTime = shootDelay;
             getSlot().flushSelect();
             getSlot().flushTargeter();
+//            getSlot().flushNumberSelected();
         }
     }
 

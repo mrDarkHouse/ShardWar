@@ -30,9 +30,9 @@ public class OpticalSight extends Spell {
         public String getTooltip() {
             AssetLoader l = ShardWar.main.getAssetLoader();
             return l.getWord("opticalsightTooltip1") + " " +
-                    FontLoader.colorString(String.valueOf(bonusDmg), 5) + " " +
+                    FontLoader.colorString(String.valueOf(bonusDmg), 6) + " " +
                     l.getWord("opticalsightTooltip2") + " " +
-                    FontLoader.colorString(String.valueOf(duration), 2) + " " +
+                    FontLoader.colorString(String.valueOf(duration), 5) + " " +
                     l.getWord("opticalsightTooltip3");
         }
 
@@ -42,12 +42,12 @@ public class OpticalSight extends Spell {
         }
     }
     
-    private class PowerBoostEffect extends Effect<Tower> implements Effect.IAttack {
+    private class OpticalSightEffect extends Effect<Tower> {
         
         private int bonusDmg;
 
-        public PowerBoostEffect(int duration, int bonusDmg) {
-            super("opticalsight", true, duration, IAttack.class);
+        public OpticalSightEffect(int duration, int bonusDmg) {
+            super("opticalsight", true, duration, INone.class);
             this.bonusDmg = bonusDmg;
         }
 
@@ -60,11 +60,7 @@ public class OpticalSight extends Spell {
         public void dispell() {
             owner.setDmg(owner.getDmg() - bonusDmg);
         }
-        
-        @Override
-        public void attack(GameObject target) {
-            
-        }
+
     }
 
     private int duration;
@@ -79,7 +75,7 @@ public class OpticalSight extends Spell {
     @Override
     public void use(ArrayList<ArrayList<GameObject>> targets) {
         for (GameObject g:targets.get(0)){
-            g.addEffect(new PowerBoostEffect(duration, bonusDmg).setOwner(((Tower) g)));
+            g.addEffect(new OpticalSightEffect(duration, bonusDmg).setOwner(((Tower) g)));
         }
     }
 }

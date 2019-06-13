@@ -34,7 +34,16 @@ public class SpellTooltip extends AbstractTooltip {
         getTitleLabel().setText(a.getWord(spell.getName()));
         defaults().align(Align.left);
         for (int i = 0; i < spell.getTargetData().length; i++) {
-            String st = FontLoader.colorString(a.getWord("targetType") + ": ", 4);
+            if (spell.getTargetData().length > 1){
+                String td = a.getWord("targeting");
+                Label targetData = new Label(td + " " +(i + 1) + ":",
+                        ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
+                add(targetData).row();
+            }
+            String ft = FontLoader.colorString(a.getWord("fieldTarget") + ": ", 1);
+            Label fieldTarget = new Label(ft + a.getWord(spell.getTargetData()[i].getFieldTarget().toString().toLowerCase()),
+                    ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
+            String st = FontLoader.colorString(a.getWord("targetType") + ": ", 0);
             Label spellType = new Label(st + a.getWord(spell.getTargetData()[i].getSpellType().toString().toLowerCase()),
                     ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
             spellType.getStyle().font.getData().markupEnabled = true;
@@ -43,12 +52,13 @@ public class SpellTooltip extends AbstractTooltip {
                 s += a.getWord(spell.getTargetData()[i].getAffectedTypes().get(j).getSimpleName().toLowerCase());
                 if(j != spell.getTargetData()[i].getAffectedTypes().size() - 1) s += ", ";
             }
-            String at = FontLoader.colorString(a.getWord("affectedUnits") +":", 6);
+            String at = FontLoader.colorString(a.getWord("affectedUnits") +":", 2);
             Label affectedTypes = new Label(at + s,
                     ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
             affectedTypes.getStyle().font.getData().markupEnabled = true;
 
             add(spellType).row();
+            add(fieldTarget).row();
             add(affectedTypes).padBottom(5).row();
         }
         Label spellTooltip = new Label(spell.getTooltip(),

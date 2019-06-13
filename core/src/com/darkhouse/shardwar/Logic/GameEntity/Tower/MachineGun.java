@@ -10,7 +10,7 @@ public class MachineGun extends Tower {
 
         public P() {
             super(ShardWar.main.getAssetLoader().get("towers/machinegun.png", Texture.class),
-                    ShardWar.main.getAssetLoader().getWord("machinegun"), 20, 0, 2, 5,
+                    ShardWar.main.getAssetLoader().getWord("machinegun"), 25, 0, 2, 5,
                     new MultiShot(3, 0.6f));
         }
 

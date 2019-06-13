@@ -4,16 +4,18 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.I18NBundleLoader;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.*;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.darkhouse.shardwar.ShardWar;
 
 import java.util.Locale;
 
@@ -33,10 +35,14 @@ public class AssetLoader extends AssetManager {
 
     public void loadAll(){
         load("MainMenuBg.png", Texture.class);
+        load("levelWinBg.png", Texture.class);
+        load("levelLooseBg.png", Texture.class);
         load("backButton.png", Texture.class);
         load("shard.png", Texture.class);
         load("towerSlot.png", Texture.class);
         load("wallSlot.png", Texture.class);
+        load("less.png", Texture.class);
+        load("more.png", Texture.class);
 
         load("walls/brickWall.png", Texture.class);
         load("walls/energyWall.png", Texture.class);
@@ -104,6 +110,14 @@ public class AssetLoader extends AssetManager {
         load("Ability/Spells/poisonsplash.png", Texture.class);
         load("Ability/Spells/shieldup.png", Texture.class);
         load("Ability/Spells/disablefield.png", Texture.class);
+        load("Ability/Spells/lifedrain.png", Texture.class);
+        load("Ability/Spells/darkritual.png", Texture.class);
+        load("Ability/Spells/firebullets.png", Texture.class);
+        load("Ability/Spells/clawsmash.png", Texture.class);
+        load("Ability/Spells/vampire.png", Texture.class);
+        load("Ability/Spells/fanofknives.png", Texture.class);
+        load("Ability/Spells/rejuvenation.png", Texture.class);
+        load("Ability/Spells/additionalrocket.png", Texture.class);
 
         load("Ability/Effects/disarm.png", Texture.class);
         load("Ability/Effects/weakness.png", Texture.class);
@@ -114,6 +128,14 @@ public class AssetLoader extends AssetManager {
         load("Ability/Effects/poisonsplash.png", Texture.class);
         load("Ability/Effects/shieldup.png", Texture.class);
         load("Ability/Effects/disablefield.png", Texture.class);
+        load("Ability/Effects/firebullets.png", Texture.class);
+        load("Ability/Effects/vampire.png", Texture.class);
+        load("Ability/Effects/rejuvenation.png", Texture.class);
+        load("Ability/Effects/additionalrocket.png", Texture.class);
+
+
+        load("Ability/Animation/clawsmash.png", Texture.class);
+        load("Ability/Animation/clawsmash.atlas", TextureAtlas.class);
 
         load("towerSlotSelect.png", Texture.class);
         load("wallSlotSelect.png", Texture.class);
@@ -158,6 +180,50 @@ public class AssetLoader extends AssetManager {
     public Drawable getLeftTarget2(int player){
         if(player == 1) return new TextureRegionDrawable(new TextureRegion(get("target/targetLeft2.png", Texture.class)));
         else return new TextureRegionDrawable(new TextureRegion(get("target/targetLeftInv2.png", Texture.class)));
+    }
+
+    public TextureAtlas getAnimation(String spellName){
+        return get("Ability/Animation/" + spellName + ".atlas");
+    }
+
+    public ProgressBar.ProgressBarStyle getTimeBarStyle(int height){
+//        int height = 10;
+        Skin skin = ShardWar.main.getAssetLoader().getSkin();
+        String styleName = "exp-bar";
+//        Drawable b = skin.getDrawable("bar-bg");
+//        Drawable k = skin.getDrawable("exp-bar-knob");
+//
+//        ProgressBar.ProgressBarStyle n = new ProgressBar.ProgressBarStyle();
+//
+//        n.background = b;
+//        n.knobBefore = k;
+        ProgressBar.ProgressBarStyle n = new ProgressBar.ProgressBarStyle(skin.get(styleName, ProgressBar.ProgressBarStyle.class));
+        n.background.setMinHeight(height);
+        n.knobBefore.setMinHeight(height - 2);
+//        String styleName = "exp-bar";
+//        ProgressBar.ProgressBarStyle s = new ProgressBar.ProgressBarStyle(skin.get(styleName, ProgressBar.ProgressBarStyle.class));
+//        ProgressBar.ProgressBarStyle n = new ProgressBar.ProgressBarStyle();
+        return n;
+    }
+    public ProgressBar.ProgressBarStyle getHpBarStyle(int height){
+        Skin skin = ShardWar.main.getAssetLoader().getSkin();
+//        Drawable b = skin.getDrawable("bar-bg2");
+//        Drawable k = skin.getDrawable("health-bar-knob");
+//        ProgressBar.ProgressBarStyle n = new ProgressBar.ProgressBarStyle();
+//        n.background = b;
+//        n.knobBefore = k;
+        String styleName = "health-bar";
+        ProgressBar.ProgressBarStyle n = new ProgressBar.ProgressBarStyle(skin.get(styleName, ProgressBar.ProgressBarStyle.class));
+
+        n.background.setMinHeight(height);
+        n.knobBefore.setMinHeight(height - 2);
+//        String styleName = "health-bar";
+//        ProgressBar.ProgressBarStyle s = new ProgressBar.ProgressBarStyle(skin.get(styleName, ProgressBar.ProgressBarStyle.class));
+//        ProgressBar.ProgressBarStyle n = new ProgressBar.ProgressBarStyle();
+//        n.background = s.background;
+//        n.knobBefore = s.knobBefore;
+//        ProgressBar.ProgressBarStyle n = new ProgressBar.ProgressBarStyle();
+        return n;
     }
 
 

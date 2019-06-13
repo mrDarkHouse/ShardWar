@@ -41,7 +41,7 @@
 		default-horizontal: { background: default-slider, knob: default-slider-knob },
 		default-vertical: { background: default-slider, knob: default-round-large },
 		health-bar: { background: bar-bg, knobBefore: health-bar-knob},
-		exp-bar: { background: bar-bg, knobBefore: exp-bar-knob}
+		exp-bar: { background: bar-bg2, knobBefore: exp-bar-knob}
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.Slider$SliderStyle: {
 		default-horizontal: { },

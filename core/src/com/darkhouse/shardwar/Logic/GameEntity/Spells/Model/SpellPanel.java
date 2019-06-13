@@ -69,16 +69,29 @@ public class SpellPanel extends Table {
             public boolean mouseMoved(InputEvent event, float x, float y) {
                 circle.setPosition(event.getStageX() - 10, event.getStageY() - 10);
                 Slot target = getTarget(new Vector2(x, y));
-                if(target != null && !target.isReserved()) {
+                if(target != null && (spell.getPrototype().isSameTargets() || !target.isReserved())) {
                     ArrayList<Slot> all = new ArrayList<Slot>();
                     ArrayList<Slot> targets = new ArrayList<Slot>();
+                    if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ALL) {
+                        if(ShardWar.fightScreen.getEnemyField(player).getObjects().contains(target)){
+                            all.addAll(ShardWar.fightScreen.getEnemyField(player).getObjects());
+                            targets.addAll(spell.getTargetData()[currentTargeting].getSpellType().
+                                    getTargets(ShardWar.fightScreen.getEnemyField(player), target));
+                        }else if(ShardWar.fightScreen.getField(player).getObjects().contains(target)){
+                            all.addAll(ShardWar.fightScreen.getField(player).getObjects());
+                            targets.addAll(spell.getTargetData()[currentTargeting].getSpellType().
+                                    getTargets(ShardWar.fightScreen.getField(player), target));
+                        }
+                    }
                     if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ENEMY) {
                         all.addAll(ShardWar.fightScreen.getEnemyField(player).getObjects());
-                        targets.addAll(spell.getTargetData()[currentTargeting].getSpellType().getTargets(ShardWar.fightScreen.getEnemyField(player), target));
+                        targets.addAll(spell.getTargetData()[currentTargeting].getSpellType().
+                                getTargets(ShardWar.fightScreen.getEnemyField(player), target));
                     }
                     if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.FRIENDLY) {
                         all.addAll(ShardWar.fightScreen.getField(player).getObjects());
-                        targets.addAll(spell.getTargetData()[currentTargeting].getSpellType().getTargets(ShardWar.fightScreen.getField(player), target));
+                        targets.addAll(spell.getTargetData()[currentTargeting].getSpellType().
+                                getTargets(ShardWar.fightScreen.getField(player), target));
                     }
                     for (Slot s:all){
                         if(targets.contains(s)){
@@ -125,6 +138,10 @@ public class SpellPanel extends Table {
             private Slot getTarget(Vector2 point){
 //            Effectable target = Level.getMap().getTargetUnit(point, targetTypes);
                 Slot target = null;
+                if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ALL) {
+                    target = ShardWar.fightScreen.getEnemyField(player).getByCoords(point.x, point.y);
+                    if(target == null)target = ShardWar.fightScreen.getField(player).getByCoords(point.x, point.y);
+                }
                 if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ENEMY) {
                     target = ShardWar.fightScreen.getEnemyField(player).getByCoords(point.x, point.y);
                 }
@@ -142,6 +159,15 @@ public class SpellPanel extends Table {
                 Slot target = getTarget(point);
                 if(target != null) {
                     ArrayList<Slot> targets = new ArrayList<Slot>();
+                    if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ALL) {
+                        if(ShardWar.fightScreen.getEnemyField(player).getObjects().contains(target)){
+                            targets.addAll(spell.getTargetData()[currentTargeting].getSpellType().getTargets(
+                                    ShardWar.fightScreen.getEnemyField(player), target));
+                        }else if(ShardWar.fightScreen.getField(player).getObjects().contains(target)){
+                            targets.addAll(spell.getTargetData()[currentTargeting].getSpellType().getTargets(
+                                    ShardWar.fightScreen.getField(player), target));
+                        }
+                    }
                     if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ENEMY) {
                          targets = spell.getTargetData()[currentTargeting].getSpellType().getTargets(
                                 ShardWar.fightScreen.getEnemyField(player), target);
@@ -224,7 +250,7 @@ public class SpellPanel extends Table {
         private ArrayList<GameObject> sortTargets(ArrayList<Slot> targets, Spell spell, int currentTargeting){
             ArrayList<GameObject> trueTargets = new ArrayList<GameObject>();
             for (Slot g:targets){
-                if(g.getSomeObject() != null && !g.isReserved()){
+                if(g.getSomeObject() != null && (spell.getPrototype().isSameTargets() || !g.isReserved())){
                     if(spell.getTargetData()[currentTargeting].getAffectedTypes().contains(
                             g.getSomeObject().getClass().getSuperclass()) ||//TODO rework
                     spell.getTargetData()[currentTargeting].getAffectedTypes().contains(
@@ -260,11 +286,19 @@ public class SpellPanel extends Table {
             if(spell.getTargetData()[i].getSpellType() instanceof Spell.NonTargetType) {
                 FightScreen f = ShardWar.fightScreen;
                 ArrayList<Slot> targetSlots = new ArrayList<Slot>();
+                if(spell.getTargetData()[i].getFieldTarget() == Spell.FieldTarget.ALL){
+                    targetSlots.addAll(((Spell.NonTargetType) spell.getTargetData()[i].getSpellType()).
+                            getTargets(f.getEnemyField(player)));
+                    targetSlots.addAll(((Spell.NonTargetType) spell.getTargetData()[i].getSpellType()).
+                            getTargets(f.getField(player)));
+                }
                 if(spell.getTargetData()[i].getFieldTarget() == Spell.FieldTarget.ENEMY){
-                    targetSlots.addAll(((Spell.NonTargetType) spell.getTargetData()[i].getSpellType()).getTargets(f.getEnemyField(player)));
+                    targetSlots.addAll(((Spell.NonTargetType) spell.getTargetData()[i].getSpellType()).
+                            getTargets(f.getEnemyField(player)));
                 }
                 if(spell.getTargetData()[i].getFieldTarget() == Spell.FieldTarget.FRIENDLY){
-                    targetSlots.addAll(((Spell.NonTargetType) spell.getTargetData()[i].getSpellType()).getTargets(f.getField(player)));
+                    targetSlots.addAll(((Spell.NonTargetType) spell.getTargetData()[i].getSpellType()).
+                            getTargets(f.getField(player)));
                 }
                 ArrayList<GameObject> targets = sortTargets(targetSlots, spell, i);
                 allTargets.add(targets);
@@ -328,7 +362,7 @@ public class SpellPanel extends Table {
     public void init(){
         setBackground(ShardWar.main.getAssetLoader().getSkin().getDrawable("info-panel"));
         slots = new SpellSlot[4];
-        listeners = new ArrayList<SpellSlot.SoloTargeter>();
+        listeners = new ArrayList<>();
         for (int i = 0; i < slots.length; i++) {
             slots[i] = new SpellSlot(i);
             slots[i].setSize(getHeight() - 10, getHeight() - 10);

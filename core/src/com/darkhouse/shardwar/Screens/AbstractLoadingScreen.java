@@ -20,7 +20,7 @@ public abstract class AbstractLoadingScreen extends AbstractScreen {
         super(null);
     }
     public void init(){
-        batch = new SpriteBatch();
+//        batch = new SpriteBatch();
         initBg(ShardWar.main.getAssetLoader().getMainMenuBg());
 
         loadBar = new ProgressBar(0, 100, 1, false, ShardWar.main.getAssetLoader().getLoadingBarStyle());

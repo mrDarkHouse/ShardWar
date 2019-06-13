@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 public class FontLoader {
     private static FreeTypeFontGenerator generator;
 
+    public static Label.LabelStyle effectDurationStyle = generateStyle(0, 14, Color.WHITE, 1, Color.BLACK);
+
     public static BitmapFont amountFont;
 
     final static String font_chars_ru =
@@ -23,25 +25,36 @@ public class FontLoader {
     public static String firstLowerLetter(String s){
         return s.substring(0, 1).toLowerCase() + s.substring(1).replaceAll(" ", "");
     }
+    private static final String[] COLORS = {
+            /*0*/"[#1C9D1Cff]",//target type
+            /*1*/"[#bfc84fff]",//field targeting
+            /*2*/"[#4169E1ff]",//affected units
+            /*3*/"[#F5A014ff]",//heal
+            /*4*/"[#C71A1Aff]",//dmg
+            /*5*/"[#bf36aeff]",//duration
+            /*6*/"[#B7B353ff]",//effect
+            /*7*/"[#30511fff]",//poison
+    };
 
     public static String colorCode(int id){
-        switch (id){
-            case 0:return "[#990000ff]";//red
-            case 1:return "[#0ffe00ff]";//green
-            case 2:return "[#00ffffff]";//blue
-            case 3:return "[#900274ff]";//Amethyst
-            case 4:return "[#009900ff]";//Emerald
-            case 5:return "[#66ffffff]";//Diamond
-            case 6:return "[#4169E1ff]";//royalBlue
-            case 7:return "[#CCCC00ff]";//darkYellow
-            case 8:return "[#00886Bff]";//observatory green
-            case 9:return "[#F09135ff]";//orange
-            case 10:return "[#64A619ff]";//green (mob spells)
-            case 11:return "[#CD6600ff]";//dark orange (layer armor)
-            case 12:return "[#8B0000ff]";//dark red (debuffs)
-            case 13:return "[#000000ff]";//black
-            default:return "";
-        }
+        return COLORS[id];
+//        switch (id){
+//            case 0:return "[#990000ff]";//red
+//            case 1:return "[#0ffe00ff]";//green
+//            case 2:return "[#00ffffff]";//blue
+//            case 3:return "[#900274ff]";//Amethyst
+//            case 4:return "[#009900ff]";//Emerald
+//            case 5:return "[#66ffffff]";//Diamond
+//            case 6:return "[#4169E1ff]";//royalBlue
+//            case 7:return "[#CCCC00ff]";//darkYellow
+//            case 8:return "[#00886Bff]";//observatory green
+//            case 9:return "[#F09135ff]";//orange
+//            case 10:return "[#64A619ff]";//green (mob spells)
+//            case 11:return "[#CD6600ff]";//dark orange (layer armor)
+//            case 12:return "[#8B0000ff]";//dark red (debuffs)
+//            case 13:return "[#000000ff]";//black
+//            default:return "";
+//        }
     }
 
     public static String colorCode(Color c){

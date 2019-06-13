@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -12,16 +13,19 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public abstract class AbstractScreen implements Screen {
 
-    protected SpriteBatch batch;
+//    protected SpriteBatch batch;
 //    protected Texture background;
     protected Image background;
     protected Stage stage;
     protected OrthographicCamera camera;
     protected Viewport viewport;
 
+    public Stage getStage() {
+        return stage;
+    }
 
     public AbstractScreen(Texture texture) {
-        batch = new SpriteBatch();
+//        batch = new SpriteBatch();
         stage = new Stage();
         if(texture != null){
             initBg(texture);
@@ -50,13 +54,15 @@ public abstract class AbstractScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        batch.begin();
 
+//        batch.begin();
+//        draw(batch);
+//        batch.end();
 //        batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch.end();
         stage.draw();
         stage.act(delta);
     }
+    protected void draw(Batch batch){}
 
     @Override
     public void resize(int width, int height) {

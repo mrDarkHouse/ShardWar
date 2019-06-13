@@ -9,7 +9,7 @@ public class Musket extends Tower {
 
         public P() {
             super(ShardWar.main.getAssetLoader().get("towers/musket.png", Texture.class),
-                    ShardWar.main.getAssetLoader().getWord("musket"), 20, 0, 8, 5);
+                    ShardWar.main.getAssetLoader().getWord("musket"), 25, 0, 8, 5);
         }
 
         @Override

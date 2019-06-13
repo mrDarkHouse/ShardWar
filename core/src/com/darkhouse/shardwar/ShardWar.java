@@ -10,6 +10,7 @@ import com.darkhouse.shardwar.Screens.FightScreen;
 import com.darkhouse.shardwar.Screens.MainMenu;
 import com.darkhouse.shardwar.Screens.OptionsMenu;
 import com.darkhouse.shardwar.Screens.StartingLoadScreen;
+import com.darkhouse.shardwar.Tools.AbilityHelper;
 import com.darkhouse.shardwar.Tools.AssetLoader;
 import com.darkhouse.shardwar.Tools.FontLoader;
 
@@ -51,6 +52,7 @@ public class ShardWar extends Game {
 //		assetLoader.loadAll();
 //		assetLoader.setFilters();
 		FontLoader.load();
+		AbilityHelper.init();
 		initScreens();
 	}
 	private void initScreens(){
@@ -65,6 +67,7 @@ public class ShardWar extends Game {
 			break;
 			case 2: {
 				fightScreen = new FightScreen();
+				fightScreen.init();
 				setScreen(fightScreen);
 			}
 		}

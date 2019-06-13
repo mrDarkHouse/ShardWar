@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
+import com.darkhouse.shardwar.Screens.FightScreen;
 import com.darkhouse.shardwar.ShardWar;
 import com.darkhouse.shardwar.Tools.FontLoader;
 
@@ -20,7 +21,7 @@ public class EffectIcon extends Actor{
     public Texture getIcon() {
         return icon;
     }
-    ShapeRenderer sp;
+//    ShapeRenderer sp;
     private int borderSize = 1;
 
     private Label duration;
@@ -30,9 +31,8 @@ public class EffectIcon extends Actor{
         icon = ShardWar.main.getAssetLoader().getEffectIcon(effect.getName());
         if(effect.isPositive())color = Color.FOREST;
         else                   color = Color.FIREBRICK;
-        sp = new ShapeRenderer();
-
-        duration = new Label(effect.getDuration() + "", FontLoader.generateStyle(0, 14, Color.WHITE, 1, Color.BLACK));
+//        sp = new ShapeRenderer();//Exception in thread "Timer-0" No OpenGL context found in the current thread.
+        duration = new Label(effect.getDuration() + "", FontLoader.effectDurationStyle);
         duration.setAlignment(Align.center);
     }
     public void init(){
@@ -48,6 +48,7 @@ public class EffectIcon extends Actor{
     public void draw(Batch batch, float parentAlpha) {
         batch.end();
 
+        ShapeRenderer sp = FightScreen.sp;
         sp.begin(ShapeRenderer.ShapeType.Line);
         sp.setColor(color);
         Gdx.gl.glLineWidth(borderSize);

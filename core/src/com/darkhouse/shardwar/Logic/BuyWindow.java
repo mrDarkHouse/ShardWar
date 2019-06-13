@@ -79,6 +79,7 @@ public abstract class BuyWindow<T extends GameObject.ObjectPrototype, O extends 
     public BuyWindow(Slot<T, O> owner, String title) {
         super(title, ShardWar.main.getAssetLoader().getSkin(), "description");
         getTitleLabel().setAlignment(Align.center);
+        setMovable(false);
 //        if(type == Tower.class) {
 ////            getTitleLabel().setText("Tower");
 ////            BuyItem<Tower> item1 = new BuyItem<T>(new SniperTower(), owner);

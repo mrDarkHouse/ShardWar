@@ -3,6 +3,7 @@ package com.darkhouse.shardwar.Logic.Slot;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -54,6 +55,10 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 //        System.out.println(Arrays.toString(targeter));
         return targeter[numberSelected];
     }
+    public Image[] getAllTargeters(){
+        return targeter;
+    }
+
 
     public boolean isDisable() {
         return disable;
@@ -66,7 +71,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     protected TextureRegion reserve;
     protected TextureRegion disableTexture;
     private boolean isChosen;
-    private boolean reserved;//for double use
+    private boolean reserved;//for multiply use
 
     public void reserve(){
         reserved = true;
@@ -97,6 +102,11 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 //        getActions().clear();
 //        fadeIn();
 
+    }
+
+    public Vector2 getCenter(){
+        return new Vector2(getX() + getParent().getX() + getWidth() / 2,
+                getY() + getParent().getY() + getHeight() / 2);
     }
 
     public FightScreen getOwner() {
@@ -145,6 +155,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
                 selectedRow[i] = -1;
             }
         }
+        numberSelected = 0;
     }
     public void endSelect(){
         numberSelected++;
@@ -161,6 +172,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 //            if(selected[i] == -1) b = true;
 //        }
 //        return b;
+//        if(empty()) return false;
         boolean b = false;
         for (int aSelected : selected) {
             if (aSelected != -1) b = true;
@@ -351,16 +363,17 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     private void initHpBar(){
         int height = 8;
         hpBar = new ProgressBar(0, object.getMaxHealth(), 0.2f, false,
-                ShardWar.main.getAssetLoader().getSkin(), "health-bar");
+                ShardWar.main.getAssetLoader().getHpBarStyle(height));
         hpBar.setValue(object.getHealth());
         float yCoord;
         if(player) yCoord = getY() + getParent().getY() - 10;
         else yCoord = getY() + getParent().getY() + getHeight() + 10 - height;
         hpBar.setPosition(getX() + getParent().getX(), yCoord);
         hpBar.setSize(getWidth(), height);
-        hpBar.getStyle().background.setMinHeight(height);
-        hpBar.getStyle().knobBefore.setMinHeight(height - 2);
+//        hpBar.getStyle().background.setMinHeight(height);
+//        hpBar.getStyle().knobBefore.setMinHeight(height - 2);
 //            hpBar.debug();
+//        hpBar.pack();
         getStage().addActor(hpBar);
     }
 
@@ -378,14 +391,23 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
             hpBar = null;
         }
     }
-    public void clear(){
-        for (int i = 0; i < selected.length; i++) {
-            selected[i] = -1;
-        }
+    public void clearSelecting(){
+//        for (int i = 0; i < selected.length; i++) {
+//            selected[i] = -1;
+//        }
+        selected = null;
+        selectedRow = null;
+//        if(selectedRow != null){
+//            for (int i = 0; i < selectedRow.length; i++) {
+//                selectedRow[i] = -1;
+//            }
+//        }
+        targeter = null;
         numberSelected = 0;
-        for (int i = 0; i < targeter.length; i++) {
-            targeter[i] = null;
-        }
+
+//        for (int i = 0; i < targeter.length; i++) {
+//            targeter[i] = null;
+//        }
     }
 
     @Override
@@ -438,7 +460,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     }
 
     @Override
-    public void dmg(int dmg, DamageSource source) {
-        object.dmg(dmg, source);
+    public int dmg(int dmg, DamageSource source) {
+        return object.dmg(dmg, source);
     }
 }

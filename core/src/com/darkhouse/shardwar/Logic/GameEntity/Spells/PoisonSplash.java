@@ -33,12 +33,12 @@ public class PoisonSplash extends Spell {
             AssetLoader l = ShardWar.main.getAssetLoader();
             return l.getWord("poisonsplashTooltip1") + System.getProperty("line.separator") +
                     l.getWord("poisonsplashTooltip2") + " " +
-                    FontLoader.colorString(String.valueOf(dmg), 7) + " " +
+                    FontLoader.colorString(String.valueOf(dmg), 4) + " " +
                     l.getWord("poisonsplashTooltip3") + " " +
-                    FontLoader.colorString(String.valueOf(duration), 2) + " " +
+                    FontLoader.colorString(String.valueOf(duration), 5) + " " +
                     l.getWord("poisonsplashTooltip4") + System.getProperty("line.separator") +
                     l.getWord("poisonsplashTooltip5") +
-                    FontLoader.colorString(String.valueOf(finalDmg), 7) +
+                    FontLoader.colorString(String.valueOf(finalDmg), 4) + " " +
                     l.getWord("poisonsplashTooltip6");
         }
 

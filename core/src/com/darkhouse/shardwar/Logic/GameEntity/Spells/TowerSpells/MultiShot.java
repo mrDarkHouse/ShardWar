@@ -3,6 +3,8 @@ package com.darkhouse.shardwar.Logic.GameEntity.Spells.TowerSpells;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 
+import java.util.Arrays;
+
 public class MultiShot extends Ability<Tower>{
 
     private int shoots;
@@ -16,14 +18,16 @@ public class MultiShot extends Ability<Tower>{
     @Override
     public void build() {
         owner.getSlot().selected = new int[shoots];
-        for (int i = 0; i < shoots; i++) {
-            owner.getSlot().selected[i] = -1;
-        }
+        Arrays.fill(owner.getSlot().selected, -1);
+//        for (int i = 0; i < shoots; i++) {
+//            owner.getSlot().selected[i] = -1;
+//        }
         if(owner.isGlobal()){
             owner.getSlot().selectedRow = new int[shoots];
-            for (int i = 0; i < shoots; i++) {
-                owner.getSlot().selectedRow[i] = -1;
-            }
+            Arrays.fill(owner.getSlot().selectedRow, -1);
+//            for (int i = 0; i < shoots; i++) {
+//                owner.getSlot().selectedRow[i] = -1;
+//            }
         }
         owner.getSlot().targeter = new Image[shoots];
         owner.getSlot().maxTargets = shoots;

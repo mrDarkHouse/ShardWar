@@ -27,7 +27,7 @@ public class Heal extends Spell{
         public String getTooltip() {
             AssetLoader l = ShardWar.main.getAssetLoader();
             return l.getWord("healTooltip1") + " " +
-                    FontLoader.colorString(String.valueOf(healAmount), 2)
+                    FontLoader.colorString(String.valueOf(healAmount), 3)
                     + " " + l.getWord("healTooltip2");
         }
 

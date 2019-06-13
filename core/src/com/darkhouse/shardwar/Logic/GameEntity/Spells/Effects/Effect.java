@@ -7,8 +7,11 @@ public abstract class Effect<T extends GameObject> {
     public interface IEffectType{
 
     }
-    public interface IAttack extends IEffectType{
-        void attack(GameObject target);
+    public interface IPreAttack extends IEffectType{
+        int preAttack(GameObject target, int dmg);
+    }
+    public interface IAfterAttack extends IEffectType{
+        void afterAttack(GameObject target, int dmg);
     }
     public interface IGetDmg extends IEffectType{
         int getDmg(int dmg);

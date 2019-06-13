@@ -11,7 +11,7 @@ public class EnergyWall extends Wall {
         private int blockDmg;
         public P(int blockDmg) {
             super(ShardWar.main.getAssetLoader().get("walls/energyWall.png", Texture.class),
-                    "Energy Wall", 12, 5, 3);
+                    "Energy Wall", 15, 5, 3);
             this.blockDmg = blockDmg;
         }
 

@@ -27,7 +27,7 @@ public class Greed extends Spell {
         public String getTooltip() {
             AssetLoader l = ShardWar.main.getAssetLoader();
             return l.getWord("greedTooltip1") + " " +
-                    FontLoader.colorString(String.valueOf(bounty), 2) + " " +
+                    FontLoader.colorString(String.valueOf(bounty), 3) + " " +
                     l.getWord("greedTooltip2");
         }
 

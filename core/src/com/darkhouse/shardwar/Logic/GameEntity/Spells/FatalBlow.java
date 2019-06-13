@@ -25,7 +25,7 @@ public class FatalBlow extends Spell{
         public String getTooltip() {
             AssetLoader l = ShardWar.main.getAssetLoader();
             return l.getWord("fatalblowTooltip1") + " " +
-                    FontLoader.colorString(String.valueOf(dmg), 7) + " " +
+                    FontLoader.colorString(String.valueOf(dmg), 4) + " " +
                     l.getWord("fatalblowTooltip2");
         }
 

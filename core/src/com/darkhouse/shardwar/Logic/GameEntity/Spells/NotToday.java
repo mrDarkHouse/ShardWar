@@ -28,7 +28,7 @@ public class NotToday extends Spell {
         public String getTooltip() {
             AssetLoader l = ShardWar.main.getAssetLoader();
             return l.getWord("nottodayTooltip1") + " " +
-                    FontLoader.colorString(String.valueOf(duration), 2) + " " +
+                    FontLoader.colorString(String.valueOf(duration), 5) + " " +
                     l.getWord("nottodayTooltip2") +
                     System.getProperty("line.separator") +
                     l.getWord("nottodayTooltip3");

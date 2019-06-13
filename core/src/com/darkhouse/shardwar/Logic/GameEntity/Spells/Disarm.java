@@ -26,7 +26,7 @@ public class Disarm extends Spell {
         @Override
         public String getTooltip() {
             AssetLoader l = ShardWar.main.getAssetLoader();
-            return l.getWord("disarmTooltip1") + " " + FontLoader.colorString(String.valueOf(duration), 2)
+            return l.getWord("disarmTooltip1") + " " + FontLoader.colorString(String.valueOf(duration), 5)
                     + " " + l.getWord("disarmTooltip2");
         }
 

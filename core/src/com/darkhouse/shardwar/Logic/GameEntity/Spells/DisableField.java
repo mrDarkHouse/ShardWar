@@ -28,7 +28,7 @@ public class DisableField extends Spell{
             AssetLoader l = ShardWar.main.getAssetLoader();
             return l.getWord("disablefieldTooltip1") + System.getProperty("line.separator") +
                     l.getWord("disablefieldTooltip2") + " " +
-                    FontLoader.colorString(String.valueOf(duration), 2) + " " +
+                    FontLoader.colorString(String.valueOf(duration), 5) + " " +
                     l.getWord("disablefieldTooltip3");
         }
 

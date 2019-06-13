@@ -26,7 +26,7 @@ public class FireBreath extends Spell{
         @Override
         public String getTooltip() {
             AssetLoader l = ShardWar.main.getAssetLoader();
-            return l.getWord("firebreathTooltip1") + " " + FontLoader.colorString(String.valueOf(dmg), 7)
+            return l.getWord("firebreathTooltip1") + " " + FontLoader.colorString(String.valueOf(dmg), 4)
                     + " " + l.getWord("firebreathTooltip2");
         }
 

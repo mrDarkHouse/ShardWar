@@ -64,7 +64,7 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
             this.maxHealth = health;
             this.cost = cost;
             this.bounty = bounty;
-            this.abilities = new ArrayList<Ability>(Arrays.asList(abilities));
+            this.abilities = new ArrayList<>(Arrays.asList(abilities));
         }
 
         public abstract GameObject getObject();
@@ -200,6 +200,16 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         }
     }
 
+    public void dispell(boolean positive){
+        for (Effect e:getEffects()){
+            if(positive) {
+                if(e.isPositive()) e.removeEffect();
+            }else {
+                if(!e.isPositive())e.removeEffect();
+            }
+        }
+    }
+
 
     protected Texture texture;
 //    private TextureRegion t
@@ -266,7 +276,7 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
     }
 
     public GameObject() {
-        effects = new HashMap<Class<? extends Effect.IEffectType>, Array<Effect>>();
+        effects = new HashMap<>();
         effectBar = new EffectBar();
     }
 
@@ -277,7 +287,7 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         this.maxHealth = prototype.maxHealth;
         this.bounty = prototype.bounty;
         this.objectPrototype = prototype;
-        effects = new HashMap<Class<? extends Effect.IEffectType>, Array<Effect>>();
+        effects = new HashMap<>();
         effectBar = new EffectBar();
 //        effectBar.debug();
 //        effectBar.debugAll();
@@ -310,12 +320,19 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         die(source, bounty, true);
     }
 
-    public void dmg(int dmg, DamageSource source){
-        health -= receiveDamage(calculateGetDmg(dmg), source);
-//        System.out.println("attacked " + health);
+    public int dmg(int dmg, DamageSource source){
+        int receive = receiveDamage(calculateGetDmg(dmg), source);
+//        health -= receive;
+        if(health - receive <= 0) {
+            receive = health;
+            health = 0;
+        }else {
+            health -= receive;
+        }
+
         if(health <= 0) die(source, true, true);
         else slot.hasChanged();
-//        ShardWar.fightScreen.hasChanged();
+        return receive;
     }
 
     public int calculateGetDmg(int dmg){
@@ -331,13 +348,17 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
     public abstract void physic(float delta);
 
     public void die(DamageSource source, boolean giveBounty, boolean disableSlotAfter){
-        slot.clearObject();//NullPointer
-        slot.hasChanged();
-        Empty e = slot.getEmptyObject();
-        if (disableSlotAfter) e.addEffect(new DisableField.DisableFieldEffect(1).setOwner(e));
-        slot = null;
+//        if(slot == null) return;
+        if(slot != null) {
+            slot.clearObject();//NullPointer
+            slot.hasChanged();
+            Empty e = slot.getEmptyObject();
+            if (disableSlotAfter) e.addEffect(new DisableField.DisableFieldEffect(1).setOwner(e));
+            slot = null;
+        }else {
+            System.out.println("Error Slot null " + this);
+        }
         if(giveBounty) source.getOwnerPlayer().addShards(bounty);
-
     }
 
 

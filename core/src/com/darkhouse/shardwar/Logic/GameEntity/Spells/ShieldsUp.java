@@ -29,9 +29,9 @@ public class ShieldsUp extends Spell {
         public String getTooltip() {
             AssetLoader l = ShardWar.main.getAssetLoader();
             return l.getWord("shieldupTooltip1") + " " +
-                    FontLoader.colorString(String.valueOf(shieldAmount), 5) + " " +
+                    FontLoader.colorString(String.valueOf(shieldAmount), 3) + " " +
                     l.getWord("shieldupTooltip2") + " " +
-                    FontLoader.colorString(String.valueOf(duration), 2) + " " +
+                    FontLoader.colorString(String.valueOf(duration), 5) + " " +
                     l.getWord("shieldupTooltip3") +
                     System.getProperty("line.separator") +
                     l.getWord("shieldupTooltip4");
