@@ -147,18 +147,13 @@ public class Player extends GameObject {
     }
 
     @Override
-    public int dmg(int dmg, DamageSource source) {
+    public int dmg(int dmg, DamageSource source, boolean ignoreDefSpells) {
         if(dmg >= getShards()){
             shards = 0;
             loose();
         }else deleteShards(dmg);
         updateBar();
         return dmg;
-    }
-
-    @Override
-    public int receiveDamage(int damage, DamageSource source) {
-        return damage;
     }
 
     @Override

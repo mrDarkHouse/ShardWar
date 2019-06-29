@@ -95,13 +95,12 @@ public abstract class Tower extends GameObject {
 
     private boolean disarm;
 
-    public void setDisarm(boolean disarm) {
-        this.disarm = disarm;
-    }
     public boolean isDisarm() {
         return disarm;
     }
-
+    public void setDisarm(boolean disarm) {
+        this.disarm = disarm;
+    }
 
     public void setCanShoot(boolean canShoot) {
         this.shoots = slot.getNumberSelected();
@@ -141,17 +140,12 @@ public abstract class Tower extends GameObject {
                 realDmg = ((Effect.IPreAttack) e).preAttack(g, realDmg);
             }
         }
-        g.dmg(realDmg, this);
+        g.dmg(realDmg, this, isImmune());
         if (effects.containsKey(Effect.IAfterAttack.class)) {
             for (Effect e : effects.get(Effect.IAfterAttack.class)) {
                 ((Effect.IAfterAttack) e).afterAttack(g, realDmg);
             }
         }
-    }
-
-    @Override
-    public int receiveDamage(int damage, DamageSource source) {
-        return damage;
     }
 
     @Override

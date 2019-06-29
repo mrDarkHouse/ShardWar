@@ -5,6 +5,9 @@ import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.Effect;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.Wall;
 import com.darkhouse.shardwar.Player;
+import com.darkhouse.shardwar.ShardWar;
+import com.darkhouse.shardwar.Tools.AssetLoader;
+import com.darkhouse.shardwar.Tools.FontLoader;
 
 import java.util.ArrayList;
 
@@ -24,7 +27,12 @@ public class Rejuvenation extends Spell {
 
         @Override
         public String getTooltip() {
-            return "";
+            AssetLoader l = ShardWar.main.getAssetLoader();
+            return l.getWord("rejuvenationTooltip1") + " " +
+                    FontLoader.colorString(String.valueOf(value),3) + " " +
+                    l.getWord("rejuvenationTooltip2") + " " +
+                    FontLoader.colorString(String.valueOf(duration),5) + " "  +
+                    l.getWord("rejuvenationTooltip3");
         }
 
         @Override

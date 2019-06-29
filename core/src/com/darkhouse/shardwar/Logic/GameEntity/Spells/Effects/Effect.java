@@ -78,7 +78,7 @@ public abstract class Effect<T extends GameObject> {
         }
     }
 
-    public void updateDuration(){
+    public void updateDuration(int duration){
         currentTime = duration;
 //        if (owner.haveEffect(this.getClass())) {
 //            currentTime = duration;

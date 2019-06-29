@@ -56,7 +56,7 @@ public class DarkRitual extends Spell{
         int dmg = ((int) Math.floor(((Tower) friendly).getDmg() * multiplayer));
         if(dmg < 0) dmg = 0;
         for(GameObject g:targets.get(1)){
-            g.dmg(dmg, this);
+            g.dmg(dmg, this, true);
         }
         friendly.die(this, false, true);
     }

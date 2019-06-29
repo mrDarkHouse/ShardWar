@@ -118,6 +118,8 @@ public class AssetLoader extends AssetManager {
         load("Ability/Spells/fanofknives.png", Texture.class);
         load("Ability/Spells/rejuvenation.png", Texture.class);
         load("Ability/Spells/additionalrocket.png", Texture.class);
+        load("Ability/Spells/dispel.png", Texture.class);
+        load("Ability/Spells/immune.png", Texture.class);
 
         load("Ability/Effects/disarm.png", Texture.class);
         load("Ability/Effects/weakness.png", Texture.class);
@@ -132,6 +134,7 @@ public class AssetLoader extends AssetManager {
         load("Ability/Effects/vampire.png", Texture.class);
         load("Ability/Effects/rejuvenation.png", Texture.class);
         load("Ability/Effects/additionalrocket.png", Texture.class);
+        load("Ability/Effects/immune.png", Texture.class);
 
 
         load("Ability/Animation/clawsmash.png", Texture.class);
@@ -151,8 +154,9 @@ public class AssetLoader extends AssetManager {
         load("player2Logo.png", Texture.class);
 
         ObjectMap<String, Object> fontMap = new ObjectMap<String, Object>();
-        fontMap.put("default-font", FontLoader.generateFont(0, 26, Color.BLACK));
+        fontMap.put("default-font", FontLoader.generateFont(2, 24, Color.BLACK));
         fontMap.put("description-font", FontLoader.generateFont(1, 20, Color.BLACK));
+        fontMap.put("description-main", FontLoader.generateFont(0, 26, new Color(0xfddd95ff), 2, Color.BLACK));
         fontMap.put("spell-font", FontLoader.generateFont(1, 14, Color.WHITE));
 
 

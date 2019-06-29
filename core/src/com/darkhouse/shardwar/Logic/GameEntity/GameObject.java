@@ -160,9 +160,12 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
                 ei.init();
 //            }
         }else {
-            getEffect(e.getClass()).updateDuration();
+//            if(getEffect(e.getClass()).getDuration() != e.getDuration()){
+//
+//            }else
+            getEffect(e.getClass()).updateDuration(e.getDuration());//can be problem with similar effects (not anyone now)
         }
-        slot.updateTooltip();
+        if(slot != null) slot.updateTooltip();
     }
     public boolean haveEffect(Class e){
         return (getEffect(e) != null);
@@ -201,7 +204,7 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
             e.nextTurn();
             effectBar.updateEffectIcon();
         }
-        slot.updateTooltip();
+        if(slot != null) slot.updateTooltip();//slot can be null if object dies after effect act
     }
 
     public void dispell(boolean positive){
@@ -212,6 +215,7 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
                 if(!e.isPositive())e.removeEffect();
             }
         }
+        if(slot != null) slot.updateTooltip();//slot can be null after dispell (example - poison splash final dmg)
     }
 
 
@@ -225,6 +229,14 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
     protected ObjectPrototype objectPrototype;
     protected int bounty;
     protected Player owner;
+
+    private boolean immune;
+    public boolean isImmune() {
+        return immune;
+    }
+    public void setImmune(boolean immune) {
+        this.immune = immune;
+    }
 
     public void setOwner(Player owner) {
         this.owner = owner;
@@ -340,8 +352,8 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         die(source, bounty, true);
     }
 
-    public int dmg(int dmg, DamageSource source){
-        int receive = receiveDamage(calculateGetDmg(dmg), source);
+    public int dmg(int dmg, DamageSource source, boolean ignoreDefSpells){
+        int receive = receiveDamage(calculateGetDmg(dmg), source, ignoreDefSpells);
 //        health -= receive;
         if(health - receive <= 0) {
             receive = health;
@@ -364,7 +376,9 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
         return dmg;
     }
 
-    public abstract int receiveDamage(int damage, DamageSource source);
+    public int receiveDamage(int damage, DamageSource source, boolean ignoreDefSpells){
+        return damage;
+    }
     public abstract void physic(float delta);
 
     public void die(DamageSource source, boolean giveBounty, boolean disableSlotAfter){

@@ -132,10 +132,10 @@ public class FontLoader {
                 break;
             case 1:f = Gdx.files.internal("Fonts/roboto-regular.ttf");
                 break;
-            case 2:f = Gdx.files.internal("Fonts/Roboto-Medium.ttf");
+            case 2:f = Gdx.files.internal("Fonts/Bookman.ttf");
                 break;
-            case 3:f = Gdx.files.internal("Fonts/Signboard.ttf");
-                break;
+//            case 3:f = Gdx.files.internal("Fonts/Signboard.ttf");
+//                break;
             default:throw new IllegalArgumentException("cant find font with type " + type);
         }
         return generateDefaultBorderFont(size, color, borderSize, borderColor, f);
@@ -167,6 +167,8 @@ public class FontLoader {
 //            case 1:f = Gdx.files.internal("Fonts/roboto-regular.ttf");
 //                break;
             case 1:f = Gdx.files.internal("Fonts/Roboto-Medium.ttf");
+                break;
+            case 2:f = Gdx.files.internal("Fonts/Bookman.ttf");
                 break;
             default:throw new IllegalArgumentException("cant find font with type " + type);
         }

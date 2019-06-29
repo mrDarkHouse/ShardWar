@@ -109,7 +109,7 @@ public class Projectile extends Image {
 //            }
 
             if(dmg == -1) tower.attack(target.getObject());
-            else target.dmg(dmg, tower);
+            else target.getObject().dmg(dmg, tower, tower.isImmune());
 //            System.out.println("attaked " + target);
             removeProjectile();
 //            Map.projectiles.remove(this);

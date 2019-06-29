@@ -46,7 +46,7 @@ public abstract class Wall extends GameObject implements DamageReceiver {
         return ((WallPrototype) objectPrototype);
     }
 
-    public abstract int receiveDamage(int damage, DamageSource source);
+//    public abstract int receiveDamage(int damage, DamageSource source, boolean ignoreDefSpells);
 
     @Override
     public void physic(float delta) {

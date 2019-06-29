@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.darkhouse.shardwar.Logic.*;
 import com.darkhouse.shardwar.Logic.GameEntity.Empty;
+import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.*;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellBuy;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Model.SpellPanel;
@@ -73,7 +74,22 @@ public class FightScreen extends AbstractScreen {
             list.add(playerSlot);
             return list;
         }
-        public ArrayList<Slot> getNotEmptyGameObjects(){
+        public ArrayList<GameObject> getGameObjects(){
+            ArrayList<GameObject> list = new ArrayList<>();
+            for (Slot s: getObjects()){
+                list.add(s.getSomeObject());
+            }
+            return list;
+        }
+        public ArrayList<GameObject> getNotEmptyGameObjects(){
+            ArrayList<GameObject> list = new ArrayList<>();
+            for (Slot s: getNotEmptySlots()){
+                list.add(s.getObject());
+            }
+            return list;
+        }
+
+        public ArrayList<Slot> getNotEmptySlots(){
             ArrayList<Slot> list = new ArrayList<>();
             for (Slot s:getMainObjects()){
                 if(!s.empty())list.add(s);
@@ -252,8 +268,10 @@ public class FightScreen extends AbstractScreen {
 //            System.out.println(targetSlot);
 //            System.out.println(targetSlot.getTargeter());
             targetSlot.getTargeter().addAction(a);
+            targetSlot.getTargeter().toFront();
         }
     }
+//    private AlphaAction a;
 
     public FightScreen() {
         super(ShardWar.main.getAssetLoader().getMainMenuBg());
@@ -415,6 +433,7 @@ public class FightScreen extends AbstractScreen {
         projectiles = new Array<>();
         t = new Timer();
         buyedInit = new int[2];
+//        a = new AlphaAction();
 
         initUsers();
         initPlayerField();
@@ -479,7 +498,7 @@ public class FightScreen extends AbstractScreen {
     private void initTimeSkipButton(){
         AssetLoader l = ShardWar.main.getAssetLoader();
         TextButton timeSkip = new TextButton(l.getWord("endTurn"), l.getSkin());
-        timeSkip.setPosition(Gdx.graphics.getWidth() - /*timeSkip.getWidth() - */ 120,
+        timeSkip.setPosition(Gdx.graphics.getWidth() - /*timeSkip.getWidth() - */ 130,
                 Gdx.graphics.getHeight()/2f - timeSkip.getHeight() - 10);
         timeSkip.addListener(new ClickListener(){
             @Override
@@ -499,6 +518,7 @@ public class FightScreen extends AbstractScreen {
         private static final int minimumValue = 3;
 
         private TextButton buyTurn;
+        private AlphaAction a;
 //        private Image shard;
         private ImageButton less;
         private ImageButton more;
@@ -508,6 +528,7 @@ public class FightScreen extends AbstractScreen {
         public TurnBuyButton() {
             AssetLoader l = ShardWar.main.getAssetLoader();
             defaults().spaceBottom(5f);
+            a = new AlphaAction();
             num = minimumValue;
             buyTurn = new TextButton(l.getWord("buyNext"), l.getSkin());
             buyTurn.setTransform(false);
@@ -541,6 +562,11 @@ public class FightScreen extends AbstractScreen {
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                     if(getCurrentPlayerObject().deleteShards(num)) {
                         buyedInit[currentPlayer - 1] = num;
+//                        AlphaAction a = new AlphaAction();
+                        a.setAlpha(0.4f);
+                        a.restart();
+                        addAction(a);
+                        setTouchable(Touchable.disabled);
                     }
                     return true;
                 }
@@ -559,12 +585,19 @@ public class FightScreen extends AbstractScreen {
         public void reset(){
             num = minimumValue;
             updateNum();
+//            AlphaAction a = new AlphaAction();
+//            a.reset();
+            a.setAlpha(1f);
+            a.restart();
+            addAction(a);
+            setTouchable(Touchable.enabled);
         }
     }
 
+
     private void initBuyTurnInitiative(){
         turnBuyButton = new TurnBuyButton();
-        turnBuyButton.setPosition(Gdx.graphics.getWidth() - /*turnBuyButton.getWidth() - */120,
+        turnBuyButton.setPosition(Gdx.graphics.getWidth() - /*turnBuyButton.getWidth() - */130,
                 Gdx.graphics.getHeight()/2f - turnBuyButton.getHeight() + 75);
         stage.addActor(turnBuyButton);
     }
@@ -605,10 +638,13 @@ public class FightScreen extends AbstractScreen {
         stage.addActor(timeBar);
     }
 
-    private void initDialog(){
+    private void initDialog(int buyed){
         String roundText = "Round " + round + " (" + (numberChange + 1) + "/2)";
         String turnText = "Now turn of ";
         turnText += "Player " + currentPlayer;
+        if(buyed != -1) turnText += System.getProperty("line.separator") + "(Buyed by player " + buyed + ")";
+//        if(buyedInit[0] > buyedInit[1])turnText += " (Buyed by player 1)";
+//        if(buyedInit[0] < buyedInit[1])turnText += " (Buyed by player 2)";
 //        turnDialog.text(text);
 //        turnLabel.setText(text);
 //        turnLabel.pack();
@@ -617,15 +653,20 @@ public class FightScreen extends AbstractScreen {
 //        turnDialog = new Dialog(roundText, ShardWar.main.getAssetLoader().getSkin(), "description");
 
         turnDialog.getTitleLabel().setText(roundText);
-        turnDialog.getContentTable().clear();
+//        turnDialog.getContentTable().clear();
+        turnDialog.clear();
 //        turnDialog.text(roundText).row();
-        turnDialog.text(turnText);//java.lang.IndexOutOfBoundsException: index can't be >= size: 1 >= 0
-//        turnDialog.pack();
+        Label l = new Label(turnText, ShardWar.main.getAssetLoader().getSkin(), "description-main");
+        turnDialog.add(l).align(Align.center).pad(5f).row();
+
+//        turnDialog.text(turnText).align(Align.center);//java.lang.IndexOutOfBoundsException: index can't be >= size: 1 >= 0
+        turnDialog.pack();
 //        turnDialog.getButtonTable().getCells().get(0).getActor() =
     }
     private void createDialog(){
         turnDialog = new Dialog("", ShardWar.main.getAssetLoader().getSkin(), "description");
         turnDialog.getTitleLabel().setAlignment(Align.center);
+
 //        turnLabel = new Label("", ShardWar.main.getAssetLoader().getSkin(), "turn-info");
 
 //        stage.addActor(turnLabel);
@@ -638,9 +679,11 @@ public class FightScreen extends AbstractScreen {
     private void startTurn(){
         offTouch();
 
+        int buyedTurn = -1;
         if(buyedInit[0] != buyedInit[1]){
             if(buyedInit[0] > buyedInit[1]) currentPlayer = 1;
             else currentPlayer = 2;
+            buyedTurn = currentPlayer;
         }else {
             Random r = new Random();
             int n = r.nextInt(2);
@@ -654,7 +697,7 @@ public class FightScreen extends AbstractScreen {
         if(round % ROLL_ROUND == 0 && numberChange == 0){
             rollSpells();
         }
-        showPlayerTurn();
+        showPlayerTurn(buyedTurn);
     }
     private void showTurnLabel(){
         Color color = turnDialog.getColor();//Libgdx bug #3920 when dialog flick
@@ -668,6 +711,7 @@ public class FightScreen extends AbstractScreen {
 //        turnLabel.setVisible(false);
     }
     private void clearTargetSelected(){
+        if(targetSlot != null) targetSlot.getTargeter().remove();
         for (Image i:targetSelected){
             i.remove();
         }
@@ -689,8 +733,8 @@ public class FightScreen extends AbstractScreen {
         }
     }
 
-    private void showPlayerTurn(){
-        initDialog();
+    private void showPlayerTurn(int buyed){
+        initDialog(buyed);
         showTurnLabel();
         changePlayerTurnHighlighter();
         updateCurrentRoundPanel();
@@ -709,7 +753,7 @@ public class FightScreen extends AbstractScreen {
                 onTouch();
                 cancel();
             }
-        }, 800);
+        }, 1000);
     }
 
     private void addSpellPanel(){
@@ -771,16 +815,15 @@ public class FightScreen extends AbstractScreen {
                         new FireBreath.P(4),
                         new Disarm.P(2),
                         new Heal.P(5),
-                        new Greed.P(6),
-                        new Weakness.P(2, 1)
-//                        new ClawSmash.P(4, 4, 4)
+                        new Greed.P(8),
+                        new Weakness.P(1, 3)
                 )
         ));
         allSpells.put(2, new ArrayList<>(
                 Arrays.asList(
                         new Vulnerability.P(1, 2),
                         new Silence.P(3),
-                        new ShieldsUp.P(2, 8),
+                        new ShieldsUp.P(4, 8),
                         new LifeDrain.P(6),
                         new DisableField.P(3),
                         new FanOfKnives.P(2, 4)
@@ -793,7 +836,8 @@ public class FightScreen extends AbstractScreen {
                         new NotToday.P(3),
                         new ClawSmash.P(2, 2, 3),
                         new Vampire.P(3, 1f),
-                        new AdditionalRocket.P(3, 2)
+                        new AdditionalRocket.P(3, 2),
+                        new Dispel.P()
                 )
         ));
         allSpells.put(4, new ArrayList<>(
@@ -802,7 +846,8 @@ public class FightScreen extends AbstractScreen {
                         new FireBullets.P(4, 3, 2),
                         new Combiner.P(),
                         new DarkRitual.P(2f),
-                        new Rejuvenation.P(3, 3)
+                        new Rejuvenation.P(3, 3),
+                        new Immune.P(5)
                 )
         ));
         for(Map.Entry<Integer, ArrayList<Spell.SpellPrototype>> s:allSpells.entrySet()){
@@ -877,7 +922,8 @@ public class FightScreen extends AbstractScreen {
     private void endTime(){
         allowStartTurn = false;
         hideTooltips();
-        hideTargeters();
+        hideSpellTargeters();
+        clearTargetSelected();
         clearListeners();
         spellBuy.hide();
         turnBuyButton.reset();
@@ -907,7 +953,7 @@ public class FightScreen extends AbstractScreen {
         }else nextPlayer();
     }
 
-    private void hideTargeters(){
+    private void hideSpellTargeters(){
         spellPanel1.clearListeners();
         spellPanel2.clearListeners();
     }
@@ -942,7 +988,7 @@ public class FightScreen extends AbstractScreen {
             }
         }
 
-        clearTargetSelected();
+//        clearTargetSelected();
     }
 
 //    private void shootProjectile(final Slot<Tower.TowerPrototype, Tower> s, final int i){
@@ -1005,7 +1051,7 @@ public class FightScreen extends AbstractScreen {
 //        if(currentPlayer == p1) currentPlayer = p2;
 //        else currentPlayer = p1;
         numberChange++;
-        showPlayerTurn();
+        showPlayerTurn(-1);
     }
 
     private Field generateField(boolean player){

@@ -29,7 +29,8 @@ public class EnergyWall extends Wall {
     }
 
     @Override
-    public int receiveDamage(int damage, DamageSource source) {
+    public int receiveDamage(int damage, DamageSource source, boolean ignoreDefSpells) {
+        if(ignoreDefSpells) return damage;
         if(damage > blockDmg) return damage - blockDmg;
         else return 1;
     }

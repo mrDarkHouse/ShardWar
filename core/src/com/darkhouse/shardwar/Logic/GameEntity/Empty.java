@@ -25,10 +25,10 @@ public class Empty extends GameObject{
 //                slot.getY() + slot.getParent().getY() + slot.getHeight()/2);
 //    }
 
-    @Override
-    public int receiveDamage(int damage, DamageSource source) {
-        return 0;
-    }
+//    @Override
+//    public int receiveDamage(int damage, DamageSource source, boolean ignoreDefSpells) {
+//        return 0;
+//    }
 
     @Override
     public void physic(float delta) {

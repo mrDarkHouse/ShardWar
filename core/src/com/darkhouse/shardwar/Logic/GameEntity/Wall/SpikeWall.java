@@ -13,7 +13,7 @@ public class SpikeWall extends Wall {
         private int spikeDmg;
         public P(int spikeDmg) {
             super(ShardWar.main.getAssetLoader().get("walls/spikeWall.png", Texture.class),
-                    "Spike Wall", 14, 7, 4);
+                    "Spike Wall", 12, 7, 4);
             this.spikeDmg = spikeDmg;
         }
 
@@ -31,9 +31,10 @@ public class SpikeWall extends Wall {
     }
 
     @Override
-    public int receiveDamage(int damage, DamageSource source) {
+    public int receiveDamage(int damage, DamageSource source, boolean ignoreDefSpells) {
+        if(ignoreDefSpells) return damage;
         if(source instanceof Tower) {
-            ((DamageReceiver) source).dmg(spikeDmg, this);
+            ((DamageReceiver) source).dmg(spikeDmg, this, false);
         }
         return damage;
     }

@@ -72,8 +72,8 @@ public class ShieldsUp extends Spell {
         }
 
         @Override
-        public void updateDuration() {
-            super.updateDuration();
+        public void updateDuration(int duration) {
+            super.updateDuration(duration);
             currShield = shieldAmount;
         }
 

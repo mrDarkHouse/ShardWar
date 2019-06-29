@@ -103,7 +103,7 @@ public class ClawSmash extends Spell{
             ShardWar.fightScreen.getStage().addActor(animationActor3);
         }
         for (GameObject g:targets){
-            g.dmg(dmg[i], this);
+            g.dmg(dmg[i], this, true);
         }
     }
 

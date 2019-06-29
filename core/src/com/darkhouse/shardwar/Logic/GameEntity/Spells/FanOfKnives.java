@@ -5,6 +5,8 @@ import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
 import com.darkhouse.shardwar.Logic.GameEntity.Wall.Wall;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.ShardWar;
+import com.darkhouse.shardwar.Tools.AssetLoader;
+import com.darkhouse.shardwar.Tools.FontLoader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +26,14 @@ public class FanOfKnives extends Spell {
 
         @Override
         public String getTooltip() {
-            return "";
+            AssetLoader l = ShardWar.main.getAssetLoader();
+            return l.getWord("fanofknivesTooltip1") + System.getProperty("line.separator") +
+                    l.getWord("fanofknivesTooltip2") + " " +
+                    FontLoader.colorString(String.valueOf(dmg[0]), 4) + " " +
+                    l.getWord("fanofknivesTooltip3") + System.getProperty("line.separator") +
+                    l.getWord("fanofknivesTooltip4") + " " +
+                    FontLoader.colorString(String.valueOf(dmg[1]), 4) + " " +
+                    l.getWord("fanofknivesTooltip5");
         }
 
         @Override
@@ -42,7 +51,7 @@ public class FanOfKnives extends Spell {
 
     private void useWave(ArrayList<GameObject> targets, int i){
         for (GameObject g : targets) {
-            g.dmg(dmg[i], this);
+            g.dmg(dmg[i], this, true);
         }
     }
 

@@ -68,7 +68,7 @@ public class FireBullets extends Spell{
 
             @Override
             protected void act() {
-                owner.dmg(burnDmg, FireBulletsEffect.this.owner);
+                owner.dmg(burnDmg, FireBulletsEffect.this.owner, true);
             }
         }
 

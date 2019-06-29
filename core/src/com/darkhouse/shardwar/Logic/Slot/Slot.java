@@ -489,7 +489,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     }
 
     @Override
-    public int dmg(int dmg, DamageSource source) {
-        return object.dmg(dmg, source);
+    public int dmg(int dmg, DamageSource source, boolean ignoreDefSpells) {//TODO slot cant be damage receiver
+        return object.dmg(dmg, source, ignoreDefSpells);
     }
 }

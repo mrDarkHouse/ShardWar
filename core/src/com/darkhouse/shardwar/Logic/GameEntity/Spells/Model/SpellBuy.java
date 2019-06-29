@@ -93,13 +93,15 @@ public class SpellBuy extends Dialog {
                 return true;
             }
         });
+
+
         getTitleTable().add(closeButton).height(getPadTop());
 
 //        getTitleTable().padTop(20);
 //        getTitleTable().padBottom(50);
 //        getTitleLabel().setHeight(40);
         setMovable(false);
-        defaults().align(Align.center).pad(20);
+        defaults().align(Align.center).pad(20f);
         padRight(8);
         spells = new Container[3];
 //        debug();

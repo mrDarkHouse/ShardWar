@@ -25,7 +25,7 @@ public class BrickWall extends Wall {
     }
 
     @Override
-    public int receiveDamage(int damage, DamageSource source) {
+    public int receiveDamage(int damage, DamageSource source, boolean ignoreDefSpells) {
         return damage;
     }
 }

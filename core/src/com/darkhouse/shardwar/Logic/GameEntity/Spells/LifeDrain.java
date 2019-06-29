@@ -53,7 +53,7 @@ public class LifeDrain extends Spell {
         int realValue;
         if(h < value) realValue = h;
         else realValue = value;
-        enemy.dmg(realValue, this);
+        enemy.dmg(realValue, this, true);
         friendly.heal(realValue);
     }
 }

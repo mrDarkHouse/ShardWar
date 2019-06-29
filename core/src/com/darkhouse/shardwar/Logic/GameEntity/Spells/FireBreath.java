@@ -46,7 +46,7 @@ public class FireBreath extends Spell{
     @Override
     public void use(ArrayList<ArrayList<GameObject>> targets) {
         for (GameObject g: targets.get(0)) {
-            g.dmg(dmg, this);
+            g.dmg(dmg, this, true);
         }
     }
 

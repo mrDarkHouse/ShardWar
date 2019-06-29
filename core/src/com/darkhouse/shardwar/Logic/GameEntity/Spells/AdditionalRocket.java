@@ -1,6 +1,5 @@
 package com.darkhouse.shardwar.Logic.GameEntity.Spells;
 
-import com.badlogic.gdx.math.Vector2;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Effects.Effect;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.DoubleRocket;
@@ -12,6 +11,8 @@ import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.Screens.FightScreen;
 import com.darkhouse.shardwar.ShardWar;
 import com.darkhouse.shardwar.Tools.AbilityHelper;
+import com.darkhouse.shardwar.Tools.AssetLoader;
+import com.darkhouse.shardwar.Tools.FontLoader;
 
 import java.util.ArrayList;
 
@@ -31,7 +32,14 @@ public class AdditionalRocket extends Spell {
 
         @Override
         public String getTooltip() {
-            return "";
+            AssetLoader l = ShardWar.main.getAssetLoader();
+            return l.getWord("additionalrocketTooltip1") + System.getProperty("line.separator") +
+                    l.getWord("additionalrocketTooltip2") + " " +
+                    FontLoader.colorString(String.valueOf(rocketDamage), 4) + " " +
+                    l.getWord("additionalrocketTooltip3") + System.getProperty("line.separator") +
+                    l.getWord("additionalrocketTooltip4") + " " +
+                    FontLoader.colorString(String.valueOf(duration), 5) + " " +
+                    l.getWord("additionalrocketTooltip5");
         }
 
         @Override
@@ -62,8 +70,8 @@ public class AdditionalRocket extends Spell {
         @Override
         public void afterAttack(GameObject target, int dmg) {
             FightScreen.Field f = ShardWar.fightScreen.getEnemyField(ownerPlayer);
-            int num = AbilityHelper.rollNum(f.getNotEmptyGameObjects().size());
-            Slot t = f.getNotEmptyGameObjects().get(num);
+            int num = AbilityHelper.rollNum(f.getNotEmptySlots().size());
+            Slot t = f.getNotEmptySlots().get(num);
             Projectile pr = new Projectile(owner.getSlot(), owner.getSlot().getCenter(), t,
                     t.getColumn(), t.getRow(), rocketDamage);
             owner.getSlot().getOwner().projectiles.add(pr);

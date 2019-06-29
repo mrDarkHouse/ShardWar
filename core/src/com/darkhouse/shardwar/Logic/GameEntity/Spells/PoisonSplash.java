@@ -61,7 +61,7 @@ public class PoisonSplash extends Spell {
 
         @Override
         protected void act() {
-            owner.dmg(dmg, PoisonSplash.this);
+            owner.dmg(dmg, PoisonSplash.this, true);
         }
 
         @Override
@@ -71,7 +71,7 @@ public class PoisonSplash extends Spell {
 
         @Override
         public void dispell() {
-            owner.dmg(finalDmg, PoisonSplash.this);
+            owner.dmg(finalDmg, PoisonSplash.this, true);
         }
     }
 

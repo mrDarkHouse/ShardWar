@@ -250,7 +250,9 @@ public class SpellPanel extends Table {
         private ArrayList<GameObject> sortTargets(ArrayList<Slot> targets, Spell spell, int currentTargeting){
             ArrayList<GameObject> trueTargets = new ArrayList<GameObject>();
             for (Slot g:targets){
-                if(g.getSomeObject() != null && (spell.getPrototype().isSameTargets() || !g.isReserved())){
+                if(g.getSomeObject() != null && (spell.getPrototype().isSameTargets() || !g.isReserved()) &&
+                        (!g.getSomeObject().isImmune() ||
+                        spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.FRIENDLY)){
                     if(spell.getTargetData()[currentTargeting].getAffectedTypes().contains(
                             g.getSomeObject().getClass().getSuperclass()) ||//TODO rework
                     spell.getTargetData()[currentTargeting].getAffectedTypes().contains(

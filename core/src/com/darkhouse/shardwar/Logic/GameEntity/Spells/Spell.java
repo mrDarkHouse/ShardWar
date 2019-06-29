@@ -107,9 +107,9 @@ public abstract class Spell implements DamageSource {
             public ArrayList<Slot> getTargets(FightScreen.Field field, Slot pointer) {
                 Slot s = pointer;//
                 ArrayList<Slot> list = new ArrayList<Slot>();
-                list.addAll(field.getOnColumn(0));
-                list.addAll(field.getOnColumn(1));
-                list.addAll(field.getOnColumn(2));
+                list.addAll(field.getOnRow(0));
+                list.addAll(field.getOnRow(1));
+                list.addAll(field.getOnRow(2));
                 list.add(field.getPlayerSlot());
                 return list;
             }
