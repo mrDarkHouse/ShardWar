@@ -1,6 +1,7 @@
 package com.darkhouse.shardwar.Logic.GameEntity.Spells.Model;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
@@ -33,12 +34,25 @@ public class SpellTooltip extends AbstractTooltip {
         AssetLoader a = ShardWar.main.getAssetLoader();
         getTitleLabel().setText(a.getWord(spell.getName()));
         defaults().align(Align.left);
+        add(getTooltipTable(spell)).row();
+        Label spellTooltip = new Label(spell.getTooltip(),
+                a.getSkin(), "spell-tooltip");
+
+//                add(new Actor()).row();
+        add(spellTooltip).row();
+        pack();
+
+    }
+    public static Table getTooltipTable(Spell.SpellPrototype spell){
+        AssetLoader a = ShardWar.main.getAssetLoader();
+        Table t = new Table();
+        t.defaults().left();
         for (int i = 0; i < spell.getTargetData().length; i++) {
             if (spell.getTargetData().length > 1){
                 String td = a.getWord("targeting");
                 Label targetData = new Label(td + " " +(i + 1) + ":",
                         ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
-                add(targetData).row();
+                t.add(targetData).row();
             }
             String ft = FontLoader.colorString(a.getWord("fieldTarget") + ": ", 1);
             Label fieldTarget = new Label(ft + a.getWord(spell.getTargetData()[i].getFieldTarget().toString().toLowerCase()),
@@ -57,18 +71,13 @@ public class SpellTooltip extends AbstractTooltip {
                     ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
             affectedTypes.getStyle().font.getData().markupEnabled = true;
 
-            add(spellType).row();
-            add(fieldTarget).row();
-            add(affectedTypes).padBottom(5).row();
+            t.add(spellType).row();
+            t.add(fieldTarget).row();
+            t.add(affectedTypes).padBottom(5).row();
         }
-        Label spellTooltip = new Label(spell.getTooltip(),
-                ShardWar.main.getAssetLoader().getSkin(), "spell-tooltip");
-
-//                add(new Actor()).row();
-        add(spellTooltip).row();
-        pack();
-
+        return t;
     }
+
 
     @Override
     public void show() {

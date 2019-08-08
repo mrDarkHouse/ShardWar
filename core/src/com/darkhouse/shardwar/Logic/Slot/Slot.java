@@ -199,9 +199,15 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     public int[] getSelected() {
         return selected;
     }
+    public int getCurrentSelected(){
+        return selected[numberSelected];
+    }
 
     public int[] getSelectedRow() {
         return selectedRow;
+    }
+    public int getCurrentSelectedRow(){
+        return selectedRow[numberSelected];
     }
 
     @Override
@@ -306,6 +312,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 
     public void initBuyWindowTooltip(){
         initSlotTooltip();
+
         buyWindow.setPosition(getX() + getParent().getX() + 35, getY() + getParent().getY() + 35);
 //        AlphaAction a = new AlphaAction();
 //        a.setAlpha(0.0f);
@@ -316,6 +323,7 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
     }
     public void hideTooltip(){
         buyWindow.hide();
+        tooltip.hide();
     }
 
     public void setObject(O object) {
@@ -449,13 +457,12 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 //            batch.draw(texture, getX(), getY(), getWidth(), getHeight(),
 //                    0, 0, texture.getWidth(), texture.getHeight(), false, true);
 //        }
-
         if(/*object != null*/ !empty()) {
             if(!flip || player) batch.draw(object.getTexture(), getX() + drawOffset, getY() + drawOffset,
                     getWidth() - drawOffset*2, getHeight() - drawOffset*2);
             else batch.draw(object.getTexture(), getX() + drawOffset, getY() + drawOffset,
                     getWidth() - drawOffset*2, getHeight() - drawOffset*2,
-                    0, 0, ((int) getWidth()), ((int)getHeight()), false, true);
+                    0, 0, /*((int)getWidth())*/48, /*((int)getHeight())*/48, false, true);
         }
         if(isChosen){
             batch.draw(choose, getX(), getY(), getWidth(), getHeight());

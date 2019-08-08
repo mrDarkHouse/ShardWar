@@ -11,8 +11,8 @@ public class DesktopLauncher {
 		System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true");
 
 		config.title = "Shard War";
-		config.width = 1024;
-		config.height = 576;
+		config.width = 1024;//1024
+		config.height = 576;//576
 		config.fullscreen = false;
 //		config.samples = 64;
 

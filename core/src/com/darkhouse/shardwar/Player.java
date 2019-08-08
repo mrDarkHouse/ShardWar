@@ -79,7 +79,7 @@ public class Player extends GameObject {
     public static class PlayerPrototype extends ObjectPrototype{
 
         public PlayerPrototype(Texture texture, String name) {
-            super(texture, name, 0, 0, 0);
+            super(texture, texture, name, 0, 0, 0);
         }
 
         @Override

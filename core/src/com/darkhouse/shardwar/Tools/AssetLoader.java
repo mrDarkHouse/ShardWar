@@ -1,5 +1,7 @@
 package com.darkhouse.shardwar.Tools;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.I18NBundleLoader;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
@@ -17,6 +19,7 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.darkhouse.shardwar.ShardWar;
 
+import java.io.File;
 import java.util.Locale;
 
 public class AssetLoader extends AssetManager {
@@ -47,6 +50,9 @@ public class AssetLoader extends AssetManager {
         load("walls/brickWall.png", Texture.class);
         load("walls/energyWall.png", Texture.class);
         load("walls/spikeWall.png", Texture.class);
+        load("walls/brickWallOriginal.png", Texture.class);
+        load("walls/energyWallOriginal.png", Texture.class);
+        load("walls/spikeWallOriginal.png", Texture.class);
 
         load("towers/shotgun.png", Texture.class);
         load("towers/assault.png", Texture.class);
@@ -153,11 +159,24 @@ public class AssetLoader extends AssetManager {
         load("player1Logo.png", Texture.class);
         load("player2Logo.png", Texture.class);
 
+        load("Wiki/basics.png", Texture.class);
+        load("Wiki/info1.png", Texture.class);
+        load("Wiki/info2.png", Texture.class);
+        load("Wiki/info3.png", Texture.class);
+        load("Wiki/info4.png", Texture.class);
+
+//        setLoader(GIF.class, new Gifloader(resolver));
+//        setLoader();
+
+
         ObjectMap<String, Object> fontMap = new ObjectMap<String, Object>();
-        fontMap.put("default-font", FontLoader.generateFont(2, 24, Color.BLACK));
-        fontMap.put("description-font", FontLoader.generateFont(1, 20, Color.BLACK));
-        fontMap.put("description-main", FontLoader.generateFont(0, 26, new Color(0xfddd95ff), 2, Color.BLACK));
-        fontMap.put("spell-font", FontLoader.generateFont(1, 14, Color.WHITE));
+        float androidScale = 2.0f;
+        float scale = 1f;
+        if(Gdx.app.getType() == Application.ApplicationType.Android) scale = androidScale;
+        fontMap.put("default-font", FontLoader.generateFont(2, (int)(24*scale), Color.BLACK));
+        fontMap.put("description-font", FontLoader.generateFont(1, (int)(20*scale), Color.BLACK));
+        fontMap.put("description-main", FontLoader.generateFont(0, (int)(26*scale), new Color(0xfddd95ff), 2, Color.BLACK));
+        fontMap.put("spell-font", FontLoader.generateFont(1, (int)(14*scale), Color.WHITE));
 
 
         SkinLoader.SkinParameter parameter = new SkinLoader.SkinParameter(fontMap);
@@ -238,6 +257,13 @@ public class AssetLoader extends AssetManager {
         get("walls/brickWall.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         get("walls/energyWall.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         get("walls/spikeWall.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        get("walls/brickWallOriginal.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        get("walls/energyWallOriginal.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        get("walls/spikeWallOriginal.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
+        get("towers/shotgun.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        get("towers/assault.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        get("towers/rocket.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         get("target/targetCenter.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         get("target/targetCenterInv.png", Texture.class).setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);

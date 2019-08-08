@@ -9,12 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 import com.darkhouse.shardwar.Logic.GameEntity.Empty;
-import com.darkhouse.shardwar.Logic.GameEntity.Entity;
 import com.darkhouse.shardwar.Logic.GameEntity.GameObject;
 import com.darkhouse.shardwar.Logic.GameEntity.Spells.Spell;
 import com.darkhouse.shardwar.Logic.GameEntity.Tower.Tower;
@@ -72,7 +69,7 @@ public class SpellPanel extends Table {
                 if(target != null && (spell.getPrototype().isSameTargets() || !target.isReserved())) {
                     ArrayList<Slot> all = new ArrayList<Slot>();
                     ArrayList<Slot> targets = new ArrayList<Slot>();
-                    if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ALL) {
+                    if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ANY) {
                         if(ShardWar.fightScreen.getEnemyField(player).getObjects().contains(target)){
                             all.addAll(ShardWar.fightScreen.getEnemyField(player).getObjects());
                             targets.addAll(spell.getTargetData()[currentTargeting].getSpellType().
@@ -138,7 +135,7 @@ public class SpellPanel extends Table {
             private Slot getTarget(Vector2 point){
 //            Effectable target = Level.getMap().getTargetUnit(point, targetTypes);
                 Slot target = null;
-                if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ALL) {
+                if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ANY) {
                     target = ShardWar.fightScreen.getEnemyField(player).getByCoords(point.x, point.y);
                     if(target == null)target = ShardWar.fightScreen.getField(player).getByCoords(point.x, point.y);
                 }
@@ -148,7 +145,7 @@ public class SpellPanel extends Table {
                 if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.FRIENDLY) {
                     target = ShardWar.fightScreen.getField(player).getByCoords(point.x, point.y);
                 }
-//                if(spell.getFieldTarget() == Spell.FieldTarget.ALL) {
+//                if(spell.getFieldTarget() == Spell.FieldTarget.ANY) {
 //                    target = ShardWar.fightScreen.getEnemyField(player).getByCoords(point.x, point.y);
 //                }
                 if(target != null) return target;
@@ -159,7 +156,7 @@ public class SpellPanel extends Table {
                 Slot target = getTarget(point);
                 if(target != null) {
                     ArrayList<Slot> targets = new ArrayList<Slot>();
-                    if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ALL) {
+                    if(spell.getTargetData()[currentTargeting].getFieldTarget() == Spell.FieldTarget.ANY) {
                         if(ShardWar.fightScreen.getEnemyField(player).getObjects().contains(target)){
                             targets.addAll(spell.getTargetData()[currentTargeting].getSpellType().getTargets(
                                     ShardWar.fightScreen.getEnemyField(player), target));
@@ -267,6 +264,7 @@ public class SpellPanel extends Table {
 
         private void useSpell(Spell spell, Vector2 useCoord){
             if(player.isSilenced()) return;
+            SpellPanel.this.clearListeners();
             ArrayList<ArrayList<GameObject>> allTargets = new ArrayList<>();
             useCoord.x = useCoord.x + getParent().getX() + index*getWidth() + 5/*- 5*/;
             useCoord.y = useCoord.y + getParent().getY() + 5/*- 5*/;
@@ -288,7 +286,7 @@ public class SpellPanel extends Table {
             if(spell.getTargetData()[i].getSpellType() instanceof Spell.NonTargetType) {
                 FightScreen f = ShardWar.fightScreen;
                 ArrayList<Slot> targetSlots = new ArrayList<Slot>();
-                if(spell.getTargetData()[i].getFieldTarget() == Spell.FieldTarget.ALL){
+                if(spell.getTargetData()[i].getFieldTarget() == Spell.FieldTarget.ANY){
                     targetSlots.addAll(((Spell.NonTargetType) spell.getTargetData()[i].getSpellType()).
                             getTargets(f.getEnemyField(player)));
                     targetSlots.addAll(((Spell.NonTargetType) spell.getTargetData()[i].getSpellType()).

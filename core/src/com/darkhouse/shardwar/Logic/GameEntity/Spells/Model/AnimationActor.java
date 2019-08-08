@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 public class AnimationActor extends Actor {
     private Animation<TextureAtlas.AtlasRegion> animation;
     private TextureRegion current;
-    float time = 0f;
+    private float time = 0f;
 
     public AnimationActor(Animation<TextureAtlas.AtlasRegion> animation) {
         this.animation = animation;

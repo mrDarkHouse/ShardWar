@@ -20,13 +20,17 @@ public abstract class Tower extends GameObject {
     public abstract static class TowerPrototype<T extends Tower> extends ObjectPrototype {
         private int dmg;
 
-//        public TowerPrototype(Texture texture, String name, int health, int cost, int dmg, int bounty,
+        public int getDmg() {
+            return dmg;
+        }
+
+        //        public TowerPrototype(Texture texture, String name, int health, int cost, int dmg, int bounty,
 //                              Ability... abilities) {
 //            this(texture, name, health, cost, dmg, bounty, abilities);
 //        }
         public TowerPrototype(Texture texture, String name, int health, int cost, int dmg, int bounty,
                               Ability... abilities){
-            super(texture, name, health, cost, bounty, abilities);
+            super(texture, texture, name, health, cost, bounty, abilities);
             this.dmg = dmg;
         }
 

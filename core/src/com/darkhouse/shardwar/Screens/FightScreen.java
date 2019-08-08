@@ -1,5 +1,6 @@
 package com.darkhouse.shardwar.Screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -41,7 +43,11 @@ public class FightScreen extends AbstractScreen {
     private static final int INCOME = 4;
     public static final int ROLL_ROUND = 3;
     public static final int PREROLL_ROUNDS = 5;
-    private static final int[] heights = {200, 260, 320};
+    private static float[] VERTICAL_MOVE_HEIGHTS /*= {200, 260, 320}*/;
+    private static int CELL_SIZE;
+    private static final int MINIMUM_DRAG_DISTANCE = 150;
+    public static final int MINIMUM_VALUE = 3;
+    public static float TURN_TIME = 45f;
 
     public static final ShapeRenderer sp = new ShapeRenderer();
 
@@ -222,7 +228,7 @@ public class FightScreen extends AbstractScreen {
 
 
     private ProgressBar timeBar;
-    private float turnTime = 45f;
+//    private static final int MINIMUM_VALUE = 3;
     private Dialog turnDialog;
 //    private Label turnLabel;
 //    private Window turnWindow;
@@ -241,27 +247,29 @@ public class FightScreen extends AbstractScreen {
 
     public void setTargetSlot(Slot<Tower.TowerPrototype, Tower> targetSlot) {
         this.targetSlot = targetSlot;
-        ShardWar.fightScreen.getCurrentField().setTouchable(Touchable.disabled);
+//        ShardWar.fightScreen.getCurrentField().setTouchable(Touchable.disabled);
+        ShardWar.fightScreen.getField(1).setTouchable(Touchable.disabled);
+        ShardWar.fightScreen.getField(2).setTouchable(Touchable.disabled);
         if(targetSlot.getNumberSelected() < targetSlot.getSelected().length) {
-            /*if(targetSlot.getObject().isGlobal()){
+            targetSlot.setTargeter(new Image(ShardWar.main.getAssetLoader().getCenterTarget(getCurrentPlayer())));
+//            targetSlot.getTargeter().debug();
+            targetSlot.select(targetSlot.getColumn());
+            if(targetSlot.getObject().isGlobal()) targetSlot.selectRow(0);
 
-            }else*/ {
-                targetSlot.setTargeter(new Image(ShardWar.main.getAssetLoader().getCenterTarget(getCurrentPlayer())));
-                targetSlot.select(targetSlot.getColumn());
-                targetSlot.getTargeter().setHeight(heights[0]);
-                if (currentPlayer == 1) {
-                    targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getCenterTarget(1));
-                    targetSlot.getTargeter().setPosition(targetSlot.getX() + targetSlot.getParent().getX(),
-                            targetSlot.getY() + targetSlot.getParent().getY() + 52);
-                }
-                if (currentPlayer == 2) {
-                    targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getCenterTarget(2));
-                    targetSlot.getTargeter().setPosition(targetSlot.getX() + targetSlot.getParent().getX(),
-                            targetSlot.getY() + targetSlot.getParent().getY() - targetSlot.getTargeter().getHeight() - 4);
-                }
-                targetSlot.getTargeter().setTouchable(Touchable.disabled);
-                stage.addActor(targetSlot.getTargeter());
+            targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[0]);
+            if (currentPlayer == 1) {
+                targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getCenterTarget(1));
+                targetSlot.getTargeter().setPosition(targetSlot.getX() + targetSlot.getParent().getX(),
+                        targetSlot.getY() + targetSlot.getParent().getY() + CELL_SIZE + 4);
             }
+            if (currentPlayer == 2) {
+                targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getCenterTarget(2));
+                targetSlot.getTargeter().setPosition(targetSlot.getX() + targetSlot.getParent().getX(),
+                        targetSlot.getY() + targetSlot.getParent().getY() - targetSlot.getTargeter().getHeight() - 4);
+            }
+            targetSlot.getTargeter().setWidth(CELL_SIZE);
+            targetSlot.getTargeter().setTouchable(Touchable.disabled);
+            stage.addActor(targetSlot.getTargeter());
         }else {
             AlphaAction a = new AlphaAction();
             a.setAlpha(1f);
@@ -280,9 +288,24 @@ public class FightScreen extends AbstractScreen {
     @Override
     public void show() {
         HideListener hideListener = new HideListener();
-        AttackPathListener attackPathListener = new AttackPathListener();
-        Gdx.input.setInputProcessor(new InputMultiplexer(attackPathListener, stage, hideListener));
 
+        InputMultiplexer p = new InputMultiplexer();
+//        AttackPathListener attackPathListener = new AttackPathListener();
+//        AndroidAttackPathListener androidAttackPathListener = new AndroidAttackPathListener();
+//        Gdx.input.setInputProcessor(new InputMultiplexer(attackPathListener, stage, hideListener));
+//        Gdx.input.setInputProcessor(new InputMultiplexer(new GestureDetector()),
+//                stage, hideListener));
+        p.addProcessor(stage);
+        if(Gdx.app.getType() == Application.ApplicationType.Android){
+//            p.addProcessor(new AttackPathListener());
+            p.addProcessor(new GestureDetector(new AndroidAttackPathListener()));
+        }else {
+            p.addProcessor(new AttackPathListener());
+//            p.addProcessor(new GestureDetector(new AndroidAttackPathListener()));
+        }
+
+        p.addProcessor(hideListener);
+        Gdx.input.setInputProcessor(p);
 
         startTurn();
     }
@@ -302,6 +325,8 @@ public class FightScreen extends AbstractScreen {
         }
     }
 
+
+
     public class HideListener extends InputAdapter {
         @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
@@ -309,24 +334,138 @@ public class FightScreen extends AbstractScreen {
             return true;
         }
     }
+    public class AndroidAttackPathListener extends GestureDetector.GestureAdapter{
+        @Override
+        public boolean fling(float velocityX, float velocityY, int button) {
+            if(targetSlot != null) {
+                int width = CELL_SIZE;
+                float x = targetSlot.getX() + targetSlot.getParent().getX();
+                Drawable texture = null;
+                int diff = targetSlot.getCurrentSelected() - targetSlot.getColumn();
+                if (velocityX > MINIMUM_DRAG_DISTANCE) {
+                    if(diff == 0) {
+                        if (targetSlot.getColumn() != 2) {
+                            texture = ShardWar.main.getAssetLoader().getRightTarget(currentPlayer);
+                            width = CELL_SIZE*3;
+                            targetSlot.select(targetSlot.getColumn() + 1);
+                        }
+                    }else if(diff == -1){
+                        texture = ShardWar.main.getAssetLoader().getCenterTarget(currentPlayer);
+                        targetSlot.select(targetSlot.getColumn());
+                    }else if(diff == 1 && targetSlot.getObject().isGlobal() && targetSlot.getColumn() == 0){
+                        texture = ShardWar.main.getAssetLoader().getRightTarget2(currentPlayer);
+                        width = CELL_SIZE*5;
+                        targetSlot.select(targetSlot.getColumn() + 2);
+                    }else if(diff == -2 && targetSlot.getObject().isGlobal()){
+                        texture = ShardWar.main.getAssetLoader().getLeftTarget(currentPlayer);
+                        width = CELL_SIZE*3;
+                        x = x - CELL_SIZE*2;
+                        targetSlot.select(targetSlot.getColumn() - 1);
+                    }
+                } else if (velocityX < -MINIMUM_DRAG_DISTANCE){
+                    if(diff == 0){
+                        if (targetSlot.getColumn() != 0) {
+                            texture = ShardWar.main.getAssetLoader().getLeftTarget(currentPlayer);
+                            width = CELL_SIZE*3;
+                            x = x - CELL_SIZE*2;
+                            targetSlot.select(targetSlot.getColumn() - 1);
+                        }
+                    }else if(diff == 1){
+                        texture = ShardWar.main.getAssetLoader().getCenterTarget(currentPlayer);
+                        targetSlot.select(targetSlot.getColumn());
+                    }else if(diff == -1 && targetSlot.getObject().isGlobal() && targetSlot.getColumn() == 2){
+                        texture = ShardWar.main.getAssetLoader().getLeftTarget2(currentPlayer);
+                        width = CELL_SIZE*5;
+                        x = x - CELL_SIZE*4;
+                        targetSlot.select(targetSlot.getColumn() - 2);
+                    }else if(diff == 2 && targetSlot.getObject().isGlobal()){
+                        texture = ShardWar.main.getAssetLoader().getRightTarget(currentPlayer);
+                        width = CELL_SIZE*3;
+                        targetSlot.select(targetSlot.getColumn() + 1);
+                    }
+                }
+                verticalMove(velocityY);
+                if(texture == null) return false;
+                targetSlot.getTargeter().setWidth(width);
+                targetSlot.getTargeter().setX(x);
+                targetSlot.getTargeter().setDrawable(texture);
+
+//                endSelect(button);
+            }
+            return false;
+        }
+
+//        @Override
+//        public boolean touchDown(float x, float y, int pointer, int button) {
+//            return endSelect(button);
+//        }
+
+        @Override
+        public boolean tap(float x, float y, int count, int button) {
+            return endSelect(button);
+        }
+
+        private void verticalMove(float yDiff) {
+            if(targetSlot.getObject().isGlobal()){
+//                int diff = targetSlot.getCurrentSelectedRow() - targetSlot.getRow();
+                if(     yDiff < -MINIMUM_DRAG_DISTANCE && currentPlayer == 1 ||
+                        yDiff > MINIMUM_DRAG_DISTANCE && currentPlayer == 2){//swipe up
+                    if(targetSlot.getCurrentSelectedRow() != 2){
+                        if(targetSlot.getCurrentSelectedRow() == 0){
+                            targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[1]);
+                            targetSlot.selectRow(1);
+                        }else if(targetSlot.getCurrentSelectedRow() == 1){
+                            targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[2]);
+                            targetSlot.selectRow(2);
+                        }
+
+                        if (currentPlayer == 2) {
+                            targetSlot.getTargeter().setY(targetSlot.getY() + targetSlot.getParent().getY() -
+                                targetSlot.getTargeter().getHeight() - 4);
+                        }
+                    }
+                }else if (  yDiff > MINIMUM_DRAG_DISTANCE && currentPlayer == 1 ||
+                            yDiff < -MINIMUM_DRAG_DISTANCE && currentPlayer == 2){//swipe down
+                    if(targetSlot.getCurrentSelectedRow() != 0){
+                        if(targetSlot.getCurrentSelectedRow() == 2){
+                            targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[1]);
+                            targetSlot.selectRow(1);
+                        }else if(targetSlot.getCurrentSelectedRow() == 1){
+                            targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[0]);
+                            targetSlot.selectRow(0);
+                        }
+
+                        if (currentPlayer == 2) {
+                            targetSlot.getTargeter().setY(targetSlot.getY() + targetSlot.getParent().getY() -
+                                    targetSlot.getTargeter().getHeight() - 4);
+                        }
+
+                    }
+
+                }
+            }
+        }
+    }
+
     public class AttackPathListener extends InputAdapter{
         @Override
         public boolean mouseMoved(int screenX, int screenY) {
             if(targetSlot != null){
-                int width = 48;
+                int width = CELL_SIZE;
                 float x = targetSlot.getX() + targetSlot.getParent().getX();
                 Drawable texture = null;
                 if (screenX > targetSlot.getX() + targetSlot.getParent().getX() + targetSlot.getWidth()) {
                     if (targetSlot.getColumn() != 2) {
-                        targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getRightTarget(currentPlayer));
+//                        targetSlot.getTargeter().setDrawable(ShardWar.main.getAssetLoader().getRightTarget(currentPlayer));
+//                        texture = ShardWar.main.getAssetLoader().getRightTarget(currentPlayer);
                          if(targetSlot.getObject().isGlobal() && targetSlot.getColumn() == 0 && screenX > getCurrentField().getXofColumn(1)){
                              texture = ShardWar.main.getAssetLoader().getRightTarget2(currentPlayer);
-                             width = 48*5;
+                             width = CELL_SIZE*5;
 //                             x = x - 30;
                              targetSlot.select(targetSlot.getColumn() + 2);
                          }else {
                              texture = ShardWar.main.getAssetLoader().getRightTarget(currentPlayer);
-                             width = 48*3;
+                             width = CELL_SIZE*3;
                              targetSlot.select(targetSlot.getColumn() + 1);
                          }
                     }
@@ -334,14 +473,14 @@ public class FightScreen extends AbstractScreen {
                     if (targetSlot.getColumn() != 0) {
                         if(targetSlot.getObject().isGlobal() && targetSlot.getColumn() == 2 && screenX < getCurrentField().getXofColumn(0)){
                             texture = ShardWar.main.getAssetLoader().getLeftTarget2(currentPlayer);
-                            width = 48*5;
-                            x = x - 48 * 4;
+                            width = CELL_SIZE*5;
+                            x = x - CELL_SIZE*4;
 //                            x = x - 30;
                             targetSlot.select(targetSlot.getColumn() - 2);
                         }else {
                             texture = ShardWar.main.getAssetLoader().getLeftTarget(currentPlayer);
-                            width = 48 * 3;
-                            x = x - 48 * 2;
+                            width = CELL_SIZE*3;
+                            x = x - CELL_SIZE*2;
 //                        targetSlot.getTargeter().setX(targetSlot.getX() + targetSlot.getParent().getX() - 48 * 2);
                             targetSlot.select(targetSlot.getColumn() - 1);
                         }
@@ -354,75 +493,80 @@ public class FightScreen extends AbstractScreen {
                 targetSlot.getTargeter().setWidth(width);
                 targetSlot.getTargeter().setX(x);
                 targetSlot.getTargeter().setDrawable(texture);
-                globalMove(screenY);
+                verticalMove(screenY);
 //                }
             }
             return super.mouseMoved(screenX, screenY);
         }
 
-        private void globalMove(int screenY) {
+        private void verticalMove(int screenY) {
             if(targetSlot.getObject().isGlobal()){
                 if(currentPlayer == 1) {
                     if (screenY > getCurrentField().getYOfRow(1, true)) {
-                        targetSlot.getTargeter().setHeight(heights[0]);
+                        targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[0]);
                         targetSlot.selectRow(0);
                     } else if (screenY > getCurrentField().getYOfRow(2, true)) {
-                        targetSlot.getTargeter().setHeight(heights[1]);
+                        targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[1]);
                         targetSlot.selectRow(1);
                     } else {
-                        targetSlot.getTargeter().setHeight(heights[2]);
+                        targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[2]);
                         targetSlot.selectRow(2);
                     }
                 }else {
                     if (screenY < getCurrentField().getYOfRow(1, false)) {
-                        targetSlot.getTargeter().setHeight(heights[0]);
+                        targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[0]);
                         targetSlot.selectRow(0);
                     } else if (screenY < getCurrentField().getYOfRow(2, false)) {
-                        targetSlot.getTargeter().setHeight(heights[1]);
+                        targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[1]);
                         targetSlot.selectRow(1);
                     } else {
-                        targetSlot.getTargeter().setHeight(heights[2]);
+                        targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[2]);
                         targetSlot.selectRow(2);
                     }
                     targetSlot.getTargeter().setY(targetSlot.getY() + targetSlot.getParent().getY() -
                             targetSlot.getTargeter().getHeight() - 4);
                 }
-            }else targetSlot.getTargeter().setHeight(heights[0]);
+            }else targetSlot.getTargeter().setHeight(VERTICAL_MOVE_HEIGHTS[0]);
         }
 
         @Override
         public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            if(button == 1 && targetSlot != null){
-                for (int i = 0; i < targetSlot.getAllTargeters().length; i++) {
-                    if(targetSlot.getAllTargeters()[i] != null) {
-                        targetSlot.getAllTargeters()[i].remove();
-                        targetSelected.removeValue(targetSlot.getAllTargeters()[i], true);
-                    }
+            return (endSelect(button));
+        }
+    }
+    private boolean endSelect(int button){
+        if(button == 1 && targetSlot != null){
+            for (int i = 0; i < targetSlot.getAllTargeters().length; i++) {
+                if(targetSlot.getAllTargeters()[i] != null) {
+                    targetSlot.getAllTargeters()[i].remove();
+                    targetSelected.removeValue(targetSlot.getAllTargeters()[i], true);
                 }
-                targetSlot.flushSelect();
-                targetSlot.flushTargeter();
-                targetSlot = null;
-                ShardWar.fightScreen.getCurrentField().setTouchable(Touchable.enabled);
-                return true;
             }
-            if(button == 0 && targetSlot != null && targetSlot.getTargeter() != null){
+            targetSlot.flushSelect();
+            targetSlot.flushTargeter();
+            targetSlot = null;
+//            ShardWar.fightScreen.getCurrentField().setTouchable(Touchable.enabled);
+            ShardWar.fightScreen.getField(1).setTouchable(Touchable.enabled);
+            ShardWar.fightScreen.getField(2).setTouchable(Touchable.enabled);
+            return true;
+        }
+        if(button == 0 && targetSlot != null && targetSlot.getTargeter() != null){
 
 //                targeter.setVisible(false);
 
 //                targeter.remove();
 
 //                targetSlot.select(-1);
-                targetSelected.add(targetSlot.getTargeter());
-                AlphaAction a = new AlphaAction();
-                a.setAlpha(0.4f);
-                targetSlot.getTargeter().addAction(a);
-                targetSlot.endSelect();
-                targetSlot = null;
-                ShardWar.fightScreen.getCurrentField().setTouchable(Touchable.enabled);
-                return true;
-            }
-            return false;
+            targetSelected.add(targetSlot.getTargeter());
+            AlphaAction a = new AlphaAction();
+            a.setAlpha(0.4f);
+            targetSlot.getTargeter().addAction(a);
+            targetSlot.endSelect();
+            targetSlot = null;
+            ShardWar.fightScreen.getCurrentField().setTouchable(Touchable.enabled);
+            return true;
         }
+        return false;
     }
 
 
@@ -435,9 +579,11 @@ public class FightScreen extends AbstractScreen {
         buyedInit = new int[2];
 //        a = new AlphaAction();
 
+        initSizes();
         initUsers();
         initPlayerField();
-        initEnemyFiled();
+        initEnemyField();
+        initVerticalMoveSize();
         setPlayerShootPositions();
         initTimeBar();
         initTurnImages();
@@ -449,6 +595,22 @@ public class FightScreen extends AbstractScreen {
         initSpellRollPanel();
         initCurrentRoundText();
     }
+
+    private void initSizes(){
+        CELL_SIZE = Gdx.graphics.getHeight()/12;
+
+    }
+    private void initVerticalMoveSize(){//after initFields
+        VERTICAL_MOVE_HEIGHTS = new float[3];
+//        VERTICAL_MOVE_HEIGHTS[0] = Gdx.graphics.getHeight()/2.6f;
+//        System.out.println(fields[1].getY() + " " + fields[0].getTowers()[0].getY());
+        VERTICAL_MOVE_HEIGHTS[0] = Math.abs(fields[1].getY() -
+                (fields[0].getTowers()[0].getY() + fields[0].getTowers()[0].getHeight())) - 10;
+        VERTICAL_MOVE_HEIGHTS[1] = VERTICAL_MOVE_HEIGHTS[0] + CELL_SIZE + 20;
+        VERTICAL_MOVE_HEIGHTS[2] = VERTICAL_MOVE_HEIGHTS[1] + CELL_SIZE + 20;
+//        System.out.println(Arrays.toString(VERTICAL_MOVE_HEIGHTS));
+    }
+
 
     private void initTurnImages(){//after timeBar
         turnTexture = new Image[2];
@@ -498,12 +660,13 @@ public class FightScreen extends AbstractScreen {
     private void initTimeSkipButton(){
         AssetLoader l = ShardWar.main.getAssetLoader();
         TextButton timeSkip = new TextButton(l.getWord("endTurn"), l.getSkin());
-        timeSkip.setPosition(Gdx.graphics.getWidth() - /*timeSkip.getWidth() - */ 130,
+        timeSkip.setPosition(Gdx.graphics.getWidth() - timeSkip.getWidth() - 10,
                 Gdx.graphics.getHeight()/2f - timeSkip.getHeight() - 10);
+//        timeSkip.pack();
         timeSkip.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-//                timeBar.setValue(turnTime);
+//                timeBar.setValue(TURN_TIME);
                 endTime();
                 return super.touchDown(event, x, y, pointer, button);
             }
@@ -515,8 +678,6 @@ public class FightScreen extends AbstractScreen {
     private int[] buyedInit;
 
     private class TurnBuyButton extends Table{
-        private static final int minimumValue = 3;
-
         private TextButton buyTurn;
         private AlphaAction a;
 //        private Image shard;
@@ -529,7 +690,7 @@ public class FightScreen extends AbstractScreen {
             AssetLoader l = ShardWar.main.getAssetLoader();
             defaults().spaceBottom(5f);
             a = new AlphaAction();
-            num = minimumValue;
+            num = MINIMUM_VALUE;
             buyTurn = new TextButton(l.getWord("buyNext"), l.getSkin());
             buyTurn.setTransform(false);
 //            shard = new Image(ShardWar.main.getAssetLoader().get("shard.png", Texture.class));
@@ -540,7 +701,7 @@ public class FightScreen extends AbstractScreen {
             less.addListener(new ClickListener(){
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    if(num > minimumValue) {
+                    if(num > MINIMUM_VALUE) {
                         num--;
                         updateNum();
                     }
@@ -583,7 +744,7 @@ public class FightScreen extends AbstractScreen {
             numShards.setText(String.valueOf(num));
         }
         public void reset(){
-            num = minimumValue;
+            num = MINIMUM_VALUE;
             updateNum();
 //            AlphaAction a = new AlphaAction();
 //            a.reset();
@@ -597,14 +758,14 @@ public class FightScreen extends AbstractScreen {
 
     private void initBuyTurnInitiative(){
         turnBuyButton = new TurnBuyButton();
-        turnBuyButton.setPosition(Gdx.graphics.getWidth() - /*turnBuyButton.getWidth() - */130,
-                Gdx.graphics.getHeight()/2f - turnBuyButton.getHeight() + 75);
+        turnBuyButton.setPosition(Gdx.graphics.getWidth() - turnBuyButton.getWidth() - 10,
+                Gdx.graphics.getHeight()/2f /*+ turnBuyButton.getHeight()*/ + 10);
         stage.addActor(turnBuyButton);
     }
 
     private void initTimeBar(){
         int height = 10;
-        timeBar = new ProgressBar(0, turnTime, 0.01f, false,
+        timeBar = new ProgressBar(0, TURN_TIME, 0.01f, false,
                 ShardWar.main.getAssetLoader().getTimeBarStyle(height)){
             @Override
             public void act(float delta) {
@@ -612,7 +773,7 @@ public class FightScreen extends AbstractScreen {
                     setValue(getValue() - delta);
                     if (getValue() == 0) {
                         endTime();
-//                        setValue(turnTime);
+//                        setValue(TURN_TIME);
                     }
                 }
             }
@@ -623,7 +784,7 @@ public class FightScreen extends AbstractScreen {
 //            }
         };
         timeBar.setPosition(0, Gdx.graphics.getHeight()/2f - height/2f);
-        timeBar.setValue(turnTime);
+        timeBar.setValue(TURN_TIME);
 //        timeBar.pack();
 //        timeBar.debug();
 
@@ -759,9 +920,16 @@ public class FightScreen extends AbstractScreen {
     private void addSpellPanel(){
         spellPanel1 = new SpellPanel(players[0]);
         spellPanel2 = new SpellPanel(players[1]);
-
-        spellPanel1.setSize(250, 70);
-        spellPanel2.setSize(250, 70);
+        int w, h;
+        if(Gdx.app.getType() == Application.ApplicationType.Android){
+            w = 380;
+            h = 100;
+        }else {
+            w = 250;
+            h = 70;
+        }
+        spellPanel1.setSize(w, h);
+        spellPanel2.setSize(w, h);
 //        spellPanel.debug();
 //        spellPane2.debug();
 
@@ -776,7 +944,7 @@ public class FightScreen extends AbstractScreen {
     }
 
 //    private int spellRoll = 0;
-    private static float chances[][] = new float[][]{
+    public static float CHANCES[][] = new float[][]{
             {1f, 0, 0, 0},
             {0.7f, 0.3f, 0, 0},
             {0.6f, 0.3f, 0.1f, 0},
@@ -799,17 +967,13 @@ public class FightScreen extends AbstractScreen {
     }
 //    private static Spell.SpellPrototype[] spellPool = new Spell.SpellPrototype[10];
     private static ArrayList<Spell.SpellPrototype> spellPool = new ArrayList<>();
-    private static HashMap<Integer, ArrayList<Spell.SpellPrototype>> allSpells = new HashMap<>();
+    public static HashMap<Integer, ArrayList<Spell.SpellPrototype>> allSpells = new HashMap<>();
 
     private Spell.SpellPrototype getSpell(int i){
         return spellPool.get(i%spellPool.size());
     }
 
-    private void initSpellDialog(){
-        spellBuy = new SpellBuy();
-        spellBuy.setSize(200, 200);
-        spellBuy.init(stage);
-
+    public static void initAllSpells(){
         allSpells.put(1, new ArrayList<>(
                 Arrays.asList(
                         new FireBreath.P(4),
@@ -855,24 +1019,29 @@ public class FightScreen extends AbstractScreen {
                 prototype.setTier(s.getKey());
             }
         }
+    }
+
+    private void initSpellDialog(){
+        spellBuy = new SpellBuy();
+        spellBuy.setSize(200, 200);
+        spellBuy.init(stage);
 
         initSpellsInNextRounds(PREROLL_ROUNDS);
-
     }
     private void initSpellsInNextRounds(int num){
         Random r = new Random();
         for (int t = 0; t < num; t++) {
             int m = t + round/ROLL_ROUND;
             if(spellPool.size()/3 >= PREROLL_ROUNDS) m += PREROLL_ROUNDS - 1;
-            if(m >= chances.length) m = chances.length - 1;
+            if(m >= CHANCES.length) m = CHANCES.length - 1;
             for (int i = 0; i < 3; i++) {
                 float f = r.nextFloat();
                 int currTier;
-                if(f < chances[m][0]){
+                if(f < CHANCES[m][0]){
                     currTier = 1;
-                }else if (f < chances[m][1] + chances[m][0]){
+                }else if (f < CHANCES[m][1] + CHANCES[m][0]){
                     currTier = 2;
-                }else if(f < chances[m][2] + chances[m][1] + chances[m][0]){
+                }else if(f < CHANCES[m][2] + CHANCES[m][1] + CHANCES[m][0]){
                     currTier = 3;
                 }else {
                     currTier = 4;
@@ -928,6 +1097,7 @@ public class FightScreen extends AbstractScreen {
         spellBuy.hide();
         turnBuyButton.reset();
         offTouch();
+        fightOrder = 0;
 
         if(round % ROLL_ROUND == 0 && numberChange == 1){
             initSpellsInNextRounds(1);
@@ -935,22 +1105,42 @@ public class FightScreen extends AbstractScreen {
         }
 
         if(round != 1){
-            fight();
+            if(!anyTowerAttacks()){
+                afterTurn();
+                return;
+            }
+            if(anyGlobalTowerAttacks()) {
+                fightGlobal();
+                fightOrder++;
+            }else {
+                fightNonGlobal();
+                fightOrder += 2;
+            }
 //            shot = 0;
 
 
 //            Timer t = new Timer();
+
             t.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     if(projectiles.size == 0){
-                        actEffects();
-                        nextPlayer();
-                        cancel();
+                        if(fightOrder == 1){
+                            fightNonGlobal();
+                            fightOrder++;
+                        }else {//2
+                            afterTurn();
+                            cancel();
+                        }
                     }
                 }
-            }, 500, 500);
+            }, 500, 1000);
         }else nextPlayer();
+    }
+    private void afterTurn(){
+        actEffects();
+        nextPlayer();
+        fightOrder = 0;
     }
 
     private void hideSpellTargeters(){
@@ -964,19 +1154,36 @@ public class FightScreen extends AbstractScreen {
             income();
             startTurn();
         }else changePlayerTurn();
-        timeBar.setValue(turnTime);
+        timeBar.setValue(TURN_TIME);
     }
 
 //    private int shot = 0;
 
-    private void fight(){
+    private int fightOrder;
+
+    private boolean anyGlobalTowerAttacks(){
+        Field f = getCurrentField();
+        for (TowerSlot s:f.getTowers()){
+            if(s.getObject() != null && s.getObject().isGlobal() && !s.isNoSelected()) return true;
+        }
+        return false;
+    }
+    private boolean anyTowerAttacks(){
+        Field f = getCurrentField();
+        for (TowerSlot s:f.getTowers()){
+            if(s.getObject() != null && !s.isNoSelected()) return true;
+        }
+        return false;
+    }
+
+    private void fightGlobal(){
         for (final Slot<Tower.TowerPrototype, Tower> s:fields[getCurrentPlayer() - 1].getTowers()){
             if(/*s.getSelected() != -1*/!s.empty() && !s.isNoSelected()) {
 //                System.out.println(Arrays.toString(s.getSelected()));
 //                for (int i = 0; i < s.getSelected().length; i++) {
 //                    shootProjectile(s, 0);
 
-                s.getObject().setCanShoot(true);
+                if(s.getObject().isGlobal()) s.getObject().setCanShoot(true);
 //                Timer t = new Timer();
 //                t.schedule(new TimerTask() {
 //                    @Override
@@ -989,6 +1196,13 @@ public class FightScreen extends AbstractScreen {
         }
 
 //        clearTargetSelected();
+    }
+    private void fightNonGlobal(){
+        for (final Slot<Tower.TowerPrototype, Tower> s:fields[getCurrentPlayer() - 1].getTowers()) {
+            if (!s.empty() && !s.isNoSelected()) {
+                if (!s.getObject().isGlobal()) s.getObject().setCanShoot(true);
+            }
+        }
     }
 
 //    private void shootProjectile(final Slot<Tower.TowerPrototype, Tower> s, final int i){
@@ -1058,7 +1272,12 @@ public class FightScreen extends AbstractScreen {
         Field field = new Field();
 //        Table field = new Table();
         field.center();
-        field.defaults().space(20, 50, 10, 50).size(48);
+
+//        if(Gdx.app.getType() == Application.ApplicationType.Android){
+//            cellSize = 64;
+//        }else cellSize = 48;
+
+        field.defaults().space(20, 50, 10, 50).size(CELL_SIZE)/*.expand().fill()*/;
 
         Array<WallSlot> wallSlots = new Array<>();
 
@@ -1081,6 +1300,7 @@ public class FightScreen extends AbstractScreen {
         }
         field.setWalls(wallSlots);
         field.pack();
+//        field.debug();
         return field;
     }
     private void initTooltips(Table t){
@@ -1094,6 +1314,9 @@ public class FightScreen extends AbstractScreen {
                 if(c.getActor() instanceof Slot) ((Slot) c.getActor()).hideTooltip();
             }
         }
+        if(Gdx.app.getType() == Application.ApplicationType.Android){
+
+        }
 //        for (Cell c:field1.getCells()){
 //            if(c.getActor() instanceof Slot) ((Slot) c.getActor()).hideTooltip();
 //        }
@@ -1106,7 +1329,15 @@ public class FightScreen extends AbstractScreen {
         Array<WallSlot> wallSlots = new Array<WallSlot>();
         for (int i = 0; i < 3; i++) {
             wallSlots.add(new WallSlot(player, this, user, i, row));
-            wallSlots.peek().setSize(32, 7);
+            int w, h;
+//            if(Gdx.app.getType() == Application.ApplicationType.Android){
+//                w = 48;
+//                h = 11;
+//            }else {
+//                w = 32;
+//                h = 7;
+//            }
+//            wallSlots.peek().setSize(w, h);
             t.add(wallSlots.peek());
 //            wallSlots[i] = new WallSlot(player, this, user, i, row);
 //            wallSlots[i].setSize(32, 7);
@@ -1147,7 +1378,7 @@ public class FightScreen extends AbstractScreen {
         }
         initTooltips(fields[0]);//after create empty object
     }
-    private void initEnemyFiled(){
+    private void initEnemyField(){
         fields[1] = generateField(false);
         fields[1].setPosition(Gdx.graphics.getWidth()/2f - fields[1].getWidth()/2,
                 Gdx.graphics.getHeight() - fields[1].getHeight() - CORNER_SPACE);

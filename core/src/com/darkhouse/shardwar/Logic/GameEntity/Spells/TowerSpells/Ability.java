@@ -11,4 +11,6 @@ public abstract class Ability<T extends GameObject>{
     }
 
     public abstract void build();
+    public abstract String getTooltip();
+    public abstract String getName();
 }

@@ -25,6 +25,7 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
     public abstract static class ObjectPrototype {
 
         protected Texture texture;
+        protected Texture originalTexture;
         protected String name;
         protected int cost;
         protected int maxHealth;
@@ -33,6 +34,9 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
 
         public Texture getTexture() {
             return texture;
+        }
+        public Texture getOriginalTexture() {
+            return originalTexture;
         }
         public String getName() {
             return name;
@@ -59,9 +63,10 @@ public abstract class GameObject implements DamageReceiver, DamageSource {
             return null;
         }
 
-        public ObjectPrototype(Texture texture, String name, int health, int cost, int bounty,
+        public ObjectPrototype(Texture texture, Texture originalTexture, String name, int health, int cost, int bounty,
                                Ability... abilities) {
             this.texture = texture;
+            this.originalTexture = originalTexture;
             this.name = name;
             this.maxHealth = health;
             this.cost = cost;

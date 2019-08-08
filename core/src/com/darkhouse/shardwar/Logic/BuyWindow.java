@@ -1,5 +1,7 @@
 package com.darkhouse.shardwar.Logic;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -24,9 +26,15 @@ public abstract class BuyWindow<T extends GameObject.ObjectPrototype, O extends 
         public BuyItem(final T object, Slot<T, O> owner) {
             this.owner = owner;
             this.object = object;
-            add(new Image(object.getTexture())).spaceRight(5f);
-            add(new Label(object.getName(), ShardWar.main.getAssetLoader().getSkin())).fill().expand();
-            add(new Label(" " + object.getCost(), ShardWar.main.getAssetLoader().getSkin())).fill();
+
+            Image icon = new Image(object.getOriginalTexture());
+            float divideMultplayer = 12f;
+            if(Gdx.app.getType() == Application.ApplicationType.Android) divideMultplayer = 10f;
+            float height = Gdx.graphics.getHeight()/divideMultplayer;
+            float width = height/icon.getHeight()*icon.getWidth();
+            add(icon).height(height).width(width).spaceRight(5f);
+            add(new Label(object.getName(), ShardWar.main.getAssetLoader().getSkin(), "description-main")).fill().expand();
+            add(new Label(" " + object.getCost(), ShardWar.main.getAssetLoader().getSkin(), "description-main")).fill();
             add(new Image(ShardWar.main.getAssetLoader().get("shard.png", Texture.class)));
 //            debug();
 

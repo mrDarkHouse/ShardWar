@@ -16,6 +16,7 @@ public class MainMenu extends AbstractScreen{
 
         TextButton start = new TextButton("Start", ShardWar.main.getAssetLoader().getSkin());
         TextButton options = new TextButton("Options", ShardWar.main.getAssetLoader().getSkin());
+        TextButton wiki = new TextButton("Wiki", ShardWar.main.getAssetLoader().getSkin());
         TextButton credits = new TextButton("Credits", ShardWar.main.getAssetLoader().getSkin());
         TextButton exit = new TextButton("Exit", ShardWar.main.getAssetLoader().getSkin());
         start.addListener(new ClickListener(){
@@ -32,6 +33,14 @@ public class MainMenu extends AbstractScreen{
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
+        wiki.addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                ShardWar.main.switchScreen(3);
+                return super.touchDown(event, x, y, pointer, button);
+            }
+        });
+
         exit.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -45,7 +54,9 @@ public class MainMenu extends AbstractScreen{
         t.defaults().space(30).padRight(40).width(200).height(70);
         t.add(start).row();
         t.add(options).row();
+        t.add(wiki).row();
         t.add(credits).row();
+        t.add(exit);
         t.right();
         t.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         stage.addActor(t);

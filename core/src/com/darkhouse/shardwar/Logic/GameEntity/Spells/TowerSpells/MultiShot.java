@@ -33,4 +33,14 @@ public class MultiShot extends Ability<Tower>{
         owner.getSlot().maxTargets = shoots;
         owner.setShootDelay(shotDelay);
     }
+
+    @Override
+    public String getTooltip() {
+        return "You can select up to " + shoots + " targets to attack";
+    }
+
+    @Override
+    public String getName() {
+        return "MultiShot";
+    }
 }

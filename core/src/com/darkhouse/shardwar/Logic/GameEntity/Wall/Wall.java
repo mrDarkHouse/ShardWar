@@ -14,10 +14,11 @@ public abstract class Wall extends GameObject implements DamageReceiver {
 
     public abstract static class WallPrototype extends ObjectPrototype {
 
-        public WallPrototype(Texture texture, String name, int health, int cost, int bounty) {
-            super(texture, name, health, cost, bounty);
+        public WallPrototype(Texture texture, Texture originalTexture, String name, int health, int cost, int bounty) {
+            super(texture, originalTexture, name, health, cost, bounty);
         }
     }
+
 
     public Wall(WallPrototype prototype) {
         super(prototype);

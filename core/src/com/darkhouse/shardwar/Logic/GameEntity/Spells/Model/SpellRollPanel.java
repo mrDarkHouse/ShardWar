@@ -1,5 +1,6 @@
 package com.darkhouse.shardwar.Logic.GameEntity.Spells.Model;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -34,7 +35,8 @@ public class SpellRollPanel extends Table {
             this.spell = spell;
             this.spellTexture = ShardWar.main.getAssetLoader().getSpell(spell.getName());
             this.slotTexture = ShardWar.main.getAssetLoader().getSpellSlotBgTexture(spell.getTier());
-            setSize(35, 35);
+            int size = Gdx.graphics.getWidth()/30;
+            setSize(size, size);//35
             defaults().space(3f);
             defaults().spaceBottom(10f);
             defaults().pad(3f);

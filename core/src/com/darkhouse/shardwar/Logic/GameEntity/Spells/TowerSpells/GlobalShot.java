@@ -15,4 +15,14 @@ public class GlobalShot extends Ability<Tower> {
         owner.setGlobal(true);
         owner.getSlot().selectedRow = new int[]{-1};
     }
+
+    @Override
+    public String getTooltip() {
+        return "You can select any target on field";
+    }
+
+    @Override
+    public String getName() {
+        return "GlobalShot";
+    }
 }

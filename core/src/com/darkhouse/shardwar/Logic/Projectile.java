@@ -65,7 +65,7 @@ public class Projectile extends Image {
                 slot.getObject().getObjectPrototype().getProjectileTexture(), Texture.class));
         this.tower = slot.getObject();
         this.slot = slot;
-        this.speed = 200;
+        this.speed = 400;
         this.line = line;
 
         setX(startLocation.x);

@@ -184,7 +184,7 @@ public abstract class Spell implements DamageSource {
     }
 
     public enum FieldTarget{
-        FRIENDLY, ENEMY, ALL //All not completed
+        FRIENDLY, ENEMY, ANY
     }
 
     public static class TargetData{

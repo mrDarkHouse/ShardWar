@@ -6,10 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.darkhouse.shardwar.Screens.FightScreen;
-import com.darkhouse.shardwar.Screens.MainMenu;
-import com.darkhouse.shardwar.Screens.OptionsMenu;
-import com.darkhouse.shardwar.Screens.StartingLoadScreen;
+import com.darkhouse.shardwar.Screens.*;
 import com.darkhouse.shardwar.Tools.AbilityHelper;
 import com.darkhouse.shardwar.Tools.AssetLoader;
 import com.darkhouse.shardwar.Tools.FontLoader;
@@ -18,6 +15,7 @@ public class ShardWar extends Game {
 
 	private MainMenu mainMenu;
 	private OptionsMenu optionsMenu;
+	private WikiScreen wikiScreen;
 	public static FightScreen fightScreen;
 
 	public MainMenu getMainMenu() {
@@ -53,11 +51,13 @@ public class ShardWar extends Game {
 //		assetLoader.setFilters();
 		FontLoader.load();
 		AbilityHelper.init();
+		FightScreen.initAllSpells();
 		initScreens();
 	}
 	private void initScreens(){
 		mainMenu = new MainMenu();
 		optionsMenu = new OptionsMenu();
+		wikiScreen = new WikiScreen();
 	}
 	public void switchScreen(int index){
 		switch (index){
@@ -69,7 +69,13 @@ public class ShardWar extends Game {
 				fightScreen = new FightScreen();
 				fightScreen.init();
 				setScreen(fightScreen);
+
 			}
+			break;
+			case 3: {
+				setScreen(wikiScreen);
+			}
+			break;
 		}
 	}
 
@@ -77,7 +83,7 @@ public class ShardWar extends Game {
 		Screen currentScreen = getScreen();
 		if(currentScreen instanceof OptionsMenu) setScreen(mainMenu);
 		if(currentScreen instanceof FightScreen) setScreen(mainMenu);
-
+		if(currentScreen instanceof WikiScreen) setScreen(mainMenu);
 	}
 
 

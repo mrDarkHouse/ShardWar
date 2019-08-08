@@ -16,7 +16,7 @@ public class Dispel extends Spell {
 
         public P() {
             super("dispel", new TargetData[]{
-                    new TargetData(TargetType.ALL, FieldTarget.ALL, Tower.class, Wall.class, Empty.class, Player.class)
+                    new TargetData(TargetType.ALL, FieldTarget.ANY, Tower.class, Wall.class, Empty.class, Player.class)
             });
         }
 
