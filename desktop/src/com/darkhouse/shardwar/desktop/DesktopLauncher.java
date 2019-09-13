@@ -14,6 +14,7 @@ public class DesktopLauncher {
 		config.width = 1024;//1024
 		config.height = 576;//576
 		config.fullscreen = false;
+		config.foregroundFPS = 60;
 //		config.samples = 64;
 
 		new LwjglApplication(new ShardWar(), config);

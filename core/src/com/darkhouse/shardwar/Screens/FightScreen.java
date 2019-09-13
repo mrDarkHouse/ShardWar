@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.darkhouse.shardwar.Logic.*;
@@ -30,11 +32,22 @@ import com.darkhouse.shardwar.Logic.Slot.PlayerSlot;
 import com.darkhouse.shardwar.Logic.Slot.Slot;
 import com.darkhouse.shardwar.Logic.Slot.TowerSlot;
 import com.darkhouse.shardwar.Logic.Slot.WallSlot;
+import com.darkhouse.shardwar.Model.BackButton;
+import com.darkhouse.shardwar.Model.PlayerSearchTimer;
 import com.darkhouse.shardwar.Model.ShardPanel;
+import com.darkhouse.shardwar.Model.UserPanel;
 import com.darkhouse.shardwar.Player;
 import com.darkhouse.shardwar.ShardWar;
 import com.darkhouse.shardwar.Tools.AssetLoader;
+//import io.socket.client.IO;
+import com.darkhouse.shardwar.User;
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.net.URISyntaxException;
 import java.util.*;
 
 public class FightScreen extends AbstractScreen {
@@ -281,12 +294,325 @@ public class FightScreen extends AbstractScreen {
     }
 //    private AlphaAction a;
 
+    private int gameMode;
+
     public FightScreen() {
         super(ShardWar.main.getAssetLoader().getMainMenuBg());
+        gameMode = 0;
+//        if(!configured) {
+//            initSocket();
+//            configured = true;
+//        }
+        connect();
+        players = new Player[2];
+//        timerToStart();
+    }
+
+
+
+    public FightScreen(User first) {
+        super(ShardWar.main.getAssetLoader().getMainMenuBg());
+        gameMode = 1;
+        players = new Player[2];
+        MainMenu.RegisterDialog dialog = new MainMenu.RegisterDialog(){
+            @Override
+            protected void setUser() {
+                initOwnPlayer(first);
+                initEnemy(getUser());
+                started = true;
+            }
+        };
+        dialog.show(stage);
+    }
+
+    private static Socket socket;
+
+    public static void initSocket(){
+        try {
+            socket = IO.socket("http://localhost:8080");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void connect(){
+        try {
+            socket.off();
+            configSocketsEvents();
+            /*if(!socket.connected()) */socket.connect();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+    private void configSocketsEvents(){
+        socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+//                JSONObject data = (JSONObject) args[0];
+                JSONObject data = new JSONObject();
+                try {
+                    data.put("name", ShardWar.user.getName());
+                    data.put("avatarID", ShardWar.user.getAvatarID());
+                    data.put("rankedPoints", ShardWar.user.getRankedPoints());
+                    socket.emit("initUser", data);
+//                    String name = data.getString("name");
+//                    int avatarID = data.getInt("avatarID");
+//                    int rankedPoints = data.getInt("rankedPoints");
+//                    initUser(User.loadUserFromCache(name, avatarID, rankedPoints));
+                    initOwnPlayer(User.loadUserFromCache(ShardWar.user.getName(),
+                                                    ShardWar.user.getAvatarID(),
+                                                    ShardWar.user.getRankedPoints()));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).on("socketID", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JSONObject data = (JSONObject) args[0];
+                try {
+                    String id = data.getString("id");
+                    System.out.println("My id " + id);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).on("newPlayer", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JSONObject data = (JSONObject) args[0];
+                try {
+                    String name = data.getString("name");
+                    int avatarID = data.getInt("avatarID");
+                    int rankedPoints = data.getInt("rankedPoints");
+                    initEnemy(User.loadUserFromCache(name, avatarID, rankedPoints));
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).on("playerDisconnected", args -> {
+            JSONObject data = (JSONObject) args[0];
+            try {
+                String id = data.getString("id");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }).on("gameStart", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+//                init();
+//                startTurn();
+                hideSearch();
+                started = true;
+            }
+        }).on("startVote", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JSONObject data = (JSONObject) args[0];
+                try {
+                    String name = data.getString("name");
+                    int avatarID = data.getInt("avatarID");
+                    int rankedPoints = data.getInt("rankedPoints");
+                    enemyConnected(User.loadUserFromCache(name, avatarID, rankedPoints));
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).on("enemyDisconnected", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                enemyDisconnected();
+            }
+        }).on("enemyVoted", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                int a = (int) args[0];
+                paintVoteTable(false, a == 1);
+            }
+        }).on("timeEnd", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                endTime();
+            }
+        }).on("timeChange", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JSONObject data = (JSONObject) args[0];
+                try {
+                    double currTime = data.getDouble("time");
+                    timeBar.setValue((float) currTime);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).on("currentPlayer", args -> {
+            JSONObject data = (JSONObject) args[0];
+            try {
+                currentPlayer = data.getInt("player");
+                startTurnPart2(-1);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void sendEndTime(){
+        socket.emit("endTimeButton");
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
+        t = new Timer();//another place to init
+        if(gameMode == 0)initSearch();
+//        if(gameMode == 1);
+    }
+
+
+    private PlayerSearchTimer timer;
+    private Table enemy;
+    private Table player;
+    private UserPanel p1;
+    private UserPanel p2;
+    private Table time;
+    private Dialog readyDialog;
+
+    private void hideSearch(){
+        initEnemy(p2.getUser());
+        p1.remove();
+        p2.remove();
+        timer.remove();
+        player.remove();
+        enemy.remove();
+        time.remove();
+    }
+
+
+    private void initSearch(){
+
+
+        readyDialog = new Dialog("", ShardWar.main.getAssetLoader().getSkin()){
+            {
+                setMovable(false);
+                text("Confirm enemy?");
+                button("YES", true);
+                button("NO", false);
+            }
+
+            @Override
+            protected void result(Object object) {
+//                if(object.equals(true)){
+//                    socket.emit("VoteResult", true);
+//                }else {
+//                    socket.emit("VoteResult", false);
+//                }
+                boolean res = (boolean) object;
+                socket.emit("voteResult", res ? 1 : 0);
+                paintVoteTable(true, res);
+                hide();
+                if(!res) {
+                    ShardWar.main.switchScreen(0);
+//                    socket.disconnect();
+                }
+            }
+        };
+
+        p1 = new UserPanel();
+        p1.init(ShardWar.user, 100);
+
+        player = new Table();
+        player.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()/2f);
+        player.setPosition(0, 0);
+        stage.addActor(player);
+
+        enemy = new Table();
+        enemy.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()/2f);
+        enemy.setPosition(0, Gdx.graphics.getHeight()/2f);
+        stage.addActor(enemy);
+
+        player.add(p1).center();
+
+        time = new Table();
+        timer = new PlayerSearchTimer();
+        time.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        time.add(timer).center();
+
+        initTableVoteHighlight();
+
+
+        BackButton b = new BackButton(true){
+            @Override
+            protected void close() {
+                super.close();
+//                socket.disconnect();
+            }
+        };
+        stage.addActor(b);
+
+        stage.addActor(time);
+    }
+
+    private TextureRegionDrawable greenHighlight;
+    private TextureRegionDrawable redHighlight;
+    private TextureRegionDrawable emptyHighlight;
+
+    private void initTableVoteHighlight(){
+        Pixmap p1 = new Pixmap(10, 10, Pixmap.Format.RGBA8888);
+        p1.setColor(0x299000ff);
+        p1.fillRectangle(0, 0, 10, 10);
+        greenHighlight = new TextureRegionDrawable(new TextureRegion(new Texture(p1)));
+        p1.dispose();
+        Pixmap p2 = new Pixmap(10, 10, Pixmap.Format.RGBA8888);
+        p2.setColor(0xff0000ff);
+        p2.fillRectangle(0, 0, 10, 10);
+        redHighlight = new TextureRegionDrawable(new TextureRegion(new Texture(p2)));
+        p2.dispose();
+        Pixmap p3 = new Pixmap(10, 10, Pixmap.Format.RGBA8888);
+        p3.setColor(0x00000000);
+        p3.fillRectangle(0, 0, 10, 10);
+        emptyHighlight = new TextureRegionDrawable(new TextureRegion(new Texture(p3)));
+        p3.dispose();
+    }
+
+    private void enemyConnected(User user){
+//        System.out.println(timer);
+//        System.out.println(user);
+        timer.stop();
+        p2 = new UserPanel();
+        p2.init(user, 100);
+        enemy.add(p2).center();
+//        System.out.println(stage);
+
+        readyDialog.show(stage);
+    }
+    private void enemyDisconnected(){
+        readyDialog.hide();
+//        p2.remove();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                enemy.setBackground(emptyHighlight);
+                player.setBackground(emptyHighlight);
+                enemy.removeActor(p2);
+                timer.go();
+            }
+        }, 300);
+    }
+
+
+    private void paintVoteTable(boolean owner, boolean ready){
+        if(owner) player.setBackground(ready ? greenHighlight : redHighlight);
+        else      enemy.setBackground(ready ? greenHighlight : redHighlight);
+    }
+
+
+    private void initInputs(){
+
         HideListener hideListener = new HideListener();
 
         InputMultiplexer p = new InputMultiplexer();
@@ -307,7 +633,7 @@ public class FightScreen extends AbstractScreen {
         p.addProcessor(hideListener);
         Gdx.input.setInputProcessor(p);
 
-        startTurn();
+//        startTurn();
     }
 
     public void hasChanged(){
@@ -325,7 +651,12 @@ public class FightScreen extends AbstractScreen {
         }
     }
 
-
+    @Override
+    public void hide() {
+        super.hide();
+        socket.disconnect();
+//        socket.close();
+    }
 
     public class HideListener extends InputAdapter {
         @Override
@@ -572,15 +903,15 @@ public class FightScreen extends AbstractScreen {
 
     public void init(){
         targetSelected = new Array<>();
-        players = new Player[2];
+
         fields = new Field[2];
         projectiles = new Array<>();
-        t = new Timer();
+
         buyedInit = new int[2];
 //        a = new AlphaAction();
 
         initSizes();
-        initUsers();
+//        initUsers();
         initPlayerField();
         initEnemyField();
         initVerticalMoveSize();
@@ -666,8 +997,8 @@ public class FightScreen extends AbstractScreen {
         timeSkip.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-//                timeBar.setValue(TURN_TIME);
-                endTime();
+                if(gameMode == 0) sendEndTime();
+                if(gameMode == 1) endTime();
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
@@ -755,6 +1086,18 @@ public class FightScreen extends AbstractScreen {
         }
     }
 
+    private boolean started;
+
+    @Override
+    public void render(float delta) {
+        super.render(delta);
+        if(started) {
+            initInputs();
+            init();
+            startTurn();
+            started = false;
+        }
+    }
 
     private void initBuyTurnInitiative(){
         turnBuyButton = new TurnBuyButton();
@@ -763,6 +1106,8 @@ public class FightScreen extends AbstractScreen {
         stage.addActor(turnBuyButton);
     }
 
+
+
     private void initTimeBar(){
         int height = 10;
         timeBar = new ProgressBar(0, TURN_TIME, 0.01f, false,
@@ -770,11 +1115,14 @@ public class FightScreen extends AbstractScreen {
             @Override
             public void act(float delta) {
                 if(allowStartTurn) {
-                    setValue(getValue() - delta);
+//                    if(gameMode == 0) setValue();
+                    if(gameMode == 0) setValue(getValue() - delta);
                     if (getValue() == 0) {
-                        endTime();
+                        if(gameMode == 0) return;
+                        if(gameMode == 1) endTime();
 //                        setValue(TURN_TIME);
                     }
+
                 }
             }
 
@@ -836,30 +1184,47 @@ public class FightScreen extends AbstractScreen {
     }
 
     private boolean allowStartTurn = false;
+    private boolean waitForServer = false;
 
     private void startTurn(){
         offTouch();
 
         int buyedTurn = -1;
-        if(buyedInit[0] != buyedInit[1]){
-            if(buyedInit[0] > buyedInit[1]) currentPlayer = 1;
-            else currentPlayer = 2;
-            buyedTurn = currentPlayer;
+        if(gameMode == 1) {
+            if(buyedInit[0] != buyedInit[1]){
+                if(buyedInit[0] > buyedInit[1]) currentPlayer = 1;
+                else currentPlayer = 2;
+                buyedTurn = currentPlayer;
+            }else {
+                Random r = new Random();
+                int n = r.nextInt(2);
+                currentPlayer = n + 1;
+            }
+            startTurnPart2(buyedTurn);
         }else {
-            Random r = new Random();
-            int n = r.nextInt(2);
-            currentPlayer = n + 1;
+            askForCurrentPlayer();
         }
+
+    }
+
+    private void startTurnPart2(int buyedTurn){
         round++;
 //        updateCurrentRoundPanel();
-        buyedInit[0] = 0;
-        buyedInit[1] = 0;
+        if(gameMode == 1) {
+            buyedInit[0] = 0;
+            buyedInit[1] = 0;
+        }
 
         if(round % ROLL_ROUND == 0 && numberChange == 0){
             rollSpells();
         }
         showPlayerTurn(buyedTurn);
     }
+
+    private void askForCurrentPlayer(){
+        socket.emit("askCurrentPlayer");
+    }
+
     private void showTurnLabel(){
         Color color = turnDialog.getColor();//Libgdx bug #3920 when dialog flick
         color.a = 0;
@@ -1149,11 +1514,19 @@ public class FightScreen extends AbstractScreen {
     }
 
     private void nextPlayer(){
-        if(numberChange >= 1) {
-            numberChange = 0;
-            income();
-            startTurn();
-        }else changePlayerTurn();
+        if (gameMode == 1) {
+            if (numberChange >= 1) {
+                numberChange = 0;
+                income();
+                startTurn();
+            } else changePlayerTurn();
+        }else {
+            if (numberChange >= 1) {
+                numberChange = 0;
+            }
+//            income();
+//            startTurn();
+        }
         timeBar.setValue(TURN_TIME);
     }
 
@@ -1261,10 +1634,18 @@ public class FightScreen extends AbstractScreen {
     }
 
     private void changePlayerTurn(){
-        currentPlayer = 3 - currentPlayer;
+        if(gameMode == 1) {
+            currentPlayer = 3 - currentPlayer;
 //        if(currentPlayer == p1) currentPlayer = p2;
 //        else currentPlayer = p1;
-        numberChange++;
+            numberChange++;
+            changePlayerTurnPart2();
+        }else {
+            numberChange++;
+            askForCurrentPlayer();
+        }
+    }
+    private void changePlayerTurnPart2(){
         showPlayerTurn(-1);
     }
 
@@ -1407,22 +1788,49 @@ public class FightScreen extends AbstractScreen {
         }
     }
 
-    private void initUsers(){
-//        players[0] = new Player();
+    public void initUser(User user){
+        int a = -1;
+        if(players[0] == null)     a = 0;
+        else if(players[1] == null)a = 1;
 
-//        PlayerSlot s1 = new PlayerSlot();
-        players[0] = new Player(new Player.PlayerPrototype(
-                ShardWar.main.getAssetLoader().get("player1Logo.png", Texture.class),
-                "Джавист"));
-//        players[0].setPosition(Gdx.graphics.getWidth()/2f, 0);
-//        stage.addActor(players[0]);
+        if(a == -1)return;
+        players[a] = new Player(new Player.PlayerPrototype(user));
+        players[a].initShards();
+
+        if(players[0] != null && players[1] != null){
+            initUsers();
+
+        }
+    }
+    private void initOwnPlayer(User user){
+        players[0] = new Player(new Player.PlayerPrototype(user));
         players[0].initShards();
-        players[1] = new Player(new Player.PlayerPrototype(
-                ShardWar.main.getAssetLoader().get("player2Logo.png", Texture.class),
-                "Даныло"));
-//        players[1].setPosition(Gdx.graphics.getWidth()/2f, Gdx.graphics.getHeight() - players[1].getHeight());
-//        stage.addActor(players[1]);
+//        System.out.println("my");
+//        System.out.println(user.getName());
+//        System.out.println(user.getAvatarID());
+//        System.out.println(user.getRankedPoints());
+    }
+
+    public void initEnemy(User user){
+        players[1] = new Player(new Player.PlayerPrototype(user));
         players[1].initShards();
+        initUsers();
+//        System.out.println("enemy");
+//        System.out.println(user.getName());
+//        System.out.println(user.getAvatarID());
+//        System.out.println(user.getRankedPoints());
+    }
+
+
+    private void initUsers(){
+//        players[0] = new Player(new Player.PlayerPrototype(
+//                ShardWar.main.getAssetLoader().get("player1Logo.png", Texture.class),
+//                "Джавист"));
+//        players[0].initShards();
+//        players[1] = new Player(new Player.PlayerPrototype(
+//                ShardWar.main.getAssetLoader().get("player2Logo.png", Texture.class),
+//                "Даныло"));
+//        players[1].initShards();
         currentPlayer = 1;
 
 
@@ -1431,8 +1839,6 @@ public class FightScreen extends AbstractScreen {
         panel1.setPosition(Gdx.graphics.getWidth() - panel1.getWidth() - 40, 70);
         panel2.setPosition(Gdx.graphics.getWidth() - panel2.getWidth() - 40,
                 Gdx.graphics.getHeight() - panel2.getHeight() - 70);
-
-
         stage.addActor(panel1);
         stage.addActor(panel2);
     }

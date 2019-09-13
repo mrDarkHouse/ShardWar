@@ -66,20 +66,13 @@ public class Player extends GameObject {
         updateBar();
     }
 
-//    @Override
-//    public Vector2 getShootPosition(int line) {
-//        return new Vector2(lineX[line], getY());//TODO java.lang.ArrayIndexOutOfBoundsException: -1
-//    }
-//
-//    @Override
-//    public boolean isExist() {
-//        return true;
-//    }
-
     public static class PlayerPrototype extends ObjectPrototype{
 
         public PlayerPrototype(Texture texture, String name) {
             super(texture, texture, name, 0, 0, 0);
+        }
+        public PlayerPrototype(User user){
+            this(user.getAvatar(), user.getName());
         }
 
         @Override
@@ -92,8 +85,6 @@ public class Player extends GameObject {
     public Player(PlayerPrototype p) {
         super(p);
 //        super(ShardWar.main.getAssetLoader().get("shard.png", Texture.class));
-
-
     }
 
 

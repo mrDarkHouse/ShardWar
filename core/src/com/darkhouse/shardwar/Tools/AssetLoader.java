@@ -158,6 +158,7 @@ public class AssetLoader extends AssetManager {
 
         load("player1Logo.png", Texture.class);
         load("player2Logo.png", Texture.class);
+        load("player3Logo.png", Texture.class);
 
         load("Wiki/basics.png", Texture.class);
         load("Wiki/info1.png", Texture.class);

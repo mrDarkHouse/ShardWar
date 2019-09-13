@@ -20,12 +20,15 @@ public class BackButton extends ImageButton {
         }
         addListener(new InputListener(){
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                //mainClass.setScreen(new MainMenu(mainClass));
-                ShardWar.main.setPreviousScreen();
+                close();
                 return true;
             }
         });
 
+    }
+    protected void close(){
+        //mainClass.setScreen(new MainMenu(mainClass));
+        ShardWar.main.setPreviousScreen();
     }
 
 

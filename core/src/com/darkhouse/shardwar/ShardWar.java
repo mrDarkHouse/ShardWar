@@ -16,7 +16,9 @@ public class ShardWar extends Game {
 	private MainMenu mainMenu;
 	private OptionsMenu optionsMenu;
 	private WikiScreen wikiScreen;
+	private GameModeChooseScreen gameModeChooseScreen;
 	public static FightScreen fightScreen;
+	public static User user;
 
 	public MainMenu getMainMenu() {
 		return mainMenu;
@@ -52,10 +54,12 @@ public class ShardWar extends Game {
 		FontLoader.load();
 		AbilityHelper.init();
 		FightScreen.initAllSpells();
+		FightScreen.initSocket();
 		initScreens();
 	}
 	private void initScreens(){
 		mainMenu = new MainMenu();
+		gameModeChooseScreen = new GameModeChooseScreen();
 		optionsMenu = new OptionsMenu();
 		wikiScreen = new WikiScreen();
 	}
@@ -66,10 +70,9 @@ public class ShardWar extends Game {
 			case 1: setScreen(optionsMenu);
 			break;
 			case 2: {
-				fightScreen = new FightScreen();
-				fightScreen.init();
-				setScreen(fightScreen);
-
+				setScreen(gameModeChooseScreen);
+//				fightScreen = new FightScreen();
+//				setScreen(fightScreen);
 			}
 			break;
 			case 3: {
@@ -78,12 +81,24 @@ public class ShardWar extends Game {
 			break;
 		}
 	}
+	public void startPlayerGame(){
+		fightScreen = new FightScreen();
+		setScreen(fightScreen);
+	}
+	public void startSplitGame(){
+		fightScreen = new FightScreen(ShardWar.user);
+		setScreen(fightScreen);
+	}
+	public void startBotGame(){
+
+	}
 
 	public void setPreviousScreen(){
 		Screen currentScreen = getScreen();
-		if(currentScreen instanceof OptionsMenu) setScreen(mainMenu);
-		if(currentScreen instanceof FightScreen) setScreen(mainMenu);
-		if(currentScreen instanceof WikiScreen) setScreen(mainMenu);
+		if(currentScreen instanceof OptionsMenu) 			setScreen(mainMenu);
+		if(currentScreen instanceof FightScreen) 			setScreen(gameModeChooseScreen);
+		if(currentScreen instanceof GameModeChooseScreen) 	setScreen(mainMenu);
+		if(currentScreen instanceof WikiScreen)				setScreen(mainMenu);
 	}
 
 

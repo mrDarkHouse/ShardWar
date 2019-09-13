@@ -154,11 +154,11 @@ public class WikiScreen extends AbstractScreen {
         aa[1] = new AutoAnimationActor("Wiki/BuildGuide.gif", 0.05f);
         aa[2] = new AutoAnimationActor("Wiki/SelectLineGuide.gif", 0.05f);
         aa[3] = new AutoAnimationActor("Wiki/ProjectileFlyGuide.gif", 0.05f);
-        aa[4] = new AutoAnimationActor("Wiki/GlobalShotGuide.gif", 0.05f);
-        aa[5] = new AutoAnimationActor("Wiki/MultiShotGuide.gif", 0.05f);
-        aa[6] = new AutoAnimationActor("Wiki/ShotOrderGuide.gif", 0.05f);
-        aa[7] = new AutoAnimationActor("Wiki/EndTurnGuide.gif", 0.05f);
-        aa[8] = new AutoAnimationActor("Wiki/BuyTurnGuide.gif", 0.05f);
+//        aa[4] = new AutoAnimationActor("Wiki/GlobalShotGuide.gif", 0.05f);
+//        aa[5] = new AutoAnimationActor("Wiki/MultiShotGuide.gif", 0.05f);
+//        aa[6] = new AutoAnimationActor("Wiki/ShotOrderGuide.gif", 0.05f);
+//        aa[7] = new AutoAnimationActor("Wiki/EndTurnGuide.gif", 0.05f);
+//        aa[8] = new AutoAnimationActor("Wiki/BuyTurnGuide.gif", 0.05f);
 //        aa[9] = new AutoAnimationActor("Wiki/SpellBuyPanelGuide.gif", 0.05f);
 
         Table spellChances = new Table();
@@ -281,20 +281,20 @@ public class WikiScreen extends AbstractScreen {
         battle.add(info[9]).row();
         battle.add(aa[3]).size(aa[3].getWidth()*ratio, aa[3].getHeight()*ratio).row();
         battle.add(info[10]).row();
-        battle.add(aa[4]).size(aa[4].getWidth()*ratio, aa[4].getHeight()*ratio).row();
+//        battle.add(aa[4]).size(aa[4].getWidth()*ratio, aa[4].getHeight()*ratio).row();
         battle.add(info[11]).row();
-        battle.add(aa[5]).size(aa[5].getWidth()*ratio, aa[5].getHeight()*ratio).row();
+//        battle.add(aa[5]).size(aa[5].getWidth()*ratio, aa[5].getHeight()*ratio).row();
         battle.add(info[12]).row();
-        battle.add(aa[6]).size(aa[6].getWidth()*ratio, aa[6].getHeight()*ratio).row();
+//        battle.add(aa[6]).size(aa[6].getWidth()*ratio, aa[6].getHeight()*ratio).row();
         battle.add(info[13]).row();
 
         turns.add(info[14]).row();
         turns.add(info[15]).row();
         turns.add(img3).size(img3.getWidth()*ratio, img3.getHeight()*ratio).row();
         turns.add(info[16]).row();
-        turns.add(aa[7]).size(aa[7].getWidth()*ratio, aa[7].getHeight()*ratio).row();
+//        turns.add(aa[7]).size(aa[7].getWidth()*ratio, aa[7].getHeight()*ratio).row();
         turns.add(info[17]).row();
-        turns.add(aa[8]).size(aa[8].getWidth()*ratio, aa[8].getHeight()*ratio).row();
+//        turns.add(aa[8]).size(aa[8].getWidth()*ratio, aa[8].getHeight()*ratio).row();
 
         spells.add(info[18]).row();
         spells.add(info[19]).row();
