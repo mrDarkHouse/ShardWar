@@ -115,10 +115,10 @@ function getIp(){
 
 			if (alias >= 1) {
 			  // this single interface has multiple ipv4 addresses
-			  console.log(ifname + ':' + alias, iface.address);
+			  //console.log(ifname + ':' + alias, iface.address);
 			} else {
 			  // this interface has only one ipv4 adress
-			  console.log(ifname, iface.address);
+			  //console.log(ifname, iface.address);
 			}
 			++alias;
 		});
@@ -315,6 +315,7 @@ function Room(){
 	
 	this.endTime = function(){
 		this.roundTimer = turnTime;
+		console.log("end time");
 		this.nextPlayer();
 		
 		io.sockets.sockets[this.player1.id].emit("timeEnd");

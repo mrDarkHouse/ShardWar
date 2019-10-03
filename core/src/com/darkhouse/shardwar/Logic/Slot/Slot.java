@@ -262,7 +262,8 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
             addListener(new InputListener() {
                 @Override
                 public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                    if(user == owner.getCurrentPlayerObject()) {
+                    if(user == owner.getCurrentPlayerObject() &&
+                            (owner.getGameMode() == 1 || owner.getCurrentPlayer() == 1)) {
                         if (empty() && !disable && getColor().a != 1f) {
                             fadeOut();
                         }
@@ -280,7 +281,9 @@ public abstract class Slot<T extends GameObject.ObjectPrototype, O extends GameO
 
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    if(user == owner.getCurrentPlayerObject()) {
+                    if(user == owner.getCurrentPlayerObject() &&
+                            (owner.getGameMode() == 1 || owner.getCurrentPlayer() == 1)) {
+
                         owner.hideTooltips();
                         if(disable) return true;
                         if (empty()) {

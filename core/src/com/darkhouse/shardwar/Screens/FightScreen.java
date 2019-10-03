@@ -258,11 +258,14 @@ public class FightScreen extends AbstractScreen {
     private TurnBuyButton turnBuyButton;
     private TextButton currentRound;
 
+    private void flushTargetSlot(){
+        this.targetSlot = null;
+        onTouch();
+    }
+
     public void setTargetSlot(Slot<Tower.TowerPrototype, Tower> targetSlot) {
         this.targetSlot = targetSlot;
-//        ShardWar.fightScreen.getCurrentField().setTouchable(Touchable.disabled);
-        ShardWar.fightScreen.getField(1).setTouchable(Touchable.disabled);
-        ShardWar.fightScreen.getField(2).setTouchable(Touchable.disabled);
+        offTouch();
         if(targetSlot.getNumberSelected() < targetSlot.getSelected().length) {
             targetSlot.setTargeter(new Image(ShardWar.main.getAssetLoader().getCenterTarget(getCurrentPlayer())));
 //            targetSlot.getTargeter().debug();
@@ -295,6 +298,10 @@ public class FightScreen extends AbstractScreen {
 //    private AlphaAction a;
 
     private int gameMode;
+
+    public int getGameMode() {
+        return gameMode;
+    }
 
     public FightScreen() {
         super(ShardWar.main.getAssetLoader().getMainMenuBg());
@@ -544,14 +551,7 @@ public class FightScreen extends AbstractScreen {
 
         initTableVoteHighlight();
 
-
-        BackButton b = new BackButton(true){
-            @Override
-            protected void close() {
-                super.close();
-//                socket.disconnect();
-            }
-        };
+        BackButton b = new BackButton(true);
         stage.addActor(b);
 
         stage.addActor(time);
@@ -604,12 +604,10 @@ public class FightScreen extends AbstractScreen {
         }, 300);
     }
 
-
     private void paintVoteTable(boolean owner, boolean ready){
         if(owner) player.setBackground(ready ? greenHighlight : redHighlight);
         else      enemy.setBackground(ready ? greenHighlight : redHighlight);
     }
-
 
     private void initInputs(){
 
@@ -875,10 +873,10 @@ public class FightScreen extends AbstractScreen {
             }
             targetSlot.flushSelect();
             targetSlot.flushTargeter();
-            targetSlot = null;
+            flushTargetSlot();
 //            ShardWar.fightScreen.getCurrentField().setTouchable(Touchable.enabled);
-            ShardWar.fightScreen.getField(1).setTouchable(Touchable.enabled);
-            ShardWar.fightScreen.getField(2).setTouchable(Touchable.enabled);
+//            ShardWar.fightScreen.getField(1).setTouchable(Touchable.enabled);
+//            ShardWar.fightScreen.getField(2).setTouchable(Touchable.enabled);
             return true;
         }
         if(button == 0 && targetSlot != null && targetSlot.getTargeter() != null){
@@ -893,7 +891,7 @@ public class FightScreen extends AbstractScreen {
             a.setAlpha(0.4f);
             targetSlot.getTargeter().addAction(a);
             targetSlot.endSelect();
-            targetSlot = null;
+            flushTargetSlot();
             ShardWar.fightScreen.getCurrentField().setTouchable(Touchable.enabled);
             return true;
         }
@@ -987,18 +985,25 @@ public class FightScreen extends AbstractScreen {
         currentRound.setText(text);
     }
 
+    private TextButton timeSkip;
 
     private void initTimeSkipButton(){
         AssetLoader l = ShardWar.main.getAssetLoader();
-        TextButton timeSkip = new TextButton(l.getWord("endTurn"), l.getSkin());
+        timeSkip = new TextButton(l.getWord("endTurn"), l.getSkin());
         timeSkip.setPosition(Gdx.graphics.getWidth() - timeSkip.getWidth() - 10,
                 Gdx.graphics.getHeight()/2f - timeSkip.getHeight() - 10);
 //        timeSkip.pack();
         timeSkip.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if(gameMode == 0) sendEndTime();
+                if(gameMode == 0) {
+                    if(currentPlayer == 1) sendEndTime();
+                }
                 if(gameMode == 1) endTime();
+
+                if(gameMode == 2){
+                    if(currentPlayer == 1) endTime();
+                }
                 return super.touchDown(event, x, y, pointer, button);
             }
         });
@@ -1032,9 +1037,11 @@ public class FightScreen extends AbstractScreen {
             less.addListener(new ClickListener(){
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    if(num > MINIMUM_VALUE) {
-                        num--;
-                        updateNum();
+                    if(getGameMode() == 1 || getCurrentPlayer() == 1) {
+                        if (num > MINIMUM_VALUE) {
+                            num--;
+                            updateNum();
+                        }
                     }
                     return true;
                 }
@@ -1042,9 +1049,11 @@ public class FightScreen extends AbstractScreen {
             more.addListener(new ClickListener(){
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    if(getCurrentPlayerObject().getShards() > num) {
-                        num++;
-                        updateNum();
+                    if(getGameMode() == 1 || getCurrentPlayer() == 1) {
+                        if (getCurrentPlayerObject().getShards() > num) {
+                            num++;
+                            updateNum();
+                        }
                     }
                     return true;
                 }
@@ -1052,13 +1061,15 @@ public class FightScreen extends AbstractScreen {
             buyTurn.addListener(new ClickListener(){
                 @Override
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    if(getCurrentPlayerObject().deleteShards(num)) {
-                        buyedInit[currentPlayer - 1] = num;
+                    if(getGameMode() == 1 || getCurrentPlayer() == 1) {
+                        if (getCurrentPlayerObject().deleteShards(num)) {
+                            buyedInit[currentPlayer - 1] = num;
 //                        AlphaAction a = new AlphaAction();
-                        a.setAlpha(0.4f);
-                        a.restart();
-                        addAction(a);
-                        setTouchable(Touchable.disabled);
+                            a.setAlpha(0.4f);
+                            a.restart();
+                            addAction(a);
+                            setTouchable(Touchable.disabled);
+                        }
                     }
                     return true;
                 }
@@ -1085,6 +1096,22 @@ public class FightScreen extends AbstractScreen {
             setTouchable(Touchable.enabled);
         }
     }
+
+
+
+    private void turnBuyButtonUpdate(){
+        if(gameMode == 0){
+            if(currentPlayer == 1) turnBuyButton.setTouchable(Touchable.enabled);
+            else                   turnBuyButton.setTouchable(Touchable.disabled);
+        }
+    }
+    private void timeSkipButtonUpdate(){
+        if(gameMode == 0){
+            if(currentPlayer == 1) timeSkip.setTouchable(Touchable.enabled);
+            else                   timeSkip.setTouchable(Touchable.disabled);
+        }
+    }
+
 
     private boolean started;
 
@@ -1117,6 +1144,7 @@ public class FightScreen extends AbstractScreen {
                 if(allowStartTurn) {
 //                    if(gameMode == 0) setValue();
                     if(gameMode == 0) setValue(getValue() - delta);
+                    if(gameMode == 1) setValue(getValue() - delta);
                     if (getValue() == 0) {
                         if(gameMode == 0) return;
                         if(gameMode == 1) endTime();
@@ -1184,7 +1212,7 @@ public class FightScreen extends AbstractScreen {
     }
 
     private boolean allowStartTurn = false;
-    private boolean waitForServer = false;
+//    private boolean waitForServer = false;
 
     private void startTurn(){
         offTouch();
@@ -1209,6 +1237,7 @@ public class FightScreen extends AbstractScreen {
 
     private void startTurnPart2(int buyedTurn){
         round++;
+
 //        updateCurrentRoundPanel();
         if(gameMode == 1) {
             buyedInit[0] = 0;
@@ -1264,6 +1293,8 @@ public class FightScreen extends AbstractScreen {
         showTurnLabel();
         changePlayerTurnHighlighter();
         updateCurrentRoundPanel();
+        turnBuyButtonUpdate();
+        timeSkipButtonUpdate();
 
 //        Timer t = new Timer();
 //        hideTurnLabel();
@@ -1514,16 +1545,17 @@ public class FightScreen extends AbstractScreen {
     }
 
     private void nextPlayer(){
-        if (gameMode == 1) {
+        if (gameMode == 1 || gameMode == 0) {
             if (numberChange >= 1) {
                 numberChange = 0;
                 income();
                 startTurn();
             } else changePlayerTurn();
         }else {
-            if (numberChange >= 1) {
-                numberChange = 0;
-            }
+//            if (numberChange >= 1) {
+//                numberChange = 0;
+//                startTurn();
+//            } else changePlayerTurn();
 //            income();
 //            startTurn();
         }
@@ -1634,15 +1666,15 @@ public class FightScreen extends AbstractScreen {
     }
 
     private void changePlayerTurn(){
-        if(gameMode == 1) {
+        if(gameMode == 1 || gameMode == 0) {
             currentPlayer = 3 - currentPlayer;
 //        if(currentPlayer == p1) currentPlayer = p2;
 //        else currentPlayer = p1;
             numberChange++;
             changePlayerTurnPart2();
         }else {
-            numberChange++;
-            askForCurrentPlayer();
+//            numberChange++;
+//            askForCurrentPlayer();
         }
     }
     private void changePlayerTurnPart2(){
@@ -1788,20 +1820,6 @@ public class FightScreen extends AbstractScreen {
         }
     }
 
-    public void initUser(User user){
-        int a = -1;
-        if(players[0] == null)     a = 0;
-        else if(players[1] == null)a = 1;
-
-        if(a == -1)return;
-        players[a] = new Player(new Player.PlayerPrototype(user));
-        players[a].initShards();
-
-        if(players[0] != null && players[1] != null){
-            initUsers();
-
-        }
-    }
     private void initOwnPlayer(User user){
         players[0] = new Player(new Player.PlayerPrototype(user));
         players[0].initShards();
